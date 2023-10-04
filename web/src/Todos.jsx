@@ -1,33 +1,31 @@
 import "./App.css";
 import { useState } from "react";
-import firebase, { auth, firestore, functions } from "./firebase";
-import { useCollectionData } from "react-firebase-hooks/firestore";
 
-const addTodo = functions.httpsCallable("addTodo");
+// const addTodo = functions.httpsCallable("addTodo");
 
 const Todos = () => {
   const [todo, setTodo] = useState("");
-  const todosRef = firestore.collection(`users/${auth.currentUser.uid}/todos`);
-  const [todos] = useCollectionData(todosRef, { idField: "id" });
+  // const todosRef = firestore.collection(`users/${auth.currentUser.uid}/todos`);
+  const todos = [];
 
-  const signOut = () => auth.signOut();
+  // const signOut = () => auth.signOut();
 
   const onSubmitTodo = (event) => {
     event.preventDefault();
 
     setTodo("");
-    addTodo({
-      text: todo,
-      complete: false,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-    });
+    // addTodo({
+    //   text: todo,
+    //   complete: false,
+    //   createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+    // });
   };
 
   return (
     <>
-      <header>
+      {/* <header>
         <button onClick={signOut}>Sign Out</button>
-      </header>
+      </header> */}
       <main>
         <form onSubmit={onSubmitTodo}>
           <input
@@ -45,11 +43,11 @@ const Todos = () => {
 };
 
 const Todo = ({ id, complete, text }) => {
-  const todosRef = firestore.collection(`users/${auth.currentUser.uid}/todos`);
-  const onCompleteTodo = (id, complete) =>
-    todosRef.doc(id).set({ complete: !complete }, { merge: true });
+  // const todosRef = firestore.collection(`users/${auth.currentUser.uid}/todos`);
+  const onCompleteTodo = (id, complete) => {}
+  //   todosRef.doc(id).set({ complete: !complete }, { merge: true });
 
-  const onDeleteTodo = (id) => todosRef.doc(id).delete();
+  const onDeleteTodo = (id) => {} // todosRef.doc(id).delete();
 
   return (
     <div key={id} className="todo">
