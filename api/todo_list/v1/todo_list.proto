@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+package todo_list.v1;
+
+import "resemble/v1alpha1/options.proto";
+
+////////////////////////////////////////////////////////////////////////
+
+service TodoList {
+  option (resemble.v1alpha1.service).state = "TodoListState";
+
+  rpc AddTodo(AddTodoRequest) returns (AddTodoResponse) {
+    option (resemble.v1alpha1.method).writer = {
+    };
+  }
+
+  rpc ListTodos(ListTodosRequest) returns (ListTodosResponse) {
+    option (resemble.v1alpha1.method).reader = {
+    };
+  }
+
+}
+
+message TodoListState {
+  repeated string todos = 1;
+}
+
+message AddTodoRequest {
+  string todo = 1;
+}
+
+message AddTodoResponse {}
+
+message ListTodosRequest {}
+
+message ListTodosResponse {
+  repeated string todos = 1;
+}

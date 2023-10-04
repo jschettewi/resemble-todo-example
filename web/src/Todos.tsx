@@ -1,24 +1,25 @@
 import "./App.css";
 import { useState } from "react";
+import { TodoList } from "../../api/todo_list/v1/todo_list_rsm";
 
-// const addTodo = functions.httpsCallable("addTodo");
-
-const Todos = () => {
+export const Todos = () => {
   const [todo, setTodo] = useState("");
-  // const todosRef = firestore.collection(`users/${auth.currentUser.uid}/todos`);
-  const todos = [];
+
+  const { useListTodos } = TodoList({ actorId: "todo-list" });
+
+  const {
+    response,
+    mutations: { AddTodo },
+  } = useListTodos();
+
+  const todos = response?.todos;
 
   // const signOut = () => auth.signOut();
 
-  const onSubmitTodo = (event) => {
+  const onSubmitTodo = (event: any) => {
     event.preventDefault();
 
-    setTodo("");
-    // addTodo({
-    //   text: todo,
-    //   complete: false,
-    //   createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-    // });
+    AddTodo({ todo: todo }).then(() => setTodo(""));
   };
 
   return (
@@ -36,31 +37,37 @@ const Todos = () => {
           />
           <button type="submit">Add</button>
         </form>
-        {todos && todos.map((todo) => <Todo key={todo.id} {...todo} />)}
+        {todos && todos.map((text, index) => <Todo text={text} index={index} />)}
       </main>
     </>
   );
 };
 
-const Todo = ({ id, complete, text }) => {
+interface TodoArgs {
+  text: string;
+  index: number;
+}
+
+const Todo = ({ text, index }: TodoArgs) => {
+  const complete = false;
   // const todosRef = firestore.collection(`users/${auth.currentUser.uid}/todos`);
-  const onCompleteTodo = (id, complete) => {}
+  const onCompleteTodo = () => {}
   //   todosRef.doc(id).set({ complete: !complete }, { merge: true });
 
-  const onDeleteTodo = (id) => {} // todosRef.doc(id).delete();
+  const onDeleteTodo = () => {} // todosRef.doc(id).delete();
 
   return (
-    <div key={id} className="todo">
+    <div key={index} className="todo">
       <button
         className={`todo-item ${complete ? "complete" : ""}`}
-        tabIndex="0"
-        onClick={() => onCompleteTodo(id, complete)}
+        // tabIndex="0"
+        onClick={() => onCompleteTodo()}
       >
         {text}
       </button>
-      <button onClick={() => onDeleteTodo(id)}>x</button>
+      <button onClick={() => onDeleteTodo()}>x</button>
     </div>
   );
 };
 
-export default Todos;
+// export default Todos;

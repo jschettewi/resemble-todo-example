@@ -1,29 +1,29 @@
 import asyncio
 import logging
-from greeter_servicer import GreeterServicer
-from hello_world.v1.greeter_rsm import Greeter
+from todo_list.v1.todo_list_rsm import TodoList
+from todo_list_servicer import TodoListServicer
 from resemble.aio.applications import Application
 from resemble.aio.workflows import Workflow
 
 logging.basicConfig(level=logging.INFO)
 
-EXAMPLE_GREETER_ID = 'greeter-hello-world'
+TODO_LIST_ID = 'todo-list'
 
 
 async def initialize(workflow: Workflow):
-    greeter = Greeter(EXAMPLE_GREETER_ID)
+    todolist = TodoList(TODO_LIST_ID)
 
     # Implicitly construct greeter upon first write.
-    await greeter.Greet(workflow, greeting="Hello, World!")
+    await todolist.AddTodo(workflow, todo="Sleep")
 
 
 async def main():
     application = Application(
-        servicers=[GreeterServicer],
+        servicers=[TodoListServicer],
         initialize=initialize,
     )
 
-    logging.info('👋 Hello, World? Hello, Resemble! 👋')
+    logging.info('👋 Ready to add todos! 👋')
 
     await application.run()
 

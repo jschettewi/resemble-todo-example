@@ -1,5 +1,5 @@
 import "./App.css";
-import Todos from "./Todos";
+import { Todos } from "./Todos";
 
 // const sighInWithGoogle = () =>
 //   auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
