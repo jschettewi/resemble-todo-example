@@ -1,11 +1,11 @@
 import "./App.css";
 import { useState } from "react";
-import { TodoList } from "../../api/todo_list/v1/todo_list_rsm";
+import { TodoList } from "./gen/todo_list/v1/todo_list_rsm_react";
 
 export const Todos = () => {
   const [todo, setTodo] = useState("");
 
-  const { useListTodos } = TodoList({ actorId: "todo-list" });
+  const { useListTodos } = TodoList({ id: "todo-list" });
 
   const {
     response,
@@ -49,12 +49,24 @@ interface TodoArgs {
 }
 
 const Todo = ({ text, index }: TodoArgs) => {
+
+  const { useListTodos } = TodoList({ id: "todo-list" });
+
+  const {
+    response,
+    mutations: { DeleteTodo },
+  } = useListTodos();
+
   const complete = false;
   // const todosRef = firestore.collection(`users/${auth.currentUser.uid}/todos`);
   const onCompleteTodo = () => {}
   //   todosRef.doc(id).set({ complete: !complete }, { merge: true });
 
-  const onDeleteTodo = () => {} // todosRef.doc(id).delete();
+  const onDeleteTodo = () => {
+    console.log("HERE");
+    console.log(index);
+    DeleteTodo( { id: index });
+  } // todosRef.doc(id).delete();
 
   return (
     <div key={index} className="todo">

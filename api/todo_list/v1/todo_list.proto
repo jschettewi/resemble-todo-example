@@ -19,7 +19,18 @@ service TodoList {
     };
   }
 
+  rpc DeleteTodo(DeleteTodoRequest) returns (DeleteTodoResponse) {
+    option (resemble.v1alpha1.method).writer = {
+    };
+  }
+
 }
+
+message DeleteTodoRequest {
+  int32 id = 1;
+}
+
+message DeleteTodoResponse {}
 
 message TodoListState {
   repeated string todos = 1;

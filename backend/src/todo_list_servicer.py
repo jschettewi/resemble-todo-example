@@ -6,6 +6,8 @@ from todo_list.v1.todo_list_rsm import (
     AddTodoResponse,
     ListTodosRequest,
     ListTodosResponse,
+    DeleteTodoRequest,
+    DeleteTodoResponse,
 )
 from resemble.aio.contexts import ReaderContext, WriterContext
 
@@ -30,3 +32,15 @@ class TodoListServicer(TodoList.Interface):
         request: ListTodosRequest,
     ) -> ListTodosResponse:
         return ListTodosResponse(todos=state.todos)
+    
+    async def DeleteTodo(
+        self,
+        context: WriterContext,
+        state: TodoListState,
+        request: DeleteTodoRequest,
+    ) -> TodoList.DeleteTodoEffects:
+        id = request.id
+        print("here", id)
+        state.todos.remove(state.todos[id])
+        # state.todos[id]
+        return TodoList.DeleteTodoEffects(state=state, response=DeleteTodoResponse())
