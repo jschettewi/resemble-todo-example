@@ -55,4 +55,8 @@ class TodoListServicer(TodoList.Interface):
         request: CompleteTodoRequest,
         ) -> TodoList.CompleteTodoEffects:
         print("todo is complete")
-        return TodoList.CompleteTodoEffectsC(state=state, response=CompleteTodoResponse())
+        id = request.id
+        complete = request.complete
+        complete = not complete
+        print("##########", id, complete)
+        return TodoList.CompleteTodoEffects(state=state, response=CompleteTodoResponse())

@@ -15,6 +15,11 @@ export declare class CompleteTodoRequest extends Message<CompleteTodoRequest> {
    */
   id: number;
 
+  /**
+   * @generated from field: bool complete = 2;
+   */
+  complete: boolean;
+
   constructor(data?: PartialMessage<CompleteTodoRequest>);
 
   static readonly runtime: typeof proto3;
@@ -124,6 +129,11 @@ export declare class AddTodoRequest extends Message<AddTodoRequest> {
    * @generated from field: string todo = 1;
    */
   todo: string;
+
+  /**
+   * @generated from field: bool complete = 2;
+   */
+  complete: boolean;
 
   constructor(data?: PartialMessage<AddTodoRequest>);
 

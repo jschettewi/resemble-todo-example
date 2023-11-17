@@ -19,7 +19,7 @@ export const Todos = () => {
   const onSubmitTodo = (event: any) => {
     event.preventDefault();
 
-    AddTodo({ todo: todo }).then(() => setTodo(""));
+    AddTodo({ todo: todo, complete: true }).then(() => setTodo(""));
   };
 
   return (
@@ -37,7 +37,8 @@ export const Todos = () => {
           />
           <button type="submit">Add</button>
         </form>
-        {todos && todos.map((text, index) => <Todo text={text} index={index} />)}
+        {todos && todos.map((text, index, complete) => <Todo text={text} index={index} complete={false} />)}
+      
       </main>
     </>
   );
@@ -46,9 +47,10 @@ export const Todos = () => {
 interface TodoArgs {
   text: string;
   index: number;
+  complete: boolean;
 }
 
-const Todo = ({ text, index }: TodoArgs) => {
+const Todo = ({ text, index, complete }: TodoArgs) => {
 
   const { useListTodos } = TodoList({ id: "todo-list" });
 
@@ -57,12 +59,15 @@ const Todo = ({ text, index }: TodoArgs) => {
     mutations: { DeleteTodo, CompleteTodo },
   } = useListTodos();
 
-  const complete = false;
+  // const complete = false;
   // const todosRef = firestore.collection(`users/${auth.currentUser.uid}/todos`);
   const onCompleteTodo = () => {
     console.log("complete todo");
     console.log(index);
-    CompleteTodo( { id: index })
+    console.log(complete)
+    CompleteTodo( { id: index, complete: complete })
+    complete = !complete
+    console.log(complete)
   }
   //   todosRef.doc(id).set({ complete: !complete }, { merge: true });
 

@@ -33,6 +33,7 @@ service TodoList {
 
 message CompleteTodoRequest {
   int32 id = 1;
+  bool complete = 2;
 }
 
 message CompleteTodoResponse {}
@@ -49,6 +50,7 @@ message TodoListState {
 
 message AddTodoRequest {
   string todo = 1;
+  bool complete = 2;
 }
 
 message AddTodoResponse {}

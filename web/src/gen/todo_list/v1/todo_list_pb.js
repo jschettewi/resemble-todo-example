@@ -12,6 +12,7 @@ export const CompleteTodoRequest = proto3.makeMessageType(
   "todo_list.v1.CompleteTodoRequest",
   () => [
     { no: 1, name: "id", kind: "scalar", T: 5 /* ScalarType.INT32 */ },
+    { no: 2, name: "complete", kind: "scalar", T: 8 /* ScalarType.BOOL */ },
   ],
 );
 
@@ -58,6 +59,7 @@ export const AddTodoRequest = proto3.makeMessageType(
   "todo_list.v1.AddTodoRequest",
   () => [
     { no: 1, name: "todo", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 2, name: "complete", kind: "scalar", T: 8 /* ScalarType.BOOL */ },
   ],
 );
 
