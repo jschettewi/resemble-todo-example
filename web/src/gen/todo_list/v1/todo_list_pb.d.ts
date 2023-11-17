@@ -7,6 +7,49 @@ import type { BinaryReadOptions, FieldList, JsonReadOptions, JsonValue, PartialM
 import { Message, proto3 } from "@bufbuild/protobuf";
 
 /**
+ * @generated from message todo_list.v1.CompleteTodoRequest
+ */
+export declare class CompleteTodoRequest extends Message<CompleteTodoRequest> {
+  /**
+   * @generated from field: int32 id = 1;
+   */
+  id: number;
+
+  constructor(data?: PartialMessage<CompleteTodoRequest>);
+
+  static readonly runtime: typeof proto3;
+  static readonly typeName = "todo_list.v1.CompleteTodoRequest";
+  static readonly fields: FieldList;
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): CompleteTodoRequest;
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): CompleteTodoRequest;
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): CompleteTodoRequest;
+
+  static equals(a: CompleteTodoRequest | PlainMessage<CompleteTodoRequest> | undefined, b: CompleteTodoRequest | PlainMessage<CompleteTodoRequest> | undefined): boolean;
+}
+
+/**
+ * @generated from message todo_list.v1.CompleteTodoResponse
+ */
+export declare class CompleteTodoResponse extends Message<CompleteTodoResponse> {
+  constructor(data?: PartialMessage<CompleteTodoResponse>);
+
+  static readonly runtime: typeof proto3;
+  static readonly typeName = "todo_list.v1.CompleteTodoResponse";
+  static readonly fields: FieldList;
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): CompleteTodoResponse;
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): CompleteTodoResponse;
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): CompleteTodoResponse;
+
+  static equals(a: CompleteTodoResponse | PlainMessage<CompleteTodoResponse> | undefined, b: CompleteTodoResponse | PlainMessage<CompleteTodoResponse> | undefined): boolean;
+}
+
+/**
  * @generated from message todo_list.v1.DeleteTodoRequest
  */
 export declare class DeleteTodoRequest extends Message<DeleteTodoRequest> {

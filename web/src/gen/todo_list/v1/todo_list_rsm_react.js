@@ -244,7 +244,8 @@ var TodoList = function (_a) {
         var queuedMutations = (0, react_1.useRef)([]);
         function hasRunningMutations() {
             if (runningAddTodoMutations.current.length > 0 ||
-                runningDeleteTodoMutations.current.length > 0) {
+                runningDeleteTodoMutations.current.length > 0 ||
+                runningCompleteTodoMutations.current.length > 0) {
                 return true;
             }
             return false;
@@ -477,6 +478,120 @@ var TodoList = function (_a) {
                 });
             });
         }
+        var runningCompleteTodoMutations = (0, react_1.useRef)([]);
+        var recoveredCompleteTodoMutations = (0, react_1.useRef)([]);
+        var shouldClearFailedCompleteTodoMutations = (0, react_1.useRef)(false);
+        var _j = (0, react_1.useState)([]), failedCompleteTodoMutations = _j[0], setFailedCompleteTodoMutations = _j[1];
+        var queuedCompleteTodoMutations = (0, react_1.useRef)([]);
+        var recoverAndPurgeCompleteTodoMutations = function () {
+            if (localStorageKeyRef.current === undefined) {
+                return [];
+            }
+            var suffix = CompleteTodo;
+            var value = localStorage.getItem(localStorageKeyRef.current + suffix);
+            if (value === null) {
+                return [];
+            }
+            localStorage.removeItem(localStorageKeyRef.current);
+            var mutations = JSON.parse(value);
+            var recoveredCompleteTodoMutations = [];
+            var _loop_3 = function (mutation) {
+                recoveredCompleteTodoMutations.push([mutation, function () { return __CompleteTodo(mutation); }]);
+            };
+            for (var _i = 0, mutations_3 = mutations; _i < mutations_3.length; _i++) {
+                var mutation = mutations_3[_i];
+                _loop_3(mutation);
+            }
+            return recoveredCompleteTodoMutations;
+        };
+        var doOnceCompleteTodo = (0, react_1.useRef)(true);
+        if (doOnceCompleteTodo.current) {
+            doOnceCompleteTodo.current = false;
+            recoveredCompleteTodoMutations.current = recoverAndPurgeCompleteTodoMutations();
+        }
+        // User facing state that only includes the pending mutations that
+        // have not been observed.
+        var _k = (0, react_1.useState)([]), unobservedPendingCompleteTodoMutations = _k[0], setUnobservedPendingCompleteTodoMutations = _k[1];
+        (0, react_1.useEffect)(function () {
+            shouldClearFailedCompleteTodoMutations.current = true;
+        }, [failedCompleteTodoMutations]);
+        function __CompleteTodo(mutation) {
+            return __awaiter(this, void 0, void 0, function () {
+                return __generator(this, function (_a) {
+                    try {
+                        // Invariant that we won't yield to event loop before pushing to
+                        // runningCompleteTodoMutations
+                        runningCompleteTodoMutations.current.push(mutation);
+                        return [2 /*return*/, _Mutation(
+                            // Invariant here is that we use the '/package.service.method'.
+                            //
+                            // See also 'resemble/helpers.py'.
+                            "/todo_list.v1.TodoList.CompleteTodo", mutation, mutation.request, mutation.idempotencyKey, setUnobservedPendingCompleteTodoMutations, abortController, shouldClearFailedCompleteTodoMutations, setFailedCompleteTodoMutations, runningCompleteTodoMutations, flushMutations, queuedMutations, todo_list_pb_1.CompleteTodoRequest, todo_list_pb_1.CompleteTodoResponse.fromJson)];
+                    }
+                    finally {
+                        runningCompleteTodoMutations.current = runningCompleteTodoMutations.current.filter(function (_a) {
+                            var idempotencyKey = _a.idempotencyKey;
+                            return mutation.idempotencyKey !== idempotencyKey;
+                        });
+                        (0, resemble_react_1.popMutationMaybeFromLocalStorage)(localStorageKeyRef.current, "CompleteTodo", function (mutationRequest) {
+                            return mutationRequest.idempotencyKey !== mutation.idempotencyKey;
+                        });
+                    }
+                    return [2 /*return*/];
+                });
+            });
+        }
+        function _CompleteTodo(mutation) {
+            return __awaiter(this, void 0, void 0, function () {
+                var deferred_3;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            setUnobservedPendingCompleteTodoMutations(function (mutations) { return __spreadArray(__spreadArray([], mutations, true), [mutation], false); });
+                            if (!(hasRunningMutations() ||
+                                queuedMutations.current.length > 0 ||
+                                flushMutations.current !== undefined)) return [3 /*break*/, 1];
+                            deferred_3 = new resemble_react_1.Deferred(function () {
+                                return __CompleteTodo(mutation);
+                            });
+                            // Add to localStorage here.
+                            queuedCompleteTodoMutations.current.push([mutation, function () { return deferred_3.start(); }]);
+                            queuedMutations.current.push(function () {
+                                for (var _i = 0, _a = queuedCompleteTodoMutations.current; _i < _a.length; _i++) {
+                                    var _b = _a[_i], run = _b[1];
+                                    queuedCompleteTodoMutations.current.shift();
+                                    run();
+                                    break;
+                                }
+                            });
+                            // Maybe add to localStorage.
+                            (0, resemble_react_1.pushMutationMaybeToLocalStorage)(localStorageKeyRef.current, "CompleteTodo", mutation);
+                            return [2 /*return*/, deferred_3.promise];
+                        case 1: return [4 /*yield*/, __CompleteTodo(mutation)];
+                        case 2: 
+                        // NOTE: we'll add this mutation to `runningCompleteTodoMutations` in `__CompleteTodo`
+                        // without yielding to event loop so that we are guaranteed atomicity with checking `hasRunningMutations()`.
+                        return [2 /*return*/, _a.sent()];
+                    }
+                });
+            });
+        }
+        function CompleteTodo(partialRequest, optimistic_metadata) {
+            return __awaiter(this, void 0, void 0, function () {
+                var idempotencyKey, request, mutation;
+                return __generator(this, function (_a) {
+                    idempotencyKey = (0, uuid_1.v4)();
+                    request = partialRequest instanceof todo_list_pb_1.CompleteTodoRequest ? partialRequest : new todo_list_pb_1.CompleteTodoRequest(partialRequest);
+                    mutation = {
+                        request: request,
+                        idempotencyKey: idempotencyKey,
+                        optimistic_metadata: optimistic_metadata,
+                        isLoading: false
+                    };
+                    return [2 /*return*/, _CompleteTodo(mutation)];
+                });
+            });
+        }
         (0, react_1.useEffect)(function () {
             if (abortController === undefined) {
                 return;
@@ -492,7 +607,7 @@ var TodoList = function (_a) {
                                     switch (_h.label) {
                                         case 0:
                                             _h.trys.push([0, 15, , 16]);
-                                            if (!(runningAddTodoMutations.current.length > 0 || runningDeleteTodoMutations.current.length > 0)) return [3 /*break*/, 2];
+                                            if (!(runningAddTodoMutations.current.length > 0 || runningDeleteTodoMutations.current.length > 0 || runningCompleteTodoMutations.current.length > 0)) return [3 /*break*/, 2];
                                             // TODO(benh): check invariant
                                             // 'flushMutations.current !== undefined' but don't
                                             // throw an error since that will just retry, instead
@@ -529,7 +644,7 @@ var TodoList = function (_a) {
                                             // Only keep around the idempotency keys that are
                                             // still pending as the rest are not useful for us.
                                             observedIdempotencyKeys.current = (0, resemble_react_1.filterSet)(observedIdempotencyKeys.current, function (observedIdempotencyKey) {
-                                                return __spreadArray(__spreadArray([], runningAddTodoMutations.current, true), runningDeleteTodoMutations.current, true).some(function (mutation) {
+                                                return __spreadArray(__spreadArray(__spreadArray([], runningAddTodoMutations.current, true), runningDeleteTodoMutations.current, true), runningCompleteTodoMutations.current, true).some(function (mutation) {
                                                     return observedIdempotencyKey === mutation.idempotencyKey;
                                                 });
                                             });
@@ -581,6 +696,26 @@ var TodoList = function (_a) {
                                                         runningDeleteTodoMutations.current.some(function (runningDeleteTodoMutations) {
                                                             return mutation.idempotencyKey ===
                                                                 runningDeleteTodoMutations.idempotencyKey;
+                                                        });
+                                                })
+                                                    .filter(function (mutation) {
+                                                    // Only keep mutations whose effects haven't been observed.
+                                                    return !observedIdempotencyKeys.current.has(mutation.idempotencyKey);
+                                                });
+                                            });
+                                            setUnobservedPendingCompleteTodoMutations(function (mutations) {
+                                                return mutations
+                                                    .filter(function (mutation) {
+                                                    // Only keep mutations that are queued, pending or
+                                                    // recovered.
+                                                    return queuedCompleteTodoMutations.current.some(function (_a) {
+                                                        var queuedCompleteTodoMutation = _a[0];
+                                                        return mutation.idempotencyKey ===
+                                                            queuedCompleteTodoMutation.idempotencyKey;
+                                                    }) ||
+                                                        runningCompleteTodoMutations.current.some(function (runningCompleteTodoMutations) {
+                                                            return mutation.idempotencyKey ===
+                                                                runningCompleteTodoMutations.idempotencyKey;
                                                         });
                                                 })
                                                     .filter(function (mutation) {
@@ -653,7 +788,8 @@ var TodoList = function (_a) {
             error: error,
             mutations: {
                 AddTodo: AddTodo,
-                DeleteTodo: DeleteTodo
+                DeleteTodo: DeleteTodo,
+                CompleteTodo: CompleteTodo
             },
             pendingAddTodoMutations: unobservedPendingAddTodoMutations,
             failedAddTodoMutations: failedAddTodoMutations,
@@ -664,6 +800,12 @@ var TodoList = function (_a) {
             pendingDeleteTodoMutations: unobservedPendingDeleteTodoMutations,
             failedDeleteTodoMutations: failedDeleteTodoMutations,
             recoveredDeleteTodoMutations: recoveredDeleteTodoMutations.current.map(function (_a) {
+                var mutation = _a[0], run = _a[1];
+                return (__assign(__assign({}, mutation), { run: run }));
+            }),
+            pendingCompleteTodoMutations: unobservedPendingCompleteTodoMutations,
+            failedCompleteTodoMutations: failedCompleteTodoMutations,
+            recoveredCompleteTodoMutations: recoveredCompleteTodoMutations.current.map(function (_a) {
                 var mutation = _a[0], run = _a[1];
                 return (__assign(__assign({}, mutation), { run: run }));
             })
@@ -679,6 +821,24 @@ var TodoList = function (_a) {
                         request = partialRequest instanceof todo_list_pb_1.DeleteTodoRequest ? partialRequest : new todo_list_pb_1.DeleteTodoRequest(partialRequest);
                         requestBody = request.toJson();
                         return [4 /*yield*/, guardedFetch(newRequest(requestBody, "/todo_list.v1.TodoList.DeleteTodo", "POST"))];
+                    case 1:
+                        response = _a.sent();
+                        return [4 /*yield*/, response.json()];
+                    case 2: return [2 /*return*/, _a.sent()];
+                }
+            });
+        });
+    };
+    var CompleteTodo = function (partialRequest) {
+        if (partialRequest === void 0) { partialRequest = {}; }
+        return __awaiter(void 0, void 0, void 0, function () {
+            var request, requestBody, response;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        request = partialRequest instanceof todo_list_pb_1.CompleteTodoRequest ? partialRequest : new todo_list_pb_1.CompleteTodoRequest(partialRequest);
+                        requestBody = request.toJson();
+                        return [4 /*yield*/, guardedFetch(newRequest(requestBody, "/todo_list.v1.TodoList.CompleteTodo", "POST"))];
                     case 1:
                         response = _a.sent();
                         return [4 /*yield*/, response.json()];
@@ -888,7 +1048,8 @@ var TodoList = function (_a) {
         AddTodo: AddTodo,
         ListTodos: ListTodos,
         useListTodos: useListTodos,
-        DeleteTodo: DeleteTodo
+        DeleteTodo: DeleteTodo,
+        CompleteTodo: CompleteTodo
     };
 };
 exports.TodoList = TodoList;

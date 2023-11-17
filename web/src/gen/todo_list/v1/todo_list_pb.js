@@ -6,6 +6,24 @@
 import { proto3 } from "@bufbuild/protobuf";
 
 /**
+ * @generated from message todo_list.v1.CompleteTodoRequest
+ */
+export const CompleteTodoRequest = proto3.makeMessageType(
+  "todo_list.v1.CompleteTodoRequest",
+  () => [
+    { no: 1, name: "id", kind: "scalar", T: 5 /* ScalarType.INT32 */ },
+  ],
+);
+
+/**
+ * @generated from message todo_list.v1.CompleteTodoResponse
+ */
+export const CompleteTodoResponse = proto3.makeMessageType(
+  "todo_list.v1.CompleteTodoResponse",
+  [],
+);
+
+/**
  * @generated from message todo_list.v1.DeleteTodoRequest
  */
 export const DeleteTodoRequest = proto3.makeMessageType(

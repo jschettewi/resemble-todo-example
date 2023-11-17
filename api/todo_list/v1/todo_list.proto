@@ -24,7 +24,18 @@ service TodoList {
     };
   }
 
+  rpc CompleteTodo(CompleteTodoRequest) returns (CompleteTodoResponse) {
+    option (resemble.v1alpha1.method).writer = {
+    };
+  }
+
 }
+
+message CompleteTodoRequest {
+  int32 id = 1;
+}
+
+message CompleteTodoResponse {}
 
 message DeleteTodoRequest {
   int32 id = 1;

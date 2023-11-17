@@ -54,12 +54,16 @@ const Todo = ({ text, index }: TodoArgs) => {
 
   const {
     response,
-    mutations: { DeleteTodo },
+    mutations: { DeleteTodo, CompleteTodo },
   } = useListTodos();
 
   const complete = false;
   // const todosRef = firestore.collection(`users/${auth.currentUser.uid}/todos`);
-  const onCompleteTodo = () => {}
+  const onCompleteTodo = () => {
+    console.log("complete todo");
+    console.log(index);
+    CompleteTodo( { id: index })
+  }
   //   todosRef.doc(id).set({ complete: !complete }, { merge: true });
 
   const onDeleteTodo = () => {
