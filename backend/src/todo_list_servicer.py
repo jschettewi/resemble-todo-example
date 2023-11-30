@@ -1,6 +1,7 @@
 import asyncio
 import todo_list.v1.todo_list_pb2
 from todo_list.v1.todo_list_rsm import (
+    Todo,
     TodoList,
     TodoListState,
     AddTodoRequest,
@@ -14,7 +15,6 @@ from todo_list.v1.todo_list_rsm import (
 )
 from resemble.aio.contexts import ReaderContext, WriterContext
 
-
 class TodoListServicer(TodoList.Interface):
 
     async def AddTodo(
@@ -24,8 +24,10 @@ class TodoListServicer(TodoList.Interface):
         request: AddTodoRequest,
     ) -> TodoList.AddTodoEffects:
         todo = request.todo
-        state.todos.extend([todo])
+        todoObject = Todo(id=len(state.todos), text=todo, complete=False)
+        state.todos.extend([todoObject])
         print(f"Adding todo '{todo}'")
+        print(state.todos)
         return TodoList.AddTodoEffects(state=state, response=AddTodoResponse())
 
     async def ListTodos(
@@ -56,7 +58,6 @@ class TodoListServicer(TodoList.Interface):
         ) -> TodoList.CompleteTodoEffects:
         print("todo is complete")
         id = request.id
-        complete = request.complete
-        complete = not complete
-        print("##########", id, complete)
+        state.todos[id].complete = not state.todos[id].complete
+        print("##########", id, state.todos[id].complete)
         return TodoList.CompleteTodoEffects(state=state, response=CompleteTodoResponse())

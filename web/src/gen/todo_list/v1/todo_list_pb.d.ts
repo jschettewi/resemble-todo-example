@@ -7,6 +7,40 @@ import type { BinaryReadOptions, FieldList, JsonReadOptions, JsonValue, PartialM
 import { Message, proto3 } from "@bufbuild/protobuf";
 
 /**
+ * @generated from message todo_list.v1.Todo
+ */
+export declare class Todo extends Message<Todo> {
+  /**
+   * @generated from field: int32 id = 1;
+   */
+  id: number;
+
+  /**
+   * @generated from field: string text = 2;
+   */
+  text: string;
+
+  /**
+   * @generated from field: bool complete = 3;
+   */
+  complete: boolean;
+
+  constructor(data?: PartialMessage<Todo>);
+
+  static readonly runtime: typeof proto3;
+  static readonly typeName = "todo_list.v1.Todo";
+  static readonly fields: FieldList;
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): Todo;
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): Todo;
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): Todo;
+
+  static equals(a: Todo | PlainMessage<Todo> | undefined, b: Todo | PlainMessage<Todo> | undefined): boolean;
+}
+
+/**
  * @generated from message todo_list.v1.CompleteTodoRequest
  */
 export declare class CompleteTodoRequest extends Message<CompleteTodoRequest> {
@@ -14,11 +48,6 @@ export declare class CompleteTodoRequest extends Message<CompleteTodoRequest> {
    * @generated from field: int32 id = 1;
    */
   id: number;
-
-  /**
-   * @generated from field: bool complete = 2;
-   */
-  complete: boolean;
 
   constructor(data?: PartialMessage<CompleteTodoRequest>);
 
@@ -102,9 +131,9 @@ export declare class DeleteTodoResponse extends Message<DeleteTodoResponse> {
  */
 export declare class TodoListState extends Message<TodoListState> {
   /**
-   * @generated from field: repeated string todos = 1;
+   * @generated from field: repeated todo_list.v1.Todo todos = 1;
    */
-  todos: string[];
+  todos: Todo[];
 
   constructor(data?: PartialMessage<TodoListState>);
 
@@ -129,11 +158,6 @@ export declare class AddTodoRequest extends Message<AddTodoRequest> {
    * @generated from field: string todo = 1;
    */
   todo: string;
-
-  /**
-   * @generated from field: bool complete = 2;
-   */
-  complete: boolean;
 
   constructor(data?: PartialMessage<AddTodoRequest>);
 
@@ -193,9 +217,9 @@ export declare class ListTodosRequest extends Message<ListTodosRequest> {
  */
 export declare class ListTodosResponse extends Message<ListTodosResponse> {
   /**
-   * @generated from field: repeated string todos = 1;
+   * @generated from field: repeated todo_list.v1.Todo todos = 1;
    */
-  todos: string[];
+  todos: Todo[];
 
   constructor(data?: PartialMessage<ListTodosResponse>);
 

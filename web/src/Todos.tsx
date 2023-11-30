@@ -12,14 +12,26 @@ export const Todos = () => {
     mutations: { AddTodo },
   } = useListTodos();
 
-  const todos = response?.todos;
+  const todos = response?.todos || [];
 
   // const signOut = () => auth.signOut();
 
   const onSubmitTodo = (event: any) => {
     event.preventDefault();
 
-    AddTodo({ todo: todo, complete: true }).then(() => setTodo(""));
+    const newTodo = {
+      id: todos.length,
+      text: todo,
+      complete: false,
+    };
+
+    AddTodo({todo: todo}).then(() => setTodo(""));
+
+    //AddTodo({index: todos.length, text: todo, complete: false}).then(() => setTodo(""));
+  
+    //AddTodo({ id: todos.length, text: todo, complete: false}).then(() => setTodo(""));
+
+    //AddTodo({ todo: todo, complete: true }).then(() => setTodo(""));
   };
 
   return (
@@ -37,20 +49,20 @@ export const Todos = () => {
           />
           <button type="submit">Add</button>
         </form>
-        {todos && todos.map((text, index, complete) => <Todo text={text} index={index} complete={false} />)}
-      
+        {todos && todos.map(({ id, text, complete }) => <Todo key={id} text={text} index={id} complete={complete} />)}
+        {/* {todos && todos.map((text, index, complete) => <Todo text={text} index={index} complete={false} />)} */}
       </main>
     </>
   );
 };
 
 interface TodoArgs {
-  text: string;
   index: number;
+  text: string;
   complete: boolean;
 }
 
-const Todo = ({ text, index, complete }: TodoArgs) => {
+const Todo = ({ index, text, complete }: TodoArgs) => {
 
   const { useListTodos } = TodoList({ id: "todo-list" });
 
@@ -65,8 +77,8 @@ const Todo = ({ text, index, complete }: TodoArgs) => {
     console.log("complete todo");
     console.log(index);
     console.log(complete)
-    CompleteTodo( { id: index, complete: complete })
-    complete = !complete
+    CompleteTodo( { id: index })
+    //complete = !complete
     console.log(complete)
   }
   //   todosRef.doc(id).set({ complete: !complete }, { merge: true });

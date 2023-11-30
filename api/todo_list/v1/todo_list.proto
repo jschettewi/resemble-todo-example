@@ -31,9 +31,14 @@ service TodoList {
 
 }
 
+message Todo {
+  int32 id = 1;
+  string text = 2;
+  bool complete = 3;
+}
+
 message CompleteTodoRequest {
   int32 id = 1;
-  bool complete = 2;
 }
 
 message CompleteTodoResponse {}
@@ -45,12 +50,11 @@ message DeleteTodoRequest {
 message DeleteTodoResponse {}
 
 message TodoListState {
-  repeated string todos = 1;
+  repeated Todo todos = 1;
 }
 
 message AddTodoRequest {
   string todo = 1;
-  bool complete = 2;
 }
 
 message AddTodoResponse {}
@@ -58,5 +62,5 @@ message AddTodoResponse {}
 message ListTodosRequest {}
 
 message ListTodosResponse {
-  repeated string todos = 1;
+  repeated Todo todos = 1;
 }
