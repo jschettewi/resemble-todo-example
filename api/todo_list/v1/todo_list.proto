@@ -32,19 +32,19 @@ service TodoList {
 }
 
 message Todo {
-  int32 id = 1;
+  string id = 1;
   string text = 2;
   bool complete = 3;
 }
 
 message CompleteTodoRequest {
-  int32 id = 1;
+  string id = 1;
 }
 
 message CompleteTodoResponse {}
 
 message DeleteTodoRequest {
-  int32 id = 1;
+  string id = 1;
 }
 
 message DeleteTodoResponse {}

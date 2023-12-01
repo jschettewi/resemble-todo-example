@@ -1,5 +1,6 @@
 import asyncio
 import todo_list.v1.todo_list_pb2
+import uuid
 from todo_list.v1.todo_list_rsm import (
     Todo,
     TodoList,
@@ -24,10 +25,10 @@ class TodoListServicer(TodoList.Interface):
         request: AddTodoRequest,
     ) -> TodoList.AddTodoEffects:
         todo = request.todo
-        todoObject = Todo(id=len(state.todos), text=todo, complete=False)
+        unique_id = str(uuid.uuid4())
+        todoObject = Todo(id=unique_id, text=todo, complete=False)
         state.todos.extend([todoObject])
         print(f"Adding todo '{todo}'")
-        print(state.todos)
         return TodoList.AddTodoEffects(state=state, response=AddTodoResponse())
 
     async def ListTodos(
@@ -45,9 +46,9 @@ class TodoListServicer(TodoList.Interface):
         request: DeleteTodoRequest,
     ) -> TodoList.DeleteTodoEffects:
         id = request.id
-        print("here", id)
-        state.todos.remove(state.todos[id])
-        # state.todos[id]
+        for x in state.todos:
+            if x.id == id:
+                state.todos.remove(x)
         return TodoList.DeleteTodoEffects(state=state, response=DeleteTodoResponse())
     
     async def CompleteTodo(
@@ -56,8 +57,8 @@ class TodoListServicer(TodoList.Interface):
         state: TodoListState, 
         request: CompleteTodoRequest,
         ) -> TodoList.CompleteTodoEffects:
-        print("todo is complete")
         id = request.id
-        state.todos[id].complete = not state.todos[id].complete
-        print("##########", id, state.todos[id].complete)
+        for x in state.todos:
+            if x.id == id:
+                x.complete = not x.complete
         return TodoList.CompleteTodoEffects(state=state, response=CompleteTodoResponse())

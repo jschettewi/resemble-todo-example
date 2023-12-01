@@ -14,7 +14,7 @@ async def initialize(workflow: Workflow):
     todolist = TodoList(TODO_LIST_ID)
 
     # Implicitly construct greeter upon first write.
-    await todolist.AddTodo(workflow, todo="Sleep")
+    await todolist.AddTodo(workflow, todo="add todos")
 
 
 async def main():

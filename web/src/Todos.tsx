@@ -19,19 +19,7 @@ export const Todos = () => {
   const onSubmitTodo = (event: any) => {
     event.preventDefault();
 
-    const newTodo = {
-      id: todos.length,
-      text: todo,
-      complete: false,
-    };
-
     AddTodo({todo: todo}).then(() => setTodo(""));
-
-    //AddTodo({index: todos.length, text: todo, complete: false}).then(() => setTodo(""));
-  
-    //AddTodo({ id: todos.length, text: todo, complete: false}).then(() => setTodo(""));
-
-    //AddTodo({ todo: todo, complete: true }).then(() => setTodo(""));
   };
 
   return (
@@ -49,20 +37,19 @@ export const Todos = () => {
           />
           <button type="submit">Add</button>
         </form>
-        {todos && todos.map(({ id, text, complete }) => <Todo key={id} text={text} index={id} complete={complete} />)}
-        {/* {todos && todos.map((text, index, complete) => <Todo text={text} index={index} complete={false} />)} */}
+        {todos && todos.map(({ id, text, complete }) => <Todo key={id} text={text} id={id} complete={complete} />)}
       </main>
     </>
   );
 };
 
 interface TodoArgs {
-  index: number;
+  id: string;
   text: string;
   complete: boolean;
 }
 
-const Todo = ({ index, text, complete }: TodoArgs) => {
+const Todo = ({ id, text, complete }: TodoArgs) => {
 
   const { useListTodos } = TodoList({ id: "todo-list" });
 
@@ -71,26 +58,16 @@ const Todo = ({ index, text, complete }: TodoArgs) => {
     mutations: { DeleteTodo, CompleteTodo },
   } = useListTodos();
 
-  // const complete = false;
-  // const todosRef = firestore.collection(`users/${auth.currentUser.uid}/todos`);
   const onCompleteTodo = () => {
-    console.log("complete todo");
-    console.log(index);
-    console.log(complete)
-    CompleteTodo( { id: index })
-    //complete = !complete
-    console.log(complete)
+    CompleteTodo( { id: id })
   }
-  //   todosRef.doc(id).set({ complete: !complete }, { merge: true });
 
   const onDeleteTodo = () => {
-    console.log("HERE");
-    console.log(index);
-    DeleteTodo( { id: index });
-  } // todosRef.doc(id).delete();
+    DeleteTodo( { id: id });
+  }
 
   return (
-    <div key={index} className="todo">
+    <div key={id} className="todo">
       <button
         className={`todo-item ${complete ? "complete" : ""}`}
         // tabIndex="0"
