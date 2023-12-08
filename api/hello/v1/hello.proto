@@ -6,6 +6,20 @@ import "resemble/v1alpha1/options.proto";
 
 ////////////////////////////////////////////////////////////////////////
 
+service TodoLists {
+  option (resemble.v1alpha1.service).state = "TodoListsSate";
+
+  rpc ListTodoLists(ListTodoListsRequest) returns (ListTodoListsResponse) {
+    option (resemble.v1alpha1.method).reader = {
+    };
+  }
+
+  rpc AddTodoList(AddTodoListRequest) returns (AddTodoListResponse) {
+    option (resemble.v1alpha1.method).writer = {
+    };
+  }
+}
+
 service Hello {
   option (resemble.v1alpha1.service).state = "HelloState";
 
@@ -20,6 +34,26 @@ service Hello {
     option (resemble.v1alpha1.method).writer = {
     };
   }
+}
+
+message Todo {
+  uint32 id = 1;
+  string text = 2;
+  bool complete = 3;
+}
+
+message ListTodoListsRequest {
+  repeated string todolists = 1;
+}
+
+message ListTodoListsResponse {}
+
+message AddTodoListRequest {}
+
+message AddTodoListResponse {}
+
+message TodoListsSate {
+  repeated string todolists = 1;
 }
 
 message HelloState {
