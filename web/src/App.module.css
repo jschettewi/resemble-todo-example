@@ -1,4 +1,4 @@
-/* Styles by @sowg: https://codepen.io/sowg/pen/qBXexaZ */
+/* Styles by @sowg: https://codepen.io/sowg/pen/qBXexaZ
 
 .messages {
   width: 300px;
@@ -54,4 +54,9 @@
     background: #e91e63;
     color: #fff;
   }
+} */
+
+.app {
+  display: flex;
+  height: 100vh;
 }
