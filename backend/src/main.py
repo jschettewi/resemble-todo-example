@@ -1,29 +1,34 @@
 import asyncio
 import logging
-from hello.v1.hello_rsm import Hello
-from hello_servicer import HelloServicer
+from todo_app.v1.todo_app_rsm import TodoList
+from todo_app.v1.todo_app_rsm import TodoLists
+from todo_list_servicer import TodoListServicer
+from todo_lists_servicer import TodoListsServicer
 from resemble.aio.applications import Application
 from resemble.aio.workflows import Workflow
 
 logging.basicConfig(level=logging.INFO)
 
-EXAMPLE_STATE_MACHINE_ID = 'resemble-hello'
+TODO_LIST_ID = 'todo-list'
+TODO_LISTS_ID = 'todo-lists'
 
 
 async def initialize(workflow: Workflow):
-    hello = Hello(EXAMPLE_STATE_MACHINE_ID)
+    todolist = TodoList(TODO_LIST_ID)
+    todolists = TodoLists(TODO_LISTS_ID)
 
-    # Implicitly construct state machine upon first write.
-    await hello.Send(workflow, message="Hello, World!")
+    # Implicitly construct greeter upon first write.
+    await todolist.AddTodo(workflow, todo="add todos")
+    await todolists.AddTodoList(workflow, text='Text')
 
 
 async def main():
     application = Application(
-        servicers=[HelloServicer],
+        servicers=[TodoListServicer, TodoListsServicer],
         initialize=initialize,
     )
 
-    logging.info('👋 Hello, World? Hello, Resemble! 👋')
+    logging.info('👋 Ready to add todos! 👋')
 
     await application.run()
 
