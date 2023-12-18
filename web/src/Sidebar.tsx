@@ -58,9 +58,17 @@ const TodoList = ({ id, text}: TodoListArgs) => {
     DeleteTodoList( { id: id });
   }
 
+  const onClickTodoList = () => {
+    console.log("Clicked list")
+    console.log(id)
+  }
+
   return (
     <div key={id}>
-      { text }
+      <button onClick={onClickTodoList}>
+        {/* here we need to display the correct todo list*/}
+        { text }
+      </button>
       <button onClick={() => onDeleteTodoList()}>x</button>
     </div>
   );

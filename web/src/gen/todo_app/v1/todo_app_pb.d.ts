@@ -7,9 +7,9 @@ import type { BinaryReadOptions, FieldList, JsonReadOptions, JsonValue, PartialM
 import { Message, proto3 } from "@bufbuild/protobuf";
 
 /**
- * @generated from message todo_app.v1.ListOfTodos
+ * @generated from message todo_app.v1.FullTodoList
  */
-export declare class ListOfTodos extends Message<ListOfTodos> {
+export declare class FullTodoList extends Message<FullTodoList> {
   /**
    * @generated from field: string id = 1;
    */
@@ -20,19 +20,53 @@ export declare class ListOfTodos extends Message<ListOfTodos> {
    */
   name: string;
 
-  constructor(data?: PartialMessage<ListOfTodos>);
+  /**
+   * @generated from field: repeated todo_app.v1.Todo todos = 3;
+   */
+  todos: Todo[];
+
+  constructor(data?: PartialMessage<FullTodoList>);
 
   static readonly runtime: typeof proto3;
-  static readonly typeName = "todo_app.v1.ListOfTodos";
+  static readonly typeName = "todo_app.v1.FullTodoList";
   static readonly fields: FieldList;
 
-  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): ListOfTodos;
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): FullTodoList;
 
-  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): ListOfTodos;
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): FullTodoList;
 
-  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): ListOfTodos;
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): FullTodoList;
 
-  static equals(a: ListOfTodos | PlainMessage<ListOfTodos> | undefined, b: ListOfTodos | PlainMessage<ListOfTodos> | undefined): boolean;
+  static equals(a: FullTodoList | PlainMessage<FullTodoList> | undefined, b: FullTodoList | PlainMessage<FullTodoList> | undefined): boolean;
+}
+
+/**
+ * @generated from message todo_app.v1.ListOfLists
+ */
+export declare class ListOfLists extends Message<ListOfLists> {
+  /**
+   * @generated from field: string id = 1;
+   */
+  id: string;
+
+  /**
+   * @generated from field: string name = 2;
+   */
+  name: string;
+
+  constructor(data?: PartialMessage<ListOfLists>);
+
+  static readonly runtime: typeof proto3;
+  static readonly typeName = "todo_app.v1.ListOfLists";
+  static readonly fields: FieldList;
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): ListOfLists;
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): ListOfLists;
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): ListOfLists;
+
+  static equals(a: ListOfLists | PlainMessage<ListOfLists> | undefined, b: ListOfLists | PlainMessage<ListOfLists> | undefined): boolean;
 }
 
 /**
@@ -40,9 +74,9 @@ export declare class ListOfTodos extends Message<ListOfTodos> {
  */
 export declare class TodoListsSate extends Message<TodoListsSate> {
   /**
-   * @generated from field: repeated todo_app.v1.ListOfTodos todolists = 1;
+   * @generated from field: repeated todo_app.v1.FullTodoList todolists = 1;
    */
-  todolists: ListOfTodos[];
+  todolists: FullTodoList[];
 
   constructor(data?: PartialMessage<TodoListsSate>);
 
@@ -126,9 +160,9 @@ export declare class ListTodoListsRequest extends Message<ListTodoListsRequest> 
  */
 export declare class ListTodoListsResponse extends Message<ListTodoListsResponse> {
   /**
-   * @generated from field: repeated todo_app.v1.ListOfTodos todolists = 1;
+   * @generated from field: repeated todo_app.v1.FullTodoList todolists = 1;
    */
-  todolists: ListOfTodos[];
+  todolists: FullTodoList[];
 
   constructor(data?: PartialMessage<ListTodoListsResponse>);
 

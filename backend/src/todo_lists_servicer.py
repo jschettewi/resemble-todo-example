@@ -2,7 +2,8 @@ import asyncio
 import todo_app.v1.todo_app_pb2
 import uuid
 from todo_app.v1.todo_app_rsm import (
-    ListOfTodos,
+    FullTodoList,
+    ListOfLists,
     TodoLists,
     TodoListsSate,
     AddTodoListRequest,
@@ -24,7 +25,7 @@ class TodoListsServicer(TodoLists.Interface):
     ) -> TodoLists.AddTodoListEffects:
         text = request.text
         unique_id = str(uuid.uuid4())
-        todoListObject = ListOfTodos(id=unique_id, name=text)
+        todoListObject = FullTodoList(id=unique_id, name=text, todos=[])
         state.todolists.extend([todoListObject])
         print(f"Adding todo list '{text}'")
         return TodoLists.AddTodoListEffects(state=state, response=AddTodoListResponse())
