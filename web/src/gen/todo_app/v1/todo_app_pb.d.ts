@@ -70,27 +70,27 @@ export declare class ListOfLists extends Message<ListOfLists> {
 }
 
 /**
- * @generated from message todo_app.v1.TodoListsSate
+ * @generated from message todo_app.v1.TodoListsState
  */
-export declare class TodoListsSate extends Message<TodoListsSate> {
+export declare class TodoListsState extends Message<TodoListsState> {
   /**
    * @generated from field: repeated todo_app.v1.FullTodoList todolists = 1;
    */
   todolists: FullTodoList[];
 
-  constructor(data?: PartialMessage<TodoListsSate>);
+  constructor(data?: PartialMessage<TodoListsState>);
 
   static readonly runtime: typeof proto3;
-  static readonly typeName = "todo_app.v1.TodoListsSate";
+  static readonly typeName = "todo_app.v1.TodoListsState";
   static readonly fields: FieldList;
 
-  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): TodoListsSate;
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): TodoListsState;
 
-  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): TodoListsSate;
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): TodoListsState;
 
-  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): TodoListsSate;
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): TodoListsState;
 
-  static equals(a: TodoListsSate | PlainMessage<TodoListsSate> | undefined, b: TodoListsSate | PlainMessage<TodoListsSate> | undefined): boolean;
+  static equals(a: TodoListsState | PlainMessage<TodoListsState> | undefined, b: TodoListsState | PlainMessage<TodoListsState> | undefined): boolean;
 }
 
 /**
@@ -285,7 +285,12 @@ export declare class TodoListState extends Message<TodoListState> {
  */
 export declare class AddTodoRequest extends Message<AddTodoRequest> {
   /**
-   * @generated from field: string todo = 1;
+   * @generated from field: string todolistId = 1;
+   */
+  todolistId: string;
+
+  /**
+   * @generated from field: string todo = 2;
    */
   todo: string;
 
@@ -327,6 +332,11 @@ export declare class AddTodoResponse extends Message<AddTodoResponse> {
  * @generated from message todo_app.v1.ListTodosRequest
  */
 export declare class ListTodosRequest extends Message<ListTodosRequest> {
+  /**
+   * @generated from field: string todolistId = 1;
+   */
+  todolistId: string;
+
   constructor(data?: PartialMessage<ListTodosRequest>);
 
   static readonly runtime: typeof proto3;
@@ -371,9 +381,14 @@ export declare class ListTodosResponse extends Message<ListTodosResponse> {
  */
 export declare class DeleteTodoRequest extends Message<DeleteTodoRequest> {
   /**
-   * @generated from field: string id = 1;
+   * @generated from field: string todolistId = 1;
    */
-  id: string;
+  todolistId: string;
+
+  /**
+   * @generated from field: string todoId = 2;
+   */
+  todoId: string;
 
   constructor(data?: PartialMessage<DeleteTodoRequest>);
 
@@ -414,9 +429,14 @@ export declare class DeleteTodoResponse extends Message<DeleteTodoResponse> {
  */
 export declare class CompleteTodoRequest extends Message<CompleteTodoRequest> {
   /**
-   * @generated from field: string id = 1;
+   * @generated from field: string todolistId = 1;
    */
-  id: string;
+  todolistId: string;
+
+  /**
+   * @generated from field: string todoId = 2;
+   */
+  todoId: string;
 
   constructor(data?: PartialMessage<CompleteTodoRequest>);
 

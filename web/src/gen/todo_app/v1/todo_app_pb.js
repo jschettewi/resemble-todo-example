@@ -29,10 +29,10 @@ export const ListOfLists = proto3.makeMessageType(
 );
 
 /**
- * @generated from message todo_app.v1.TodoListsSate
+ * @generated from message todo_app.v1.TodoListsState
  */
-export const TodoListsSate = proto3.makeMessageType(
-  "todo_app.v1.TodoListsSate",
+export const TodoListsState = proto3.makeMessageType(
+  "todo_app.v1.TodoListsState",
   () => [
     { no: 1, name: "todolists", kind: "message", T: FullTodoList, repeated: true },
   ],
@@ -120,7 +120,8 @@ export const TodoListState = proto3.makeMessageType(
 export const AddTodoRequest = proto3.makeMessageType(
   "todo_app.v1.AddTodoRequest",
   () => [
-    { no: 1, name: "todo", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 1, name: "todolistId", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 2, name: "todo", kind: "scalar", T: 9 /* ScalarType.STRING */ },
   ],
 );
 
@@ -137,7 +138,9 @@ export const AddTodoResponse = proto3.makeMessageType(
  */
 export const ListTodosRequest = proto3.makeMessageType(
   "todo_app.v1.ListTodosRequest",
-  [],
+  () => [
+    { no: 1, name: "todolistId", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+  ],
 );
 
 /**
@@ -156,7 +159,8 @@ export const ListTodosResponse = proto3.makeMessageType(
 export const DeleteTodoRequest = proto3.makeMessageType(
   "todo_app.v1.DeleteTodoRequest",
   () => [
-    { no: 1, name: "id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 1, name: "todolistId", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 2, name: "todoId", kind: "scalar", T: 9 /* ScalarType.STRING */ },
   ],
 );
 
@@ -174,7 +178,8 @@ export const DeleteTodoResponse = proto3.makeMessageType(
 export const CompleteTodoRequest = proto3.makeMessageType(
   "todo_app.v1.CompleteTodoRequest",
   () => [
-    { no: 1, name: "id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 1, name: "todolistId", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 2, name: "todoId", kind: "scalar", T: 9 /* ScalarType.STRING */ },
   ],
 );
 

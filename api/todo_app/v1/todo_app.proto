@@ -7,7 +7,7 @@ import "resemble/v1alpha1/options.proto";
 ////////////////////////////////////////////////////////////////////////
 
 service TodoLists {
-  option (resemble.v1alpha1.service).state = "TodoListsSate";
+  option (resemble.v1alpha1.service).state = "TodoListsState";
 
   rpc AddTodoList(AddTodoListRequest) returns (AddTodoListResponse) {
     option (resemble.v1alpha1.method).writer = {
@@ -23,44 +23,6 @@ service TodoLists {
     option (resemble.v1alpha1.method).writer = {
     };
   }
-}
-
-message FullTodoList {
-  string id = 1;
-  string name = 2;
-  repeated Todo todos = 3;
-}
-
-message ListOfLists {
-  string id = 1;
-  string name = 2;
-} 
-
-message TodoListsSate {
-  repeated FullTodoList todolists = 1;
-}
-
-message AddTodoListRequest {
-  string text = 1;
-}
-
-message AddTodoListResponse {}
-
-message ListTodoListsRequest {}
-
-message ListTodoListsResponse {
-  repeated FullTodoList todolists = 1;
-}
-
-message DeleteTodoListRequest {
-  string id = 1;
-}
-
-message DeleteTodoListResponse {}
-
-// Todo List
-service TodoList {
-  option (resemble.v1alpha1.service).state = "TodoListState";
 
   rpc AddTodo(AddTodoRequest) returns (AddTodoResponse) {
     option (resemble.v1alpha1.method).writer = {
@@ -84,6 +46,39 @@ service TodoList {
 
 }
 
+message FullTodoList {
+  string id = 1;
+  string name = 2;
+  repeated Todo todos = 3;
+}
+
+message ListOfLists {
+  string id = 1;
+  string name = 2;
+} 
+
+message TodoListsState {
+  repeated FullTodoList todolists = 1;
+}
+
+message AddTodoListRequest {
+  string text = 1;
+}
+
+message AddTodoListResponse {}
+
+message ListTodoListsRequest {}
+
+message ListTodoListsResponse {
+  repeated FullTodoList todolists = 1;
+}
+
+message DeleteTodoListRequest {
+  string id = 1;
+}
+
+message DeleteTodoListResponse {}
+
 message Todo {
   string id = 1;
   string text = 2;
@@ -95,25 +90,30 @@ message TodoListState {
 }
 
 message AddTodoRequest {
-  string todo = 1;
+  string todolistId = 1;
+  string todo = 2;
 }
 
 message AddTodoResponse {}
 
-message ListTodosRequest {}
+message ListTodosRequest {
+  string todolistId = 1;
+}
 
 message ListTodosResponse {
   repeated Todo todos = 1;
 }
 
 message DeleteTodoRequest {
-  string id = 1;
+  string todolistId = 1;
+  string todoId = 2;
 }
 
 message DeleteTodoResponse {}
 
 message CompleteTodoRequest {
-  string id = 1;
+  string todolistId = 1;
+  string todoId = 2;
 }
 
 message CompleteTodoResponse {}

@@ -1,33 +1,42 @@
 import React from 'react';
 import './MainPage.css';
-import { useState } from "react";
-import { TodoLists, TodoList } from './gen/todo_app/v1/todo_app_rsm_react';
+import { useState, useEffect } from "react";
+import { TodoLists } from './gen/todo_app/v1/todo_app_rsm_react';
 
-const MainPage = () => {
+interface MainPageArgs {
+  selectedTodoList: any;
+}
+
+const MainPage = ({ selectedTodoList } : MainPageArgs) => {
 
   const [todo, setTodo] = useState("");
-
-  const { useListTodos } = TodoList({ id: "todo-list" });
+  
+  const { useListTodos } = TodoLists({ id: "todo-lists" });
 
   const {
     response,
     mutations: { AddTodo },
-  } = useListTodos();
+  } = useListTodos({ todolistId: "selected todo list id" });
 
   const todos = response?.todos || [];
 
 
   const onSubmitTodo = (event: any) => {
     event.preventDefault();
-
-    AddTodo({todo: todo}).then(() => setTodo(""));
+    console.log(selectedTodoList?.id)
+    AddTodo({ todolistId: selectedTodoList?.id, todo: todo }).then(() => setTodo(""));
   };
+
+  // Update todos when selectedTodoListId changes
+  useEffect(() => {
+    // Fetch todos based on the selectedTodoListId
+  }, [selectedTodoList?.id]);
 
   return (
     <>
       <div className="main">
         <main>
-          <h2>Name of todo list</h2>
+          <h2>{selectedTodoList?.name}</h2>
           <form onSubmit={onSubmitTodo}>
             <input
               required
@@ -52,7 +61,7 @@ interface TodoArgs {
 
 const Todo = ({ id, text, complete }: TodoArgs) => {
 
-  const { useListTodos } = TodoList({ id: "todo-list" });
+  const { useListTodos } = TodoLists({ id: "todo-lists" });
 
   const {
     response,
@@ -60,18 +69,17 @@ const Todo = ({ id, text, complete }: TodoArgs) => {
   } = useListTodos();
 
   const onCompleteTodo = () => {
-    CompleteTodo( { id: id })
+    CompleteTodo( { todoId: id })
   }
 
   const onDeleteTodo = () => {
-    DeleteTodo( { id: id });
+    DeleteTodo( { todoId: id });
   }
 
   return (
     <div key={id} className="todo">
       <button
         className={`todo-item ${complete ? "complete" : ""}`}
-        // tabIndex="0"
         onClick={() => onCompleteTodo()}
       >
         {text}
