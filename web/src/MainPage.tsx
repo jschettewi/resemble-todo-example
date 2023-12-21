@@ -35,7 +35,7 @@ const MainPage = ({ selectedTodoList } : MainPageArgs) => {
   // Update todos when selectedTodoListId changes
   useEffect(() => {
     // Fetch todos based on the selectedTodoListId
-    settodolistId(selectedTodoList.id);
+    settodolistId(selectedTodoList?.id);
     
   }, [selectedTodoList]);
 

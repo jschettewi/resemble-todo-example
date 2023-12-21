@@ -37,9 +37,10 @@ const Sidebar = ({ onTodoListClick, selectedTodoList } : SidebarArgs) => {
             required
             value={text}
             onChange={(e) => setTodo(e.target.value)}
-            placeholder="What's Next?"
+            className="new-todolist-input"
+            placeholder="New List"
           />
-          <button type="submit">Add</button>
+          {/* <button type="submit">Add</button> */}
         </form>
         {todolists && todolists.map(({ id, name }) => <TodoList key={id} text={name} id={id} 
         onClickTodoList={() => onTodoListClick(id, name)} isSelected={selectedTodoList?.id === id}/>)}
@@ -73,11 +74,13 @@ const TodoList = ({ id, text, onClickTodoList, isSelected}: TodoListArgs) => {
   // }
 
   return (
-    <div key={id}>
-      <button onClick={onClickTodoList} className={isSelected ? 'selected' : ''}>
+    <div key={id} className="todo-list-container">
+      <button onClick={onClickTodoList} className={`text-button ${isSelected ? 'selected' : ''}`}>
         { text }
       </button>
-      <button onClick={() => onDeleteTodoList()}>x</button>
+      <button onClick={() => onDeleteTodoList()} className="text-button delete-button">
+        x
+      </button>
     </div>
   );
 };
