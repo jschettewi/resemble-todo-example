@@ -1,8 +1,8 @@
 import React from 'react';
 import './Sidebar.css'; // Import your sidebar styles
-import MainPage from './MainPage'
 import { useState } from "react";
 import { TodoLists } from './gen/todo_app/v1/todo_app_rsm_react';
+import '@fortawesome/fontawesome-free/css/all.css';
 
 interface SidebarArgs {
   onTodoListClick: any;
@@ -32,18 +32,18 @@ const Sidebar = ({ onTodoListClick, selectedTodoList } : SidebarArgs) => {
   return (
     <div className="sidebar">
       <h2>My Lists</h2>
-      <form onSubmit={onSubmitTodoList}>
-          <input
-            required
-            value={text}
-            onChange={(e) => setTodo(e.target.value)}
-            className="new-todolist-input"
-            placeholder="New List"
-          />
-          {/* <button type="submit">Add</button> */}
-        </form>
-        {todolists && todolists.map(({ id, name }) => <TodoList key={id} text={name} id={id} 
-        onClickTodoList={() => onTodoListClick(id, name)} isSelected={selectedTodoList?.id === id}/>)}
+      <form onSubmit={onSubmitTodoList} className="todolist-form">
+        <i className="fa fa-plus-circle new-list-icon"></i>
+        <input
+          required
+          value={text}
+          onChange={(e) => setTodo(e.target.value)}
+          className="new-todolist-input"
+          placeholder="New List"
+        />
+      </form>
+      {todolists && todolists.map(({ id, name }) => <TodoList key={id} text={name} id={id} 
+      onClickTodoList={() => onTodoListClick(id, name)} isSelected={selectedTodoList?.id === id}/>)}
     </div>
   );
 };
@@ -79,7 +79,7 @@ const TodoList = ({ id, text, onClickTodoList, isSelected}: TodoListArgs) => {
         { text }
       </button>
       <button onClick={() => onDeleteTodoList()} className="text-button delete-button">
-        x
+        <i className="fa fa-trash"></i>
       </button>
     </div>
   );

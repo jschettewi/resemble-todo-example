@@ -43,18 +43,29 @@ const MainPage = ({ selectedTodoList } : MainPageArgs) => {
     <>
       <div className="main">
         <main>
-          <h2>{selectedTodoList?.name}</h2>
-          <form onSubmit={onSubmitTodo}>
-            <input
-              required
-              value={todo}
-              onChange={(e) => setTodo(e.target.value)}
-              placeholder="What's Next?"
-            />
-            <button type="submit">Add</button>
-          </form>
-          {todos && todos.map(({ id, text, complete }) => <Todo key={id} text={text} id={id} complete={complete} 
-          selectedTodoList={selectedTodoList}/>)}
+          {selectedTodoList?.id && ( // Render only if selectedTodoList has an id
+            <>
+              <div className="todo-content"></div>
+                <h2>{selectedTodoList?.name}</h2>
+                {todos.map(({ id, text, complete }) => (
+                  <Todo key={id} text={text} id={id} complete={complete} 
+                  selectedTodoList={selectedTodoList}/>
+                ))}
+              <div/>
+              <div className="todo-input-container">
+                <form onSubmit={onSubmitTodo} className="todo-form">
+                  <input
+                    required
+                    value={todo}
+                    onChange={(e) => setTodo(e.target.value)}
+                    placeholder="What's Next?"
+                    className="new-todo-input"
+                  />
+                  <button type="submit" className="new-todo-submit-button">Add</button>
+                </form>
+              </div>
+            </>
+          )}
         </main>
       </div>
     </>
