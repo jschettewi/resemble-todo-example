@@ -12,16 +12,16 @@ const STATE_MACHINE_ID = "resemble-todo_app";
 
 const App = () => {
 
-  const [selectedTodoList, setSelectedTodoList] = useState("");
+  const [selectedTodoList, setSelectedTodoList] = useState({id: "", name: ""});
 
-  const handleTodoListClick = (id: any, name: any) => {
+  const handleTodoListClick = (id: string, name: string) => {
     setSelectedTodoList({ id, name });
   };
 
   return (
     <div className={css.app}>
-      <Sidebar onTodoListClick={handleTodoListClick} selectedTodoListId={undefined}/>
-      <MainPage selectedTodoList={selectedTodoList}/>
+      <Sidebar onTodoListClick={handleTodoListClick} selectedTodoList={selectedTodoList}/>
+      <MainPage key={selectedTodoList?.id} selectedTodoList={selectedTodoList}/>
     </div>
   );
 };

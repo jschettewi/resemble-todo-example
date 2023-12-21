@@ -9,6 +9,10 @@ interface MainPageArgs {
 
 const MainPage = ({ selectedTodoList } : MainPageArgs) => {
 
+  console.log(selectedTodoList?.id)
+
+  const [todolistId, settodolistId] = useState(selectedTodoList?.id);
+
   const [todo, setTodo] = useState("");
   
   const { useListTodos } = TodoLists({ id: "todo-lists" });
@@ -16,7 +20,7 @@ const MainPage = ({ selectedTodoList } : MainPageArgs) => {
   const {
     response,
     mutations: { AddTodo },
-  } = useListTodos({ todolistId: "selected todo list id" });
+  } = useListTodos({ todolistId: todolistId });
 
   const todos = response?.todos || [];
 
@@ -24,13 +28,16 @@ const MainPage = ({ selectedTodoList } : MainPageArgs) => {
   const onSubmitTodo = (event: any) => {
     event.preventDefault();
     console.log(selectedTodoList?.id)
+    console.log(todolistId)
     AddTodo({ todolistId: selectedTodoList?.id, todo: todo }).then(() => setTodo(""));
   };
 
   // Update todos when selectedTodoListId changes
   useEffect(() => {
     // Fetch todos based on the selectedTodoListId
-  }, [selectedTodoList?.id]);
+    settodolistId(selectedTodoList.id);
+    
+  }, [selectedTodoList]);
 
   return (
     <>
@@ -46,7 +53,8 @@ const MainPage = ({ selectedTodoList } : MainPageArgs) => {
             />
             <button type="submit">Add</button>
           </form>
-          {todos && todos.map(({ id, text, complete }) => <Todo key={id} text={text} id={id} complete={complete} />)}
+          {todos && todos.map(({ id, text, complete }) => <Todo key={id} text={text} id={id} complete={complete} 
+          selectedTodoList={selectedTodoList}/>)}
         </main>
       </div>
     </>
@@ -57,9 +65,10 @@ interface TodoArgs {
   id: string;
   text: string;
   complete: boolean;
+  selectedTodoList: any;
 }
 
-const Todo = ({ id, text, complete }: TodoArgs) => {
+const Todo = ({ id, text, complete, selectedTodoList }: TodoArgs) => {
 
   const { useListTodos } = TodoLists({ id: "todo-lists" });
 
@@ -69,11 +78,11 @@ const Todo = ({ id, text, complete }: TodoArgs) => {
   } = useListTodos();
 
   const onCompleteTodo = () => {
-    CompleteTodo( { todoId: id })
+    CompleteTodo( { todolistId: selectedTodoList?.id, todoId: id })
   }
 
   const onDeleteTodo = () => {
-    DeleteTodo( { todoId: id });
+    DeleteTodo( { todolistId: selectedTodoList?.id, todoId: id });
   }
 
   return (

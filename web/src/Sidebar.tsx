@@ -6,11 +6,11 @@ import { TodoLists } from './gen/todo_app/v1/todo_app_rsm_react';
 
 interface SidebarArgs {
   onTodoListClick: any;
-  selectedTodoListId: any;
+  selectedTodoList: any;
 }
 
 
-const Sidebar = ({ onTodoListClick, selectedTodoListId } : SidebarArgs) => {
+const Sidebar = ({ onTodoListClick, selectedTodoList } : SidebarArgs) => {
 
   const [text, setTodo] = useState("");
 
@@ -42,7 +42,7 @@ const Sidebar = ({ onTodoListClick, selectedTodoListId } : SidebarArgs) => {
           <button type="submit">Add</button>
         </form>
         {todolists && todolists.map(({ id, name }) => <TodoList key={id} text={name} id={id} 
-        onClick={() => onTodoListClick(id, name)} isSelected={selectedTodoListId === id}/>)}
+        onClickTodoList={() => onTodoListClick(id, name)} isSelected={selectedTodoList?.id === id}/>)}
     </div>
   );
 };
@@ -50,11 +50,11 @@ const Sidebar = ({ onTodoListClick, selectedTodoListId } : SidebarArgs) => {
 interface TodoListArgs {
   id: string;
   text: string;
-  onClick: any;
+  onClickTodoList: any;
   isSelected: any;
 }
 
-const TodoList = ({ id, text, onClick, isSelected}: TodoListArgs) => {
+const TodoList = ({ id, text, onClickTodoList, isSelected}: TodoListArgs) => {
 
   const { useListTodoLists } = TodoLists({ id: "todo-lists" });
 
@@ -67,16 +67,14 @@ const TodoList = ({ id, text, onClick, isSelected}: TodoListArgs) => {
     DeleteTodoList( { id: id });
   }
 
-  const onClickTodoList = () => {
-    console.log("Clicked list")
-    console.log(id)
-  }
+  // const onClickTodoList = () => {
+  //   console.log("Clicked list")
+  //   console.log(id)
+  // }
 
   return (
     <div key={id}>
-      <button onClick={onClick} className={isSelected ? 'selected' : ''}>
-        {/* here we need to display the correct todo list*/}
-        {/* <MainPage key={todolist_id} todolist_id={todolist_id} name={name} /> */}
+      <button onClick={onClickTodoList} className={isSelected ? 'selected' : ''}>
         { text }
       </button>
       <button onClick={() => onDeleteTodoList()}>x</button>

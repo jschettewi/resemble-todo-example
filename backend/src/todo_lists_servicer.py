@@ -92,13 +92,16 @@ class TodoListsServicer(TodoLists.Interface):
         request: ListTodosRequest,
     ) -> ListTodosResponse:
         todolistId = request.todolistId
-        print(todolistId)
+        print("#####################", todolistId)
         targetlist = None
         for todolist in state.todolists:
             if todolist.id == todolistId:
                 targetlist = todolist
         print(targetlist)
-        return ListTodosResponse(todos=[])
+        if targetlist:
+            return ListTodosResponse(todos=targetlist.todos)
+        else:
+            return ListTodosResponse(todos=[])
         # return ListTodosResponse(todos=[Todo(id="1", text="here", complete=False)])
     
     async def DeleteTodo(
@@ -108,13 +111,19 @@ class TodoListsServicer(TodoLists.Interface):
         request: DeleteTodoRequest,
     ) -> TodoLists.DeleteTodoEffects:
         # we need the id of the todolist and the id of the todo
-        todolist_id = request.todolist_id
-        todo_id = request.todo_id
+        todolistId = request.todolistId
+        todoId = request.todoId
+        # first find the target list matching the todolist id
+        targetlist = None
         for todolist in state.todolists:
-            if todolist.id == todolist_id:
-                for todo in todolist.todos:
-                    if todo.id == todo_id:
-                        state.todolist.todos.remove(todo)
+            if todolist.id == todolistId:
+                targetlist = todolist
+        # now find the correct todo to remove from the target list
+        targetTodo = None
+        for todo in targetlist.todos:
+            if todo.id == todoId:
+                targetTodo = todo
+        targetlist.todos.remove(targetTodo)
         return TodoLists.DeleteTodoEffects(state=state, response=DeleteTodoResponse())
     
     async def CompleteTodo(
@@ -125,11 +134,15 @@ class TodoListsServicer(TodoLists.Interface):
         ) -> TodoLists.CompleteTodoEffects:
         todolistId = request.todolistId
         todoId = request.todoId
+        # first find the target list matching the todolist id
+        targetlist = None
         for todolist in state.todolists:
             if todolist.id == todolistId:
-                for todo in todolist.todos:
-                    if todo.id == todoId:
-                        todo.complete = not todo.complete
+                targetlist = todolist
+        # now find the correct todo to change to complete from the target list
+        for todo in targetlist.todos:
+            if todo.id == todoId:
+                todo.complete = not todo.complete
         return TodoLists.CompleteTodoEffects(state=state, response=CompleteTodoResponse())
 
         
