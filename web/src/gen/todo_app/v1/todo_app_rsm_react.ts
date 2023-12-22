@@ -26,7 +26,7 @@ import {
 } from "react";
 import { v4 as uuidv4 } from "uuid";
 import {
-  FullTodoList, 
+  TodoList, 
 	ListOfLists, 
 	TodoListsState, 
 	AddTodoListRequest, 
@@ -49,7 +49,7 @@ import {
 
 // Additionally re-export all messages from the pb module.
 export {
-  FullTodoList, 
+  TodoList, 
 	ListOfLists, 
 	TodoListsState, 
 	AddTodoListRequest, 

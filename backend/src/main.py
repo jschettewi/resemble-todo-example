@@ -17,8 +17,7 @@ async def initialize(workflow: Workflow):
     # todolist = TodoList(TODO_LIST_ID)
     todolists = TodoLists(TODO_LISTS_ID)
 
-    # Implicitly construct greeter upon first write.
-    # await todolists.AddTodo(workflow, todo="add todos")
+    # Implicitly construct todolist upon first write.
     await todolists.AddTodoList(workflow, text='Text')
 
 

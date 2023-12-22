@@ -2,10 +2,10 @@ import asyncio
 import todo_app.v1.todo_app_pb2
 import uuid
 from todo_app.v1.todo_app_rsm import (
-    TodoListState,
-    FullTodoList,
-    ListOfLists,
     TodoLists,
+    TodoListState,
+    TodoList,
+    Todo,
     TodoListsState,
     AddTodoListRequest,
     AddTodoListResponse,
@@ -13,7 +13,6 @@ from todo_app.v1.todo_app_rsm import (
     ListTodoListsResponse,
     DeleteTodoListRequest,
     DeleteTodoListResponse,
-    Todo,
     AddTodoRequest,
     AddTodoResponse,
     ListTodosRequest,
@@ -35,10 +34,8 @@ class TodoListsServicer(TodoLists.Interface):
     ) -> TodoLists.AddTodoListEffects:
         text = request.text
         unique_id = str(uuid.uuid4())
-        todoListObject = FullTodoList(id=unique_id, name=text, todos=[])
+        todoListObject = TodoList(id=unique_id, name=text, todos=[])
         state.todolists.extend([todoListObject])
-        print(f"Adding todo list '{text}'")
-        print(state.todolists)
         return TodoLists.AddTodoListEffects(state=state, response=AddTodoListResponse())
 
     async def ListTodoLists(
@@ -69,7 +66,6 @@ class TodoListsServicer(TodoLists.Interface):
     ) -> TodoLists.AddTodoEffects:
         ## need to fix this
         todolistId = request.todolistId
-        print(todolistId)
         todo = request.todo
         unique_id = str(uuid.uuid4())
         todoObject = Todo(id=unique_id, text=todo, complete=False)
@@ -78,11 +74,6 @@ class TodoListsServicer(TodoLists.Interface):
             if todolist.id == todolistId:
                 targetlist = todolist
         targetlist.todos.extend([todoObject])
-        # targetlist.todos.extend([todoObject])
-        # for list in state.todolists:
-        #     if list.id == todolist_id:
-        #         list.todos.extend([todoObject])
-        print(f"Adding todo '{todo}'")
         return TodoLists.AddTodoEffects(state=state, response=AddTodoResponse())
 
     async def ListTodos(
@@ -92,17 +83,14 @@ class TodoListsServicer(TodoLists.Interface):
         request: ListTodosRequest,
     ) -> ListTodosResponse:
         todolistId = request.todolistId
-        print("#####################", todolistId)
         targetlist = None
         for todolist in state.todolists:
             if todolist.id == todolistId:
                 targetlist = todolist
-        print(targetlist)
         if targetlist:
             return ListTodosResponse(todos=targetlist.todos)
         else:
             return ListTodosResponse(todos=[])
-        # return ListTodosResponse(todos=[Todo(id="1", text="here", complete=False)])
     
     async def DeleteTodo(
         self,

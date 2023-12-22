@@ -2,6 +2,7 @@ import React from 'react';
 import './MainPage.css';
 import { useState, useEffect } from "react";
 import { TodoLists } from './gen/todo_app/v1/todo_app_rsm_react';
+import '@fortawesome/fontawesome-free/css/all.css';
 
 interface MainPageArgs {
   selectedTodoList: any;
@@ -34,7 +35,6 @@ const MainPage = ({ selectedTodoList } : MainPageArgs) => {
 
   // Update todos when selectedTodoListId changes
   useEffect(() => {
-    // Fetch todos based on the selectedTodoListId
     settodolistId(selectedTodoList?.id);
     
   }, [selectedTodoList]);
@@ -45,13 +45,16 @@ const MainPage = ({ selectedTodoList } : MainPageArgs) => {
         <main>
           {selectedTodoList?.id && ( // Render only if selectedTodoList has an id
             <>
-              <div className="todo-content"></div>
-                <h2>{selectedTodoList?.name}</h2>
+            <div className="todo-and-name">
+              <h2 className="todo-list-name">{selectedTodoList?.name}</h2>
+              <div className="todo-content">
                 {todos.map(({ id, text, complete }) => (
                   <Todo key={id} text={text} id={id} complete={complete} 
                   selectedTodoList={selectedTodoList}/>
                 ))}
               <div/>
+            </div>
+            </div>
               <div className="todo-input-container">
                 <form onSubmit={onSubmitTodo} className="todo-form">
                   <input
@@ -98,13 +101,15 @@ const Todo = ({ id, text, complete, selectedTodoList }: TodoArgs) => {
 
   return (
     <div key={id} className="todo">
+      <button onClick={() => onDeleteTodo()} className="todo-delete-button">
+        <i className="fa fa-trash"></i>
+      </button>
       <button
         className={`todo-item ${complete ? "complete" : ""}`}
         onClick={() => onCompleteTodo()}
       >
-        {text}
+        <span>{text}</span>
       </button>
-      <button onClick={() => onDeleteTodo()}>x</button>
     </div>
   );
 };

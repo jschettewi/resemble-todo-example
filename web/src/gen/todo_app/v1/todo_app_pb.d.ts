@@ -7,9 +7,9 @@ import type { BinaryReadOptions, FieldList, JsonReadOptions, JsonValue, PartialM
 import { Message, proto3 } from "@bufbuild/protobuf";
 
 /**
- * @generated from message todo_app.v1.FullTodoList
+ * @generated from message todo_app.v1.TodoList
  */
-export declare class FullTodoList extends Message<FullTodoList> {
+export declare class TodoList extends Message<TodoList> {
   /**
    * @generated from field: string id = 1;
    */
@@ -25,19 +25,19 @@ export declare class FullTodoList extends Message<FullTodoList> {
    */
   todos: Todo[];
 
-  constructor(data?: PartialMessage<FullTodoList>);
+  constructor(data?: PartialMessage<TodoList>);
 
   static readonly runtime: typeof proto3;
-  static readonly typeName = "todo_app.v1.FullTodoList";
+  static readonly typeName = "todo_app.v1.TodoList";
   static readonly fields: FieldList;
 
-  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): FullTodoList;
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): TodoList;
 
-  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): FullTodoList;
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): TodoList;
 
-  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): FullTodoList;
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): TodoList;
 
-  static equals(a: FullTodoList | PlainMessage<FullTodoList> | undefined, b: FullTodoList | PlainMessage<FullTodoList> | undefined): boolean;
+  static equals(a: TodoList | PlainMessage<TodoList> | undefined, b: TodoList | PlainMessage<TodoList> | undefined): boolean;
 }
 
 /**
@@ -74,9 +74,9 @@ export declare class ListOfLists extends Message<ListOfLists> {
  */
 export declare class TodoListsState extends Message<TodoListsState> {
   /**
-   * @generated from field: repeated todo_app.v1.FullTodoList todolists = 1;
+   * @generated from field: repeated todo_app.v1.TodoList todolists = 1;
    */
-  todolists: FullTodoList[];
+  todolists: TodoList[];
 
   constructor(data?: PartialMessage<TodoListsState>);
 
@@ -160,9 +160,9 @@ export declare class ListTodoListsRequest extends Message<ListTodoListsRequest> 
  */
 export declare class ListTodoListsResponse extends Message<ListTodoListsResponse> {
   /**
-   * @generated from field: repeated todo_app.v1.FullTodoList todolists = 1;
+   * @generated from field: repeated todo_app.v1.TodoList todolists = 1;
    */
-  todolists: FullTodoList[];
+  todolists: TodoList[];
 
   constructor(data?: PartialMessage<ListTodoListsResponse>);
 

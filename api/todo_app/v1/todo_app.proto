@@ -46,7 +46,7 @@ service TodoLists {
 
 }
 
-message FullTodoList {
+message TodoList {
   string id = 1;
   string name = 2;
   repeated Todo todos = 3;
@@ -58,7 +58,7 @@ message ListOfLists {
 } 
 
 message TodoListsState {
-  repeated FullTodoList todolists = 1;
+  repeated TodoList todolists = 1;
 }
 
 message AddTodoListRequest {
@@ -70,7 +70,7 @@ message AddTodoListResponse {}
 message ListTodoListsRequest {}
 
 message ListTodoListsResponse {
-  repeated FullTodoList todolists = 1;
+  repeated TodoList todolists = 1;
 }
 
 message DeleteTodoListRequest {
