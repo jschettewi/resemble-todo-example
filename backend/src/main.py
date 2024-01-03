@@ -1,7 +1,7 @@
 import asyncio
 import logging
-from todo_app.v1.todo_app_rsm import TodoLists
-from todo_app.v1.todo_app_rsm import TodoList
+from todo_app.v1.todo_lists_rsm import TodoLists
+from todo_app.v1.todo_list_rsm import TodoList
 from todo_lists_servicer import TodoListsServicer
 from todo_list_servicer import TodoListServicer
 from resemble.aio.applications import Application

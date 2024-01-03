@@ -1,7 +1,7 @@
 import { FC, useState } from "react";
 import css from "./App.module.css";
-import { TodoLists } from "./gen/hello/v1/hello_rsm_react";
-// import { TodoList } from "./gen/hello/v1/hello_rsm_react";
+import { TodoLists } from "./gen/todo_app/v1/todo_lists_rsm_react";
+import { TodoList } from "./gen/todo_app/v1/todo_list_rsm_react";
 
 import Sidebar from './Sidebar';
 import MainPage from './MainPage'

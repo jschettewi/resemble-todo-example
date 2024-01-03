@@ -1,18 +1,10 @@
 import asyncio
-import todo_app.v1.todo_app_pb2
+import todo_app.v1.todo_list_pb2
 import uuid
-from todo_app.v1.todo_app_rsm import (
+from todo_app.v1.todo_list_rsm import (
     TodoListState,
     TodoList,
     Todo,
-    TodoListMessage,
-    TodoListsState,
-    AddTodoListRequest,
-    AddTodoListResponse,
-    ListTodoListsRequest,
-    ListTodoListsResponse,
-    DeleteTodoListRequest,
-    DeleteTodoListResponse,
     AddTodoRequest,
     AddTodoResponse,
     ListTodosRequest,

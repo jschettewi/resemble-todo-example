@@ -6,13 +6,23 @@
 import { proto3 } from "@bufbuild/protobuf";
 
 /**
+ * @generated from message todo_app.v1.TodoListObject
+ */
+export const TodoListObject = proto3.makeMessageType(
+  "todo_app.v1.TodoListObject",
+  () => [
+    { no: 1, name: "id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 2, name: "name", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+  ],
+);
+
+/**
  * @generated from message todo_app.v1.TodoListsState
  */
 export const TodoListsState = proto3.makeMessageType(
   "todo_app.v1.TodoListsState",
   () => [
-    { no: 1, name: "todolistIds", kind: "scalar", T: 9 /* ScalarType.STRING */, repeated: true },
-    { no: 2, name: "todolistNames", kind: "scalar", T: 9 /* ScalarType.STRING */, repeated: true },
+    { no: 1, name: "todolists", kind: "message", T: TodoListObject, repeated: true },
   ],
 );
 
@@ -48,7 +58,7 @@ export const ListTodoListsRequest = proto3.makeMessageType(
 export const ListTodoListsResponse = proto3.makeMessageType(
   "todo_app.v1.ListTodoListsResponse",
   () => [
-    { no: 1, name: "todolistNames", kind: "scalar", T: 9 /* ScalarType.STRING */, repeated: true },
+    { no: 1, name: "todolists", kind: "message", T: TodoListObject, repeated: true },
   ],
 );
 

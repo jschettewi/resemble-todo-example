@@ -1,8 +1,8 @@
 import React from 'react';
 import './MainPage.css';
 import { useState, useEffect } from "react";
-import { TodoLists } from './gen/todo_app/v1/todo_app_rsm_react';
-import { TodoList } from './gen/todo_app/v1/todo_app_rsm_react';
+import { TodoLists } from './gen/todo_app/v1/todo_lists_rsm_react';
+import { TodoList } from './gen/todo_app/v1/todo_list_rsm_react';
 import '@fortawesome/fontawesome-free/css/all.css';
 
 interface MainPageArgs {

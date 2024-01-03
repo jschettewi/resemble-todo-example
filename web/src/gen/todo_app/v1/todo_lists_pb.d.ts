@@ -7,18 +7,42 @@ import type { BinaryReadOptions, FieldList, JsonReadOptions, JsonValue, PartialM
 import { Message, proto3 } from "@bufbuild/protobuf";
 
 /**
+ * @generated from message todo_app.v1.TodoListObject
+ */
+export declare class TodoListObject extends Message<TodoListObject> {
+  /**
+   * @generated from field: string id = 1;
+   */
+  id: string;
+
+  /**
+   * @generated from field: string name = 2;
+   */
+  name: string;
+
+  constructor(data?: PartialMessage<TodoListObject>);
+
+  static readonly runtime: typeof proto3;
+  static readonly typeName = "todo_app.v1.TodoListObject";
+  static readonly fields: FieldList;
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): TodoListObject;
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): TodoListObject;
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): TodoListObject;
+
+  static equals(a: TodoListObject | PlainMessage<TodoListObject> | undefined, b: TodoListObject | PlainMessage<TodoListObject> | undefined): boolean;
+}
+
+/**
  * @generated from message todo_app.v1.TodoListsState
  */
 export declare class TodoListsState extends Message<TodoListsState> {
   /**
-   * @generated from field: repeated string todolistIds = 1;
+   * @generated from field: repeated todo_app.v1.TodoListObject todolists = 1;
    */
-  todolistIds: string[];
-
-  /**
-   * @generated from field: repeated string todolistNames = 2;
-   */
-  todolistNames: string[];
+  todolists: TodoListObject[];
 
   constructor(data?: PartialMessage<TodoListsState>);
 
@@ -102,9 +126,9 @@ export declare class ListTodoListsRequest extends Message<ListTodoListsRequest> 
  */
 export declare class ListTodoListsResponse extends Message<ListTodoListsResponse> {
   /**
-   * @generated from field: repeated string todolistNames = 1;
+   * @generated from field: repeated todo_app.v1.TodoListObject todolists = 1;
    */
-  todolistNames: string[];
+  todolists: TodoListObject[];
 
   constructor(data?: PartialMessage<ListTodoListsResponse>);
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import './Sidebar.css'; // Import your sidebar styles
 import { useState } from "react";
-import { TodoLists } from './gen/todo_app/v1/todo_app_rsm_react';
+import { TodoLists } from './gen/todo_app/v1/todo_lists_rsm_react';
 import '@fortawesome/fontawesome-free/css/all.css';
 
 interface SidebarArgs {
