@@ -6,23 +6,8 @@ import "resemble/v1alpha1/options.proto";
 
 ////////////////////////////////////////////////////////////////////////
 
-service TodoLists {
-  option (resemble.v1alpha1.service).state = "TodoListsState";
-
-  rpc AddTodoList(AddTodoListRequest) returns (AddTodoListResponse) {
-    option (resemble.v1alpha1.method).writer = {
-    };
-  }
-
-  rpc ListTodoLists(ListTodoListsRequest) returns (ListTodoListsResponse) {
-    option (resemble.v1alpha1.method).reader = {
-    };
-  }
-
-  rpc DeleteTodoList(DeleteTodoListRequest) returns (DeleteTodoListResponse) {
-    option (resemble.v1alpha1.method).writer = {
-    };
-  }
+service TodoList {
+  option (resemble.v1alpha1.service).state = "TodoListState";
 
   rpc AddTodo(AddTodoRequest) returns (AddTodoResponse) {
     option (resemble.v1alpha1.method).writer = {
@@ -43,41 +28,7 @@ service TodoLists {
     option (resemble.v1alpha1.method).writer = {
     };
   }
-
 }
-
-message TodoList {
-  string id = 1;
-  string name = 2;
-  repeated Todo todos = 3;
-}
-
-message ListOfLists {
-  string id = 1;
-  string name = 2;
-} 
-
-message TodoListsState {
-  repeated TodoList todolists = 1;
-}
-
-message AddTodoListRequest {
-  string text = 1;
-}
-
-message AddTodoListResponse {}
-
-message ListTodoListsRequest {}
-
-message ListTodoListsResponse {
-  repeated TodoList todolists = 1;
-}
-
-message DeleteTodoListRequest {
-  string id = 1;
-}
-
-message DeleteTodoListResponse {}
 
 message Todo {
   string id = 1;

@@ -1,0 +1,67 @@
+syntax = "proto3";
+
+package todo_app.v1;
+
+import "resemble/v1alpha1/options.proto";
+
+////////////////////////////////////////////////////////////////////////
+
+service TodoLists {
+  option (resemble.v1alpha1.service).state = "TodoListsState";
+
+  rpc AddTodoList(AddTodoListRequest) returns (AddTodoListResponse) {
+    option (resemble.v1alpha1.method).writer = {
+    };
+  }
+
+  rpc ListTodoLists(ListTodoListsRequest) returns (ListTodoListsResponse) {
+    option (resemble.v1alpha1.method).reader = {
+    };
+  }
+
+  rpc DeleteTodoList(DeleteTodoListRequest) returns (DeleteTodoListResponse) {
+    option (resemble.v1alpha1.method).writer = {
+    };
+  }
+}
+
+////////////////////////////////////////////////////////////////////////
+// State types.
+
+message TodoListsState {
+  repeated string todolistIds = 1;
+  repeated string todolistNames = 2;
+}
+
+////////////////////////////////////////////////////////////////////////
+// Request and response types.
+
+// message Todo {
+//   string id = 1;
+//   string text = 2;
+//   bool complete = 3;
+// }
+
+// message TodoListMessage {
+//   string id = 1;
+//   string name = 2;
+//   repeated Todo todos = 3;
+// }
+
+message AddTodoListRequest {
+  string text = 1;
+}
+
+message AddTodoListResponse {}
+
+message ListTodoListsRequest {}
+
+message ListTodoListsResponse {
+  repeated string todolistNames = 1;
+}
+
+message DeleteTodoListRequest {
+  string id = 1;
+}
+
+message DeleteTodoListResponse {}

@@ -2,6 +2,7 @@ import React from 'react';
 import './MainPage.css';
 import { useState, useEffect } from "react";
 import { TodoLists } from './gen/todo_app/v1/todo_app_rsm_react';
+import { TodoList } from './gen/todo_app/v1/todo_app_rsm_react';
 import '@fortawesome/fontawesome-free/css/all.css';
 
 interface MainPageArgs {
@@ -16,7 +17,7 @@ const MainPage = ({ selectedTodoList } : MainPageArgs) => {
 
   const [todo, setTodo] = useState("");
   
-  const { useListTodos } = TodoLists({ id: "todo-lists" });
+  const { useListTodos } = TodoList({ id: "todo-list" });
 
   const {
     response,
@@ -84,7 +85,7 @@ interface TodoArgs {
 
 const Todo = ({ id, text, complete, selectedTodoList }: TodoArgs) => {
 
-  const { useListTodos } = TodoLists({ id: "todo-lists" });
+  const { useListTodos } = TodoList({ id: "todo-list" });
 
   const {
     response,
