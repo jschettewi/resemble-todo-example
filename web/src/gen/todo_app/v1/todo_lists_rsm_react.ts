@@ -3,6 +3,9 @@ import type {
   MessageType as __bufbuildProtobufMessageType,
   PartialMessage as __bufbuildProtobufPartialMessage,
 } from "@bufbuild/protobuf";
+import {
+  Empty
+} from "@bufbuild/protobuf";
 import * as resemble_react from "@reboot-dev/resemble-react";
 import * as resemble_api from "@reboot-dev/resemble-api";
 import {
@@ -17,7 +20,7 @@ import {
 import { unstable_batchedUpdates } from "react-dom";
 import { v4 as uuidv4 } from "uuid";
 import {
-  TodoListObject, 
+  TodoListMessage, 
 	TodoListsState, 
 	AddTodoListRequest, 
 	AddTodoListResponse, 
@@ -29,7 +32,7 @@ import {
 
 // Additionally re-export all messages from the pb module.
 export {
-  TodoListObject, 
+  TodoListMessage, 
 	TodoListsState, 
 	AddTodoListRequest, 
 	AddTodoListResponse, 
@@ -1884,18 +1887,14 @@ export const useTodoLists = (
   function useListTodoLists(
     partialRequest: __bufbuildProtobufPartialMessage<ListTodoListsRequest> = {}
   ) {
-    const [request, setRequest] = useState(
-      partialRequest instanceof ListTodoListsRequest
-        ? partialRequest.clone()
-        : new ListTodoListsRequest(partialRequest)
-    );
+    const newRequest = partialRequest instanceof ListTodoListsRequest
+      ? partialRequest.clone()
+      : new ListTodoListsRequest(partialRequest);
 
-    if (!request.equals(partialRequest)) {
-      setRequest(
-        partialRequest instanceof ListTodoListsRequest
-          ? partialRequest.clone()
-          : new ListTodoListsRequest(partialRequest)
-      );
+    const [request, setRequest] = useState(newRequest);
+
+    if (!request.equals(newRequest)) {
+      setRequest(newRequest);
     }
 
     const [response, setResponse] = useState<ListTodoListsResponse>();

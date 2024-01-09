@@ -4,7 +4,7 @@ import uuid
 from todo_app.v1.todo_list_rsm import TodoList
 from todo_app.v1.todo_lists_rsm import (
     TodoLists,
-    TodoListObject,
+    TodoListMessage,
     TodoListsState,
     AddTodoListRequest,
     AddTodoListResponse,
@@ -13,22 +13,46 @@ from todo_app.v1.todo_lists_rsm import (
     DeleteTodoListRequest,
     DeleteTodoListResponse,
 )
-from resemble.aio.contexts import ReaderContext, WriterContext
+from resemble.aio.contexts import ReaderContext, WriterContext, TransactionContext
 
 class TodoListsServicer(TodoLists.Interface):
 
     async def AddTodoList(
         self,
-        context: WriterContext,
-        state: TodoListsState,
+        context: TransactionContext,
+        # state: TodoListsState,
         request: AddTodoListRequest,
-    ) -> TodoLists.AddTodoListEffects:
-        text = request.text
+    ) -> AddTodoListResponse:
+        
         unique_id = str(uuid.uuid4())
-        todoListObject = TodoListObject(id=unique_id, name=text)
-        state.todolists.extend([todoListObject])
-        print(state)
-        return TodoLists.AddTodoListEffects(state=state, response=AddTodoListResponse())
+        name = request.name
+        
+        async def add_todolist(
+            context: WriterContext,
+            state: TodoListsState,
+        ) -> TodoLists.Effects:
+            todoListObject = TodoListMessage(id=unique_id, name=name)
+            # state.todolists.extend([todoListObject])
+            state.todolists.extend([todoListObject])
+            print(state)
+            return TodoLists.Effects(state=state)
+        
+        await self.write(context, add_todolist)
+       
+        # name = request.name
+        # unique_id = str(uuid.uuid4())
+        # todoListObject = TodoListMessage(id=unique_id, name=name)
+        # state.todolists.extend([todoListObject])
+        # print(state)
+        # return TodoLists.AddTodoListEffects(state=state, response=AddTodoListResponse())
+    
+        # Let's go create the todolist.
+        todolist = TodoList(unique_id)
+        await todolist.Create(context, name=name)
+
+        return AddTodoListResponse(id=unique_id)
+
+        #return TodoLists.AddTodoListEffects(state=state, response=AddTodoListResponse(id=unique_id))
 
     async def ListTodoLists(
         self,
@@ -36,8 +60,7 @@ class TodoListsServicer(TodoLists.Interface):
         state: TodoListsState,
         request: ListTodoListsRequest,
     ) -> ListTodoListsResponse:
-        print("###########")
-        print("#############", state.todolists)
+        print("###########", state.todolists)
         return ListTodoListsResponse(todolists=state.todolists)
     
     async def DeleteTodoList(

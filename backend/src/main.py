@@ -15,12 +15,14 @@ TODO_LIST_ID = 'todo-list'
 
 
 async def initialize(workflow: Workflow):
-    todolist = TodoList(TODO_LIST_ID)
+
+    #todolist = TodoList(TODO_LIST_ID)
     todolists = TodoLists(TODO_LISTS_ID)
 
     # Implicitly construct todolist upon first write.
-    await todolists.AddTodoList(workflow, text='Text')
-    await todolist.AddTodo(workflow, todo='Test')
+    await todolists.AddTodoList(workflow, name='First List')
+    #await todolist.AddTodo(workflow, todo='Test')
+    await todolists.ListTodoLists(workflow)
 
 
 async def main():

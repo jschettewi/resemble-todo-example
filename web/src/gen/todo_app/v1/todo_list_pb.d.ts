@@ -45,7 +45,12 @@ export declare class Todo extends Message<Todo> {
  */
 export declare class TodoListState extends Message<TodoListState> {
   /**
-   * @generated from field: repeated todo_app.v1.Todo todos = 1;
+   * @generated from field: string name = 2;
+   */
+  name: string;
+
+  /**
+   * @generated from field: repeated todo_app.v1.Todo todos = 3;
    */
   todos: Todo[];
 
@@ -62,6 +67,49 @@ export declare class TodoListState extends Message<TodoListState> {
   static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): TodoListState;
 
   static equals(a: TodoListState | PlainMessage<TodoListState> | undefined, b: TodoListState | PlainMessage<TodoListState> | undefined): boolean;
+}
+
+/**
+ * @generated from message todo_app.v1.CreateRequest
+ */
+export declare class CreateRequest extends Message<CreateRequest> {
+  /**
+   * @generated from field: string name = 1;
+   */
+  name: string;
+
+  constructor(data?: PartialMessage<CreateRequest>);
+
+  static readonly runtime: typeof proto3;
+  static readonly typeName = "todo_app.v1.CreateRequest";
+  static readonly fields: FieldList;
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): CreateRequest;
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): CreateRequest;
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): CreateRequest;
+
+  static equals(a: CreateRequest | PlainMessage<CreateRequest> | undefined, b: CreateRequest | PlainMessage<CreateRequest> | undefined): boolean;
+}
+
+/**
+ * @generated from message todo_app.v1.CreateResponse
+ */
+export declare class CreateResponse extends Message<CreateResponse> {
+  constructor(data?: PartialMessage<CreateResponse>);
+
+  static readonly runtime: typeof proto3;
+  static readonly typeName = "todo_app.v1.CreateResponse";
+  static readonly fields: FieldList;
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): CreateResponse;
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): CreateResponse;
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): CreateResponse;
+
+  static equals(a: CreateResponse | PlainMessage<CreateResponse> | undefined, b: CreateResponse | PlainMessage<CreateResponse> | undefined): boolean;
 }
 
 /**

@@ -25,8 +25,8 @@ const Sidebar = ({ onTodoListClick, selectedTodoList } : SidebarArgs) => {
 
   const onSubmitTodoList = (event: any) => {
     event.preventDefault();
-
-    AddTodoList( {text: text} ).then(() => setTodo(""));
+    console.log(text)
+    AddTodoList( {name: text} ).then(() => setTodo(""));
   };
 
   return (

@@ -23,8 +23,27 @@ export const Todo = proto3.makeMessageType(
 export const TodoListState = proto3.makeMessageType(
   "todo_app.v1.TodoListState",
   () => [
-    { no: 1, name: "todos", kind: "message", T: Todo, repeated: true },
+    { no: 2, name: "name", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 3, name: "todos", kind: "message", T: Todo, repeated: true },
   ],
+);
+
+/**
+ * @generated from message todo_app.v1.CreateRequest
+ */
+export const CreateRequest = proto3.makeMessageType(
+  "todo_app.v1.CreateRequest",
+  () => [
+    { no: 1, name: "name", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+  ],
+);
+
+/**
+ * @generated from message todo_app.v1.CreateResponse
+ */
+export const CreateResponse = proto3.makeMessageType(
+  "todo_app.v1.CreateResponse",
+  [],
 );
 
 /**

@@ -7,9 +7,9 @@ import type { BinaryReadOptions, FieldList, JsonReadOptions, JsonValue, PartialM
 import { Message, proto3 } from "@bufbuild/protobuf";
 
 /**
- * @generated from message todo_app.v1.TodoListObject
+ * @generated from message todo_app.v1.TodoListMessage
  */
-export declare class TodoListObject extends Message<TodoListObject> {
+export declare class TodoListMessage extends Message<TodoListMessage> {
   /**
    * @generated from field: string id = 1;
    */
@@ -20,19 +20,19 @@ export declare class TodoListObject extends Message<TodoListObject> {
    */
   name: string;
 
-  constructor(data?: PartialMessage<TodoListObject>);
+  constructor(data?: PartialMessage<TodoListMessage>);
 
   static readonly runtime: typeof proto3;
-  static readonly typeName = "todo_app.v1.TodoListObject";
+  static readonly typeName = "todo_app.v1.TodoListMessage";
   static readonly fields: FieldList;
 
-  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): TodoListObject;
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): TodoListMessage;
 
-  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): TodoListObject;
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): TodoListMessage;
 
-  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): TodoListObject;
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): TodoListMessage;
 
-  static equals(a: TodoListObject | PlainMessage<TodoListObject> | undefined, b: TodoListObject | PlainMessage<TodoListObject> | undefined): boolean;
+  static equals(a: TodoListMessage | PlainMessage<TodoListMessage> | undefined, b: TodoListMessage | PlainMessage<TodoListMessage> | undefined): boolean;
 }
 
 /**
@@ -40,9 +40,9 @@ export declare class TodoListObject extends Message<TodoListObject> {
  */
 export declare class TodoListsState extends Message<TodoListsState> {
   /**
-   * @generated from field: repeated todo_app.v1.TodoListObject todolists = 1;
+   * @generated from field: repeated todo_app.v1.TodoListMessage todolists = 1;
    */
-  todolists: TodoListObject[];
+  todolists: TodoListMessage[];
 
   constructor(data?: PartialMessage<TodoListsState>);
 
@@ -64,9 +64,9 @@ export declare class TodoListsState extends Message<TodoListsState> {
  */
 export declare class AddTodoListRequest extends Message<AddTodoListRequest> {
   /**
-   * @generated from field: string text = 1;
+   * @generated from field: string name = 1;
    */
-  text: string;
+  name: string;
 
   constructor(data?: PartialMessage<AddTodoListRequest>);
 
@@ -87,6 +87,13 @@ export declare class AddTodoListRequest extends Message<AddTodoListRequest> {
  * @generated from message todo_app.v1.AddTodoListResponse
  */
 export declare class AddTodoListResponse extends Message<AddTodoListResponse> {
+  /**
+   * The ID of the todolist that was just created.
+   *
+   * @generated from field: string id = 1;
+   */
+  id: string;
+
   constructor(data?: PartialMessage<AddTodoListResponse>);
 
   static readonly runtime: typeof proto3;
@@ -126,9 +133,9 @@ export declare class ListTodoListsRequest extends Message<ListTodoListsRequest> 
  */
 export declare class ListTodoListsResponse extends Message<ListTodoListsResponse> {
   /**
-   * @generated from field: repeated todo_app.v1.TodoListObject todolists = 1;
+   * @generated from field: repeated todo_app.v1.TodoListMessage todolists = 1;
    */
-  todolists: TodoListObject[];
+  todolists: TodoListMessage[];
 
   constructor(data?: PartialMessage<ListTodoListsResponse>);
 

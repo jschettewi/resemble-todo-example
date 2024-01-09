@@ -3,6 +3,9 @@ import type {
   MessageType as __bufbuildProtobufMessageType,
   PartialMessage as __bufbuildProtobufPartialMessage,
 } from "@bufbuild/protobuf";
+import {
+  Empty
+} from "@bufbuild/protobuf";
 import * as resemble_react from "@reboot-dev/resemble-react";
 import * as resemble_api from "@reboot-dev/resemble-api";
 import {
@@ -19,6 +22,8 @@ import { v4 as uuidv4 } from "uuid";
 import {
   Todo, 
 	TodoListState, 
+	CreateRequest, 
+	CreateResponse, 
 	AddTodoRequest, 
 	AddTodoResponse, 
 	ListTodosRequest, 
@@ -33,6 +38,8 @@ import {
 export {
   Todo, 
 	TodoListState, 
+	CreateRequest, 
+	CreateResponse, 
 	AddTodoRequest, 
 	AddTodoResponse, 
 	ListTodosRequest, 
@@ -48,6 +55,8 @@ export {
 
 
 export interface TodoListApi {
+  Create: (partialRequest?: __bufbuildProtobufPartialMessage<CreateRequest>) =>
+  Promise<CreateResponse>;
   AddTodo: (partialRequest?: __bufbuildProtobufPartialMessage<AddTodoRequest>) =>
   Promise<AddTodoResponse>;
   ListTodos: (partialRequest?: __bufbuildProtobufPartialMessage<ListTodosRequest>) =>
@@ -61,6 +70,9 @@ export interface TodoListApi {
     isLoading: boolean;
     error: unknown;
     mutations: {
+       Create: (request: __bufbuildProtobufPartialMessage<CreateRequest>,
+       optimistic_metadata?: any ) =>
+      Promise<resemble_react.ResponseOrError<CreateResponse>>;
        AddTodo: (request: __bufbuildProtobufPartialMessage<AddTodoRequest>,
        optimistic_metadata?: any ) =>
       Promise<resemble_react.ResponseOrError<AddTodoResponse>>;
@@ -71,6 +83,24 @@ export interface TodoListApi {
        optimistic_metadata?: any ) =>
       Promise<resemble_react.ResponseOrError<CompleteTodoResponse>>;
     };
+      pendingCreateMutations: {
+        request: CreateRequest;
+        idempotencyKey: string;
+        isLoading: boolean;
+        error?: unknown;
+        optimistic_metadata?: any;
+      }[];
+      failedCreateMutations: {
+        request: CreateRequest;
+        idempotencyKey: string;
+        isLoading: boolean;
+        error?: unknown;
+      }[];
+      recoveredCreateMutations: {
+        request: CreateRequest;
+        idempotencyKey: string;
+        run: () => void;
+      }[];
       pendingAddTodoMutations: {
         request: AddTodoRequest;
         idempotencyKey: string;
@@ -129,6 +159,18 @@ export interface TodoListApi {
 }
 
 export interface TodoListMutators {
+  create: {
+    // Mutators are functions and can be called directly.
+    (partialRequest?: __bufbuildProtobufPartialMessage<CreateRequest>,
+     optimistic_metadata?: any
+    ): Promise<
+      resemble_react.ResponseOrErrors<
+        CreateResponse,
+        resemble_api.SystemErrorDetails
+      >>;
+
+    pending: resemble_react.Mutation<CreateRequest>[];
+  };
   addTodo: {
     // Mutators are functions and can be called directly.
     (partialRequest?: __bufbuildProtobufPartialMessage<AddTodoRequest>,
@@ -229,6 +271,29 @@ export const TodoList = (
           ? JSON.stringify(requestBody)
           : null,
     });
+  };
+
+  const Create = async (
+    partialRequest: __bufbuildProtobufPartialMessage<CreateRequest> = {}
+  ) => {
+    const request = partialRequest instanceof CreateRequest
+      ? partialRequest
+      : new CreateRequest(partialRequest);
+
+    const requestBody = request.toJson();
+
+    // Invariant here is that we use the '/package.service.method' path and
+    // HTTP 'POST' method (we need 'POST' because we send an HTTP body).
+    //
+    // See also 'resemble/helpers.py'.
+    const response = await resemble_react.guardedFetch(
+      newRequest(
+        requestBody,
+        "/todo_app.v1.TodoList.Create", "POST"
+      )
+    );
+
+    return await response.json();
   };
 
   const AddTodo = async (
@@ -359,6 +424,7 @@ export const TodoList = (
 
 function hasRunningMutations(): boolean {
       if (
+      runningCreateMutations.current.length > 0||
       runningAddTodoMutations.current.length > 0||
       runningDeleteTodoMutations.current.length > 0||
       runningCompleteTodoMutations.current.length > 0) {
@@ -367,6 +433,154 @@ function hasRunningMutations(): boolean {
       return false;
     }
 
+
+    const runningCreateMutations = useRef<resemble_react.Mutation<CreateRequest>[]>([]);
+    const recoveredCreateMutations = useRef<
+      [resemble_react.Mutation<CreateRequest>, () => void][]
+    >([]);
+    const shouldClearFailedCreateMutations = useRef(false);
+    const [failedCreateMutations, setFailedCreateMutations] = useState<
+      resemble_react.Mutation<CreateRequest>[]
+    >([]);
+    const queuedCreateMutations = useRef<[resemble_react.Mutation<CreateRequest>, () => void][]>(
+      []
+    );
+    const recoverAndPurgeCreateMutations = (): [
+      resemble_react.Mutation<CreateRequest>,
+      () => void
+    ][] => {
+      if (localStorageKeyRef.current === undefined) {
+        return [];
+      }
+      const suffix = Create
+      const value = localStorage.getItem(localStorageKeyRef.current + suffix);
+      if (value === null) {
+        return [];
+      }
+
+      localStorage.removeItem(localStorageKeyRef.current);
+      const mutations: resemble_react.Mutation<CreateRequest>[] = JSON.parse(value);
+      const recoveredCreateMutations: [
+        resemble_react.Mutation<CreateRequest>,
+        () => void
+      ][] = [];
+      for (const mutation of mutations) {
+        recoveredCreateMutations.push([mutation, () => __Create(mutation)]);
+      }
+      return recoveredCreateMutations;
+    }
+    const doOnceCreate = useRef(true)
+    if (doOnceCreate.current) {
+      doOnceCreate.current = false
+      recoveredCreateMutations.current = recoverAndPurgeCreateMutations()
+    }
+
+    // User facing state that only includes the pending mutations that
+    // have not been observed.
+    const [unobservedPendingCreateMutations, setUnobservedPendingCreateMutations] =
+      useState<resemble_react.Mutation<CreateRequest>[]>([]);
+
+    useEffect(() => {
+      shouldClearFailedCreateMutations.current = true;
+    }, [failedCreateMutations]);
+
+    async function __Create(
+      mutation: resemble_react.Mutation<CreateRequest>
+    ): Promise<resemble_react.ResponseOrError<CreateResponse>> {
+      try {
+        // Invariant that we won't yield to event loop before pushing to
+        // runningCreateMutations
+        runningCreateMutations.current.push(mutation)
+        return _Mutation<CreateRequest, CreateResponse>(
+          // Invariant here is that we use the '/package.service.method'.
+          //
+          // See also 'resemble/helpers.py'.
+          "/todo_app.v1.TodoList.Create",
+          mutation,
+          mutation.request,
+          mutation.idempotencyKey,
+          setUnobservedPendingCreateMutations,
+          abortController,
+          shouldClearFailedCreateMutations,
+          setFailedCreateMutations,
+          runningCreateMutations,
+          flushMutations,
+          queuedMutations,
+          CreateRequest,
+          CreateResponse.fromJson
+        );
+      } finally {
+        runningCreateMutations.current = runningCreateMutations.current.filter(
+          ({ idempotencyKey }) => mutation.idempotencyKey !== idempotencyKey
+        );
+
+        resemble_react.popMutationMaybeFromLocalStorage(
+          localStorageKeyRef.current,
+          "Create",
+          (mutationRequest: resemble_react.Mutation<Request>) =>
+            mutationRequest.idempotencyKey !== mutation.idempotencyKey
+        );
+
+
+      }
+    }
+    async function _Create(mutation: resemble_react.Mutation<CreateRequest>) {
+      setUnobservedPendingCreateMutations(
+        (mutations) => [...mutations, mutation]
+      )
+
+      // NOTE: we only run one mutation at a time so that we provide a
+      // serializable experience for the end user but we will
+      // eventually support mutations in parallel when we have strong
+      // eventually consistent writers.
+      if (
+        hasRunningMutations() ||
+        queuedMutations.current.length > 0 ||
+        flushMutations.current !== undefined
+      ) {
+        const deferred = new resemble_react.Deferred<resemble_react.ResponseOrError<CreateResponse>>(() =>
+          __Create(mutation)
+        );
+
+        // Add to localStorage here.
+        queuedCreateMutations.current.push([mutation, () => deferred.start()]);
+        queuedMutations.current.push(() => {
+          for (const [, run] of queuedCreateMutations.current) {
+            queuedCreateMutations.current.shift();
+            run();
+            break;
+          }
+        });
+        // Maybe add to localStorage.
+        resemble_react.pushMutationMaybeToLocalStorage(localStorageKeyRef.current, "Create", mutation);
+
+        return deferred.promise;
+      } else {
+        // NOTE: we'll add this mutation to `runningCreateMutations` in `__Create`
+        // without yielding to event loop so that we are guaranteed atomicity with checking `hasRunningMutations()`.
+        return await __Create(mutation);
+      }
+    }
+
+    async function Create(
+      partialRequest: __bufbuildProtobufPartialMessage<CreateRequest>,
+      optimistic_metadata?: any
+    ): Promise<resemble_react.ResponseOrError<CreateResponse>> {
+      const idempotencyKey = uuidv4();
+
+      const request = partialRequest instanceof CreateRequest
+        ? partialRequest
+        : new CreateRequest(partialRequest);
+
+      const mutation = {
+        request,
+        idempotencyKey,
+        optimistic_metadata,
+        isLoading: false, // Won't start loading if we're flushing mutations.
+      };
+
+      return _Create(mutation);
+    }
 
     const runningAddTodoMutations = useRef<resemble_react.Mutation<AddTodoRequest>[]>([]);
     const recoveredAddTodoMutations = useRef<
@@ -821,7 +1035,7 @@ function hasRunningMutations(): boolean {
           try {// Wait for any mutations to complete before starting to
             // read so that we read the latest state including those
             // mutations.
-            if (runningAddTodoMutations.current.length > 0 || runningDeleteTodoMutations.current.length > 0 || runningCompleteTodoMutations.current.length > 0) {
+            if (runningCreateMutations.current.length > 0 || runningAddTodoMutations.current.length > 0 || runningDeleteTodoMutations.current.length > 0 || runningCompleteTodoMutations.current.length > 0) {
               // TODO(benh): check invariant
               // 'flushMutations.current !== undefined' but don't
               // throw an error since that will just retry, instead
@@ -852,6 +1066,7 @@ function hasRunningMutations(): boolean {
                 observedIdempotencyKeys.current,
                 (observedIdempotencyKey) =>
                   [
+                  ...runningCreateMutations.current,
                   ...runningAddTodoMutations.current,
                   ...runningDeleteTodoMutations.current,
                   ...runningCompleteTodoMutations.current,
@@ -877,6 +1092,33 @@ function hasRunningMutations(): boolean {
                   break;
                 }
               }
+
+              setUnobservedPendingCreateMutations(
+              (mutations) =>
+                mutations
+                  .filter(
+                    (mutation) =>
+                      // Only keep mutations that are queued, pending or
+                      // recovered.
+                      queuedCreateMutations.current.some(
+                        ([queuedCreateMutation]) =>
+                          mutation.idempotencyKey ===
+                          queuedCreateMutation.idempotencyKey
+                      ) ||
+                      runningCreateMutations.current.some(
+                        (runningCreateMutations) =>
+                          mutation.idempotencyKey ===
+                          runningCreateMutations.idempotencyKey
+                      )
+                  )
+                  .filter(
+                    (mutation) =>
+                      // Only keep mutations whose effects haven't been observed.
+                      !observedIdempotencyKeys.current.has(
+                        mutation.idempotencyKey
+                      )
+                  )
+              )
 
               setUnobservedPendingAddTodoMutations(
               (mutations) =>
@@ -1004,10 +1246,16 @@ function hasRunningMutations(): boolean {
       isLoading,
       error,
       mutations: {
+        Create,
         AddTodo,
         DeleteTodo,
         CompleteTodo,
       },
+      pendingCreateMutations: unobservedPendingCreateMutations,
+      failedCreateMutations,
+      recoveredCreateMutations: recoveredCreateMutations.current.map(
+        ([mutation, run]) => ({ ...mutation, run: run })
+      ),
       pendingAddTodoMutations: unobservedPendingAddTodoMutations,
       failedAddTodoMutations,
       recoveredAddTodoMutations: recoveredAddTodoMutations.current.map(
@@ -1076,8 +1324,8 @@ function hasRunningMutations(): boolean {
 
 async function _Mutation<
     Request extends
-AddTodoRequest    |DeleteTodoRequest    |CompleteTodoRequest,
-    Response extends    AddTodoResponse    |    DeleteTodoResponse    |    CompleteTodoResponse  >(
+CreateRequest    |AddTodoRequest    |DeleteTodoRequest    |CompleteTodoRequest,
+    Response extends    CreateResponse    |    AddTodoResponse    |    DeleteTodoResponse    |    CompleteTodoResponse  >(
     path: string,
     mutation: resemble_react.Mutation<Request>,
     request: Request,
@@ -1276,6 +1524,7 @@ AddTodoRequest    |DeleteTodoRequest    |CompleteTodoRequest,
   }
 
   return {
+    Create,
     AddTodo,
     ListTodos,
     useListTodos,
@@ -1673,6 +1922,147 @@ class TodoListInstance {
     } finally {
       delete this.observers[id];
     }
+  }
+
+
+  private useCreateMutations: (
+    resemble_react.Mutation<CreateRequest>)[] = [];
+
+  private useCreateSetPendings: {
+    [id: string]: (mutations: resemble_react.Mutation<CreateRequest>[]) => void
+  } = {};
+
+  async create(
+    mutation: resemble_react.Mutation<CreateRequest>
+  ): Promise<
+    resemble_react.ResponseOrErrors<
+      CreateResponse,
+      resemble_api.SystemErrorDetails
+  >> {
+    // We always have at least 1 observer which is this function!
+    let remainingObservers = 1;
+
+    const event = new resemble_react.Event();
+
+    const callbacks: (() => void)[] = [];
+
+    const observed = (callback: () => void) => {
+      callbacks.push(callback);
+      remainingObservers -= 1;
+      if (remainingObservers === 0) {
+        unstable_batchedUpdates(() => {
+          for (const callback of callbacks) {
+            callback();
+          }
+        });
+        event.set();
+      }
+      return event.wait();
+    };
+
+    const aborted = () => {
+      observed(() => {});
+    }
+
+    // Tell observers about this pending mutation.
+    for (const id in this.observers) {
+      remainingObservers += 1;
+      this.observers[id].observe(mutation.idempotencyKey, observed, aborted);
+    }
+
+    this.useCreateMutations.push(mutation);
+
+    unstable_batchedUpdates(() => {
+      for (const setPending of Object.values(this.useCreateSetPendings)) {
+        setPending(this.useCreateMutations);
+      }
+    });
+
+    return new Promise<
+      resemble_react.ResponseOrErrors<
+        CreateResponse,
+        resemble_api.SystemErrorDetails
+      >>(
+      async (resolve, reject) => {
+        const { responseOrStatus } = await this.mutate(
+          {
+            method: "Create",
+            request: mutation.request.toBinary(),
+            idempotencyKey: mutation.idempotencyKey,
+          },
+          ({ isLoading, error }: { isLoading: boolean; error?: any }) => {
+            for (const m of this.useCreateMutations) {
+              if (m === mutation) {
+                m.isLoading = isLoading;
+                if (error !== undefined) {
+                  m.error = error;
+                }
+              }
+              return m;
+            }
+
+            unstable_batchedUpdates(() => {
+              for (const setPending of Object.values(this.useCreateSetPendings)) {
+                setPending(this.useCreateMutations);
+              }
+            });
+          }
+        );
+
+        switch (responseOrStatus.case) {
+          case "response":
+            await observed(() => {
+              this.useCreateMutations =
+                this.useCreateMutations.filter(m => m !== mutation);
+
+              unstable_batchedUpdates(() => {
+                for (const setPending of Object.values(this.useCreateSetPendings)) {
+                  setPending(this.useCreateMutations);
+                }
+              });
+
+              resolve({
+                response: CreateResponse.fromBinary(
+                  responseOrStatus.value
+                )
+              });
+            });
+            break;
+          case "status":
+            // Let the observers know they no longer should expect to
+            // observe this idempotency key.
+            for (const id in this.observers) {
+              this.observers[id].unobserve(mutation.idempotencyKey);
+            }
+
+            const status = resemble_api.Status.fromJsonString(responseOrStatus.value);
+
+            let error;
+            if ((error = resemble_api.SystemError.fromStatus(status)) !== undefined) {
+              resolve({ error });
+            } else {
+              reject(
+                new Error(
+                  `Unknown error with gRPC status ${JSON.stringify(status)}`
+                )
+              );
+            }
+            break;
+          default:
+            reject(new Error('Expecting either a response or an error'));
+        }
+      });
+  }
+
+  useCreate(
+    id: string,
+    setPending: (mutations: resemble_react.Mutation<CreateRequest>[]) => void
+  ) {
+    this.useCreateSetPendings[id] = setPending;
+  }
+
+  unuseCreate(id: string) {
+    delete this.useCreateSetPendings[id];
   }
 
 
@@ -2218,6 +2608,55 @@ export const useTodoList = (
   }, [id]);
 
 
+  function useCreate() {
+    const [
+      pending,
+      setPending
+    ] = useState<resemble_react.Mutation<CreateRequest>[]>([]);
+
+    useEffect(() => {
+      const id = uuidv4();
+      instance.useCreate(id, setPending);
+      return () => {
+        instance.unuseCreate(id);
+      };
+    }, []);
+
+    const create = useMemo(() => {
+      const method = async (
+        partialRequest: __bufbuildProtobufPartialMessage<CreateRequest> = {},
+        optimistic_metadata?: any
+      ) => {
+        const request = partialRequest instanceof CreateRequest
+          ? partialRequest.clone()
+          : new CreateRequest(partialRequest);
+
+        const idempotencyKey = uuidv4();
+
+        const mutation = {
+          request,
+          idempotencyKey,
+          optimistic_metadata,
+          isLoading: false, // Won't start loading if we're flushing mutations.
+        };
+
+        return instance.create(mutation);
+      };
+
+      method.pending =
+        new Array<resemble_react.Mutation<CreateRequest>>();
+
+      return method;
+    }, []);
+
+    create.pending = pending;
+
+    return create;
+  }
+
+  const create = useCreate();
+
+
   function useAddTodo() {
     const [
       pending,
@@ -2271,18 +2710,14 @@ export const useTodoList = (
   function useListTodos(
     partialRequest: __bufbuildProtobufPartialMessage<ListTodosRequest> = {}
   ) {
-    const [request, setRequest] = useState(
-      partialRequest instanceof ListTodosRequest
-        ? partialRequest.clone()
-        : new ListTodosRequest(partialRequest)
-    );
+    const newRequest = partialRequest instanceof ListTodosRequest
+      ? partialRequest.clone()
+      : new ListTodosRequest(partialRequest);
 
-    if (!request.equals(partialRequest)) {
-      setRequest(
-        partialRequest instanceof ListTodosRequest
-          ? partialRequest.clone()
-          : new ListTodosRequest(partialRequest)
-      );
+    const [request, setRequest] = useState(newRequest);
+
+    if (!request.equals(newRequest)) {
+      setRequest(newRequest);
     }
 
     const [response, setResponse] = useState<ListTodosResponse>();
@@ -2490,6 +2925,7 @@ export const useTodoList = (
 
   return {
     mutators: {
+      create,
       addTodo,
       deleteTodo,
       completeTodo,

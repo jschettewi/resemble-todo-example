@@ -6,10 +6,10 @@
 import { proto3 } from "@bufbuild/protobuf";
 
 /**
- * @generated from message todo_app.v1.TodoListObject
+ * @generated from message todo_app.v1.TodoListMessage
  */
-export const TodoListObject = proto3.makeMessageType(
-  "todo_app.v1.TodoListObject",
+export const TodoListMessage = proto3.makeMessageType(
+  "todo_app.v1.TodoListMessage",
   () => [
     { no: 1, name: "id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
     { no: 2, name: "name", kind: "scalar", T: 9 /* ScalarType.STRING */ },
@@ -22,7 +22,7 @@ export const TodoListObject = proto3.makeMessageType(
 export const TodoListsState = proto3.makeMessageType(
   "todo_app.v1.TodoListsState",
   () => [
-    { no: 1, name: "todolists", kind: "message", T: TodoListObject, repeated: true },
+    { no: 1, name: "todolists", kind: "message", T: TodoListMessage, repeated: true },
   ],
 );
 
@@ -32,7 +32,7 @@ export const TodoListsState = proto3.makeMessageType(
 export const AddTodoListRequest = proto3.makeMessageType(
   "todo_app.v1.AddTodoListRequest",
   () => [
-    { no: 1, name: "text", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 1, name: "name", kind: "scalar", T: 9 /* ScalarType.STRING */ },
   ],
 );
 
@@ -41,7 +41,9 @@ export const AddTodoListRequest = proto3.makeMessageType(
  */
 export const AddTodoListResponse = proto3.makeMessageType(
   "todo_app.v1.AddTodoListResponse",
-  [],
+  () => [
+    { no: 1, name: "id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+  ],
 );
 
 /**
@@ -58,7 +60,7 @@ export const ListTodoListsRequest = proto3.makeMessageType(
 export const ListTodoListsResponse = proto3.makeMessageType(
   "todo_app.v1.ListTodoListsResponse",
   () => [
-    { no: 1, name: "todolists", kind: "message", T: TodoListObject, repeated: true },
+    { no: 1, name: "todolists", kind: "message", T: TodoListMessage, repeated: true },
   ],
 );
 

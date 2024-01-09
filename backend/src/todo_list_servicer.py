@@ -5,6 +5,8 @@ from todo_app.v1.todo_list_rsm import (
     TodoListState,
     TodoList,
     Todo,
+    CreateRequest,
+    CreateResponse,
     AddTodoRequest,
     AddTodoResponse,
     ListTodosRequest,
@@ -17,6 +19,25 @@ from todo_app.v1.todo_list_rsm import (
 from resemble.aio.contexts import ReaderContext, WriterContext
 
 class TodoListServicer(TodoList.Interface):
+
+    async def Create(
+        self,
+        context: WriterContext,
+        request: CreateRequest,
+    ) -> TodoList.CreateEffects:
+        # Since this is a constructor, we are setting the initial state of the
+        # state machine.
+        initial_state = TodoListState(name=request.name)
+
+        # here we can schedule a task if we want to
+        # welcome_email_task = self.schedule().WelcomeEmailTask(context)
+
+        print(initial_state.todos)
+
+        return TodoList.CreateEffects(
+            state=initial_state,
+            response=CreateResponse(),
+        )
     
     async def AddTodo(
         self,

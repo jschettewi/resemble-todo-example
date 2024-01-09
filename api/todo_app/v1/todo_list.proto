@@ -2,12 +2,20 @@ syntax = "proto3";
 
 package todo_app.v1;
 
+import "google/protobuf/empty.proto";
 import "resemble/v1alpha1/options.proto";
+import "resemble/v1alpha1/tasks.proto";
 
 ////////////////////////////////////////////////////////////////////////
 
 service TodoList {
   option (resemble.v1alpha1.service).state = "TodoListState";
+
+  rpc Create(CreateRequest) returns (CreateResponse) {
+    option (resemble.v1alpha1.method).writer = {
+      constructor: true,
+    };
+  }
 
   rpc AddTodo(AddTodoRequest) returns (AddTodoResponse) {
     option (resemble.v1alpha1.method).writer = {
@@ -30,6 +38,9 @@ service TodoList {
   }
 }
 
+////////////////////////////////////////////////////////////////////////
+// State types.
+
 message Todo {
   string id = 1;
   string text = 2;
@@ -37,8 +48,18 @@ message Todo {
 }
 
 message TodoListState {
-  repeated Todo todos = 1;
+  string name = 2;
+  repeated Todo todos = 3;
 }
+
+////////////////////////////////////////////////////////////////////////
+// Request and response types.
+
+message CreateRequest {
+  string name = 1;
+}
+
+message CreateResponse {}
 
 message AddTodoRequest {
   string todolistId = 1;
