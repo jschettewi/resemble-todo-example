@@ -1,8 +1,8 @@
 import React from 'react';
 import './MainPage.css';
 import { useState, useEffect } from "react";
-import { TodoLists } from './gen/todo_app/v1/todo_lists_rsm_react';
-import { TodoList } from './gen/todo_app/v1/todo_list_rsm_react';
+import { useTodoLists } from './gen/todo_app/v1/todo_lists_rsm_react';
+import { useTodoList } from './gen/todo_app/v1/todo_list_rsm_react';
 import '@fortawesome/fontawesome-free/css/all.css';
 
 interface MainPageArgs {
@@ -10,19 +10,18 @@ interface MainPageArgs {
 }
 
 const MainPage = ({ selectedTodoList } : MainPageArgs) => {
-
+  console.log("HERE")
   console.log(selectedTodoList?.id)
 
   const [todolistId, settodolistId] = useState(selectedTodoList?.id);
 
   const [todo, setTodo] = useState("");
   
-  const { useListTodos } = TodoList({ id: "todo-list" });
+  const { useListTodos, mutators } = useTodoList({ id: todolistId });
 
-  const {
-    response,
-    mutations: { AddTodo },
-  } = useListTodos({ todolistId: todolistId });
+  console.log(useTodoList({ id: todolistId }))
+
+  const { response /* , isLoading */ } = useListTodos({todolistId: todolistId});
 
   const todos = response?.todos || [];
 
@@ -30,14 +29,13 @@ const MainPage = ({ selectedTodoList } : MainPageArgs) => {
   const onSubmitTodo = (event: any) => {
     event.preventDefault();
     console.log(selectedTodoList?.id)
-    console.log(todolistId)
-    AddTodo({ todolistId: selectedTodoList?.id, todo: todo }).then(() => setTodo(""));
+    // console.log(todolistId)
+    mutators.addTodo({ todolistId: selectedTodoList?.id, todo: todo }).then(() => setTodo(""));
   };
 
   // Update todos when selectedTodoListId changes
   useEffect(() => {
     settodolistId(selectedTodoList?.id);
-    
   }, [selectedTodoList]);
 
   return (
@@ -85,19 +83,16 @@ interface TodoArgs {
 
 const Todo = ({ id, text, complete, selectedTodoList }: TodoArgs) => {
 
-  const { useListTodos } = TodoList({ id: "todo-list" });
+  const { useListTodos, mutators } = useTodoList({ id: selectedTodoList?.id });
 
-  const {
-    response,
-    mutations: { DeleteTodo, CompleteTodo },
-  } = useListTodos();
+  const { response /* , isLoading */ } = useListTodos({todolistId: selectedTodoList?.id});
 
   const onCompleteTodo = () => {
-    CompleteTodo( { todolistId: selectedTodoList?.id, todoId: id })
+    mutators.completeTodo( { todoId: id })
   }
 
   const onDeleteTodo = () => {
-    DeleteTodo( { todolistId: selectedTodoList?.id, todoId: id });
+    mutators.deleteTodo( { todoId: id });
   }
 
   return (

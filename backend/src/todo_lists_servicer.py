@@ -47,8 +47,8 @@ class TodoListsServicer(TodoLists.Interface):
         # return TodoLists.AddTodoListEffects(state=state, response=AddTodoListResponse())
     
         # Let's go create the todolist.
-        todolist = TodoList(unique_id)
-        await todolist.Create(context, name=name)
+        newtodolist = TodoList(unique_id)
+        await newtodolist.Create(context, name=name)
 
         return AddTodoListResponse(id=unique_id)
 
@@ -60,7 +60,6 @@ class TodoListsServicer(TodoLists.Interface):
         state: TodoListsState,
         request: ListTodoListsRequest,
     ) -> ListTodoListsResponse:
-        print("###########", state.todolists)
         return ListTodoListsResponse(todolists=state.todolists)
     
     async def DeleteTodoList(

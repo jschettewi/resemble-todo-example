@@ -161,14 +161,11 @@ export declare class AddTodoResponse extends Message<AddTodoResponse> {
 }
 
 /**
+ * string todolistId = 1;
+ *
  * @generated from message todo_app.v1.ListTodosRequest
  */
 export declare class ListTodosRequest extends Message<ListTodosRequest> {
-  /**
-   * @generated from field: string todolistId = 1;
-   */
-  todolistId: string;
-
   constructor(data?: PartialMessage<ListTodosRequest>);
 
   static readonly runtime: typeof proto3;
@@ -213,11 +210,8 @@ export declare class ListTodosResponse extends Message<ListTodosResponse> {
  */
 export declare class DeleteTodoRequest extends Message<DeleteTodoRequest> {
   /**
-   * @generated from field: string todolistId = 1;
-   */
-  todolistId: string;
-
-  /**
+   * string todolistId = 1;
+   *
    * @generated from field: string todoId = 2;
    */
   todoId: string;
@@ -261,11 +255,8 @@ export declare class DeleteTodoResponse extends Message<DeleteTodoResponse> {
  */
 export declare class CompleteTodoRequest extends Message<CompleteTodoRequest> {
   /**
-   * @generated from field: string todolistId = 1;
-   */
-  todolistId: string;
-
-  /**
+   * string todolistId = 1;
+   *
    * @generated from field: string todoId = 2;
    */
   todoId: string;

@@ -11,7 +11,7 @@ logging.basicConfig(level=logging.INFO)
 
 # TODO_LIST_ID = 'todo-list'
 TODO_LISTS_ID = 'todo-lists'
-TODO_LIST_ID = 'todo-list'
+#TODO_LIST_ID = 'todo-list'
 
 
 async def initialize(workflow: Workflow):
@@ -21,8 +21,9 @@ async def initialize(workflow: Workflow):
 
     # Implicitly construct todolist upon first write.
     await todolists.AddTodoList(workflow, name='First List')
+    #await todolists.AddTodoList(workflow, name='second list')
     #await todolist.AddTodo(workflow, todo='Test')
-    await todolists.ListTodoLists(workflow)
+    #await todolists.ListTodoLists(workflow)
 
 
 async def main():

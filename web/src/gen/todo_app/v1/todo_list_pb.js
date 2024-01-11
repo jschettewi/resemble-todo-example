@@ -66,13 +66,13 @@ export const AddTodoResponse = proto3.makeMessageType(
 );
 
 /**
+ * string todolistId = 1;
+ *
  * @generated from message todo_app.v1.ListTodosRequest
  */
 export const ListTodosRequest = proto3.makeMessageType(
   "todo_app.v1.ListTodosRequest",
-  () => [
-    { no: 1, name: "todolistId", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-  ],
+  [],
 );
 
 /**
@@ -91,7 +91,6 @@ export const ListTodosResponse = proto3.makeMessageType(
 export const DeleteTodoRequest = proto3.makeMessageType(
   "todo_app.v1.DeleteTodoRequest",
   () => [
-    { no: 1, name: "todolistId", kind: "scalar", T: 9 /* ScalarType.STRING */ },
     { no: 2, name: "todoId", kind: "scalar", T: 9 /* ScalarType.STRING */ },
   ],
 );
@@ -110,7 +109,6 @@ export const DeleteTodoResponse = proto3.makeMessageType(
 export const CompleteTodoRequest = proto3.makeMessageType(
   "todo_app.v1.CompleteTodoRequest",
   () => [
-    { no: 1, name: "todolistId", kind: "scalar", T: 9 /* ScalarType.STRING */ },
     { no: 2, name: "todoId", kind: "scalar", T: 9 /* ScalarType.STRING */ },
   ],
 );

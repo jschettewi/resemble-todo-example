@@ -1,8 +1,10 @@
 import React from 'react';
 import './Sidebar.css'; // Import your sidebar styles
 import { useState } from "react";
-import { TodoLists } from './gen/todo_app/v1/todo_lists_rsm_react';
+import { useTodoLists } from './gen/todo_app/v1/todo_lists_rsm_react';
 import '@fortawesome/fontawesome-free/css/all.css';
+
+const STATE_MACHINE_ID = "todo-lists" ;
 
 interface SidebarArgs {
   onTodoListClick: any;
@@ -14,20 +16,24 @@ const Sidebar = ({ onTodoListClick, selectedTodoList } : SidebarArgs) => {
 
   const [text, setTodo] = useState("");
 
-  const { useListTodoLists } = TodoLists({ id: "todo-lists" });
+  const { useListTodoLists, mutators } = useTodoLists({ id: STATE_MACHINE_ID });
 
-  const {
-    response,
-    mutations: { AddTodoList },
-  } = useListTodoLists();
+  const { response /* , isLoading */ } = useListTodoLists();
 
   const todolists = response?.todolists || [];
 
+  // const onSubmitTodoList = (event: any) => {
+  //   event.preventDefault();
+  //   console.log(text)
+  //   AddTodoList( {name: text} ).then(() => setTodo(""));
+  // };
+
   const onSubmitTodoList = (event: any) => {
     event.preventDefault();
-    console.log(text)
-    AddTodoList( {name: text} ).then(() => setTodo(""));
+    mutators.addTodoList({ name: text }).then(() => setTodo(""));
   };
+
+  console.log(todolists)
 
   return (
     <div className="sidebar">
@@ -57,21 +63,13 @@ interface TodoListArgs {
 
 const TodoList = ({ id, text, onClickTodoList, isSelected}: TodoListArgs) => {
 
-  const { useListTodoLists } = TodoLists({ id: "todo-lists" });
+  const { useListTodoLists, mutators } = useTodoLists({ id: STATE_MACHINE_ID });
 
-  const {
-    response,
-    mutations: { DeleteTodoList },
-  } = useListTodoLists();
+  const { response /* , isLoading */ } = useListTodoLists();
 
   const onDeleteTodoList = () => {
-    DeleteTodoList( { id: id });
+    mutators.deleteTodoList( { id: id });
   }
-
-  // const onClickTodoList = () => {
-  //   console.log("Clicked list")
-  //   console.log(id)
-  // }
 
   return (
     <div key={id} className="todo-list-container">

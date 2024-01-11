@@ -69,7 +69,7 @@ message AddTodoRequest {
 message AddTodoResponse {}
 
 message ListTodosRequest {
-  string todolistId = 1;
+  // string todolistId = 1;
 }
 
 message ListTodosResponse {
@@ -77,14 +77,14 @@ message ListTodosResponse {
 }
 
 message DeleteTodoRequest {
-  string todolistId = 1;
+  // string todolistId = 1;
   string todoId = 2;
 }
 
 message DeleteTodoResponse {}
 
 message CompleteTodoRequest {
-  string todolistId = 1;
+  // string todolistId = 1;
   string todoId = 2;
 }
 
