@@ -49,6 +49,7 @@ class TodoListsServicer(TodoLists.Interface):
         # Let's go create the todolist.
         newtodolist = TodoList(unique_id)
         await newtodolist.Create(context, name=name)
+        #await newtodolist.AddTodo(context, todo="Added from todo_lists_servicer")
 
         return AddTodoListResponse(id=unique_id)
 

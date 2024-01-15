@@ -4,6 +4,7 @@
 // @ts-nocheck
 
 import { proto3 } from "@bufbuild/protobuf";
+import { TaskId } from "../../resemble/v1alpha1/tasks_pb.js";
 
 /**
  * @generated from message todo_app.v1.Todo
@@ -14,6 +15,7 @@ export const Todo = proto3.makeMessageType(
     { no: 1, name: "id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
     { no: 2, name: "text", kind: "scalar", T: 9 /* ScalarType.STRING */ },
     { no: 3, name: "complete", kind: "scalar", T: 8 /* ScalarType.BOOL */ },
+    { no: 4, name: "deadline", kind: "scalar", T: 9 /* ScalarType.STRING */ },
   ],
 );
 
@@ -23,8 +25,8 @@ export const Todo = proto3.makeMessageType(
 export const TodoListState = proto3.makeMessageType(
   "todo_app.v1.TodoListState",
   () => [
-    { no: 2, name: "name", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-    { no: 3, name: "todos", kind: "message", T: Todo, repeated: true },
+    { no: 1, name: "name", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 2, name: "todos", kind: "message", T: Todo, repeated: true },
   ],
 );
 
@@ -52,7 +54,6 @@ export const CreateResponse = proto3.makeMessageType(
 export const AddTodoRequest = proto3.makeMessageType(
   "todo_app.v1.AddTodoRequest",
   () => [
-    { no: 1, name: "todolistId", kind: "scalar", T: 9 /* ScalarType.STRING */ },
     { no: 2, name: "todo", kind: "scalar", T: 9 /* ScalarType.STRING */ },
   ],
 );
@@ -119,5 +120,37 @@ export const CompleteTodoRequest = proto3.makeMessageType(
 export const CompleteTodoResponse = proto3.makeMessageType(
   "todo_app.v1.CompleteTodoResponse",
   [],
+);
+
+/**
+ * @generated from message todo_app.v1.AddDeadlineRequest
+ */
+export const AddDeadlineRequest = proto3.makeMessageType(
+  "todo_app.v1.AddDeadlineRequest",
+  () => [
+    { no: 1, name: "todoId", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 2, name: "date", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+  ],
+);
+
+/**
+ * @generated from message todo_app.v1.AddDealineResponse
+ */
+export const AddDealineResponse = proto3.makeMessageType(
+  "todo_app.v1.AddDealineResponse",
+  () => [
+    { no: 1, name: "reminder_text_task_id", kind: "message", T: TaskId },
+  ],
+);
+
+/**
+ * @generated from message todo_app.v1.ReminderTextTaskRequest
+ */
+export const ReminderTextTaskRequest = proto3.makeMessageType(
+  "todo_app.v1.ReminderTextTaskRequest",
+  () => [
+    { no: 1, name: "todo", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 2, name: "deadline", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+  ],
 );
 

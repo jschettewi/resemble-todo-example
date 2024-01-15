@@ -5,6 +5,7 @@
 
 import type { BinaryReadOptions, FieldList, JsonReadOptions, JsonValue, PartialMessage, PlainMessage } from "@bufbuild/protobuf";
 import { Message, proto3 } from "@bufbuild/protobuf";
+import type { TaskId } from "../../resemble/v1alpha1/tasks_pb.js";
 
 /**
  * @generated from message todo_app.v1.Todo
@@ -24,6 +25,11 @@ export declare class Todo extends Message<Todo> {
    * @generated from field: bool complete = 3;
    */
   complete: boolean;
+
+  /**
+   * @generated from field: string deadline = 4;
+   */
+  deadline: string;
 
   constructor(data?: PartialMessage<Todo>);
 
@@ -45,12 +51,12 @@ export declare class Todo extends Message<Todo> {
  */
 export declare class TodoListState extends Message<TodoListState> {
   /**
-   * @generated from field: string name = 2;
+   * @generated from field: string name = 1;
    */
   name: string;
 
   /**
-   * @generated from field: repeated todo_app.v1.Todo todos = 3;
+   * @generated from field: repeated todo_app.v1.Todo todos = 2;
    */
   todos: Todo[];
 
@@ -117,11 +123,8 @@ export declare class CreateResponse extends Message<CreateResponse> {
  */
 export declare class AddTodoRequest extends Message<AddTodoRequest> {
   /**
-   * @generated from field: string todolistId = 1;
-   */
-  todolistId: string;
-
-  /**
+   * string todolistId = 1;
+   *
    * @generated from field: string todo = 2;
    */
   todo: string;
@@ -293,5 +296,87 @@ export declare class CompleteTodoResponse extends Message<CompleteTodoResponse> 
   static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): CompleteTodoResponse;
 
   static equals(a: CompleteTodoResponse | PlainMessage<CompleteTodoResponse> | undefined, b: CompleteTodoResponse | PlainMessage<CompleteTodoResponse> | undefined): boolean;
+}
+
+/**
+ * @generated from message todo_app.v1.AddDeadlineRequest
+ */
+export declare class AddDeadlineRequest extends Message<AddDeadlineRequest> {
+  /**
+   * @generated from field: string todoId = 1;
+   */
+  todoId: string;
+
+  /**
+   * @generated from field: string date = 2;
+   */
+  date: string;
+
+  constructor(data?: PartialMessage<AddDeadlineRequest>);
+
+  static readonly runtime: typeof proto3;
+  static readonly typeName = "todo_app.v1.AddDeadlineRequest";
+  static readonly fields: FieldList;
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): AddDeadlineRequest;
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): AddDeadlineRequest;
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): AddDeadlineRequest;
+
+  static equals(a: AddDeadlineRequest | PlainMessage<AddDeadlineRequest> | undefined, b: AddDeadlineRequest | PlainMessage<AddDeadlineRequest> | undefined): boolean;
+}
+
+/**
+ * @generated from message todo_app.v1.AddDealineResponse
+ */
+export declare class AddDealineResponse extends Message<AddDealineResponse> {
+  /**
+   * @generated from field: resemble.v1alpha1.TaskId reminder_text_task_id = 1;
+   */
+  reminderTextTaskId?: TaskId;
+
+  constructor(data?: PartialMessage<AddDealineResponse>);
+
+  static readonly runtime: typeof proto3;
+  static readonly typeName = "todo_app.v1.AddDealineResponse";
+  static readonly fields: FieldList;
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): AddDealineResponse;
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): AddDealineResponse;
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): AddDealineResponse;
+
+  static equals(a: AddDealineResponse | PlainMessage<AddDealineResponse> | undefined, b: AddDealineResponse | PlainMessage<AddDealineResponse> | undefined): boolean;
+}
+
+/**
+ * @generated from message todo_app.v1.ReminderTextTaskRequest
+ */
+export declare class ReminderTextTaskRequest extends Message<ReminderTextTaskRequest> {
+  /**
+   * @generated from field: string todo = 1;
+   */
+  todo: string;
+
+  /**
+   * @generated from field: string deadline = 2;
+   */
+  deadline: string;
+
+  constructor(data?: PartialMessage<ReminderTextTaskRequest>);
+
+  static readonly runtime: typeof proto3;
+  static readonly typeName = "todo_app.v1.ReminderTextTaskRequest";
+  static readonly fields: FieldList;
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): ReminderTextTaskRequest;
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): ReminderTextTaskRequest;
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): ReminderTextTaskRequest;
+
+  static equals(a: ReminderTextTaskRequest | PlainMessage<ReminderTextTaskRequest> | undefined, b: ReminderTextTaskRequest | PlainMessage<ReminderTextTaskRequest> | undefined): boolean;
 }
 

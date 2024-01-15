@@ -36,6 +36,20 @@ service TodoList {
     option (resemble.v1alpha1.method).writer = {
     };
   }
+
+  rpc AddDeadline(AddDeadlineRequest) returns (AddDealineResponse) {
+    option (resemble.v1alpha1.method).writer = {
+    };
+  }
+
+  // An async task to send a reminder text to the person who set the deadline on a task
+  rpc ReminderTextTask(ReminderTextTaskRequest) returns (google.protobuf.Empty) {
+    option (resemble.v1alpha1.method) = {
+      writer: {},
+      task: true,
+    };
+  }
+
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -45,11 +59,12 @@ message Todo {
   string id = 1;
   string text = 2;
   bool complete = 3;
+  string deadline = 4;
 }
 
 message TodoListState {
-  string name = 2;
-  repeated Todo todos = 3;
+  string name = 1;
+  repeated Todo todos = 2;
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -62,7 +77,7 @@ message CreateRequest {
 message CreateResponse {}
 
 message AddTodoRequest {
-  string todolistId = 1;
+  // string todolistId = 1;
   string todo = 2;
 }
 
@@ -89,3 +104,17 @@ message CompleteTodoRequest {
 }
 
 message CompleteTodoResponse {}
+
+message AddDeadlineRequest {
+  string todoId = 1;
+  string date = 2;
+}
+
+message AddDealineResponse {
+  resemble.v1alpha1.TaskId reminder_text_task_id = 1;
+}
+
+message ReminderTextTaskRequest {
+  string todo = 1;
+  string deadline = 2;
+}

@@ -31,7 +31,10 @@ import {
 	DeleteTodoRequest, 
 	DeleteTodoResponse, 
 	CompleteTodoRequest, 
-	CompleteTodoResponse,
+	CompleteTodoResponse, 
+	AddDeadlineRequest, 
+	AddDealineResponse, 
+	ReminderTextTaskRequest,
 } from "./todo_list_pb";
 
 // Additionally re-export all messages from the pb module.
@@ -47,7 +50,10 @@ export {
 	DeleteTodoRequest, 
 	DeleteTodoResponse, 
 	CompleteTodoRequest, 
-	CompleteTodoResponse,
+	CompleteTodoResponse, 
+	AddDeadlineRequest, 
+	AddDealineResponse, 
+	ReminderTextTaskRequest,
 };
 
 // Start of service specific code.
@@ -65,6 +71,10 @@ export interface TodoListApi {
   Promise<DeleteTodoResponse>;
   CompleteTodo: (partialRequest?: __bufbuildProtobufPartialMessage<CompleteTodoRequest>) =>
   Promise<CompleteTodoResponse>;
+  AddDeadline: (partialRequest?: __bufbuildProtobufPartialMessage<AddDeadlineRequest>) =>
+  Promise<AddDealineResponse>;
+  ReminderTextTask: (partialRequest?: __bufbuildProtobufPartialMessage<ReminderTextTaskRequest>) =>
+  Promise<Empty>;
   useListTodos: (partialRequest?: __bufbuildProtobufPartialMessage<ListTodosRequest>) => {
    response: ListTodosResponse | undefined;
     isLoading: boolean;
@@ -82,6 +92,12 @@ export interface TodoListApi {
        CompleteTodo: (request: __bufbuildProtobufPartialMessage<CompleteTodoRequest>,
        optimistic_metadata?: any ) =>
       Promise<resemble_react.ResponseOrError<CompleteTodoResponse>>;
+       AddDeadline: (request: __bufbuildProtobufPartialMessage<AddDeadlineRequest>,
+       optimistic_metadata?: any ) =>
+      Promise<resemble_react.ResponseOrError<AddDealineResponse>>;
+       ReminderTextTask: (request: __bufbuildProtobufPartialMessage<ReminderTextTaskRequest>,
+       optimistic_metadata?: any ) =>
+      Promise<resemble_react.ResponseOrError<Empty>>;
     };
       pendingCreateMutations: {
         request: CreateRequest;
@@ -155,6 +171,42 @@ export interface TodoListApi {
         idempotencyKey: string;
         run: () => void;
       }[];
+      pendingAddDeadlineMutations: {
+        request: AddDeadlineRequest;
+        idempotencyKey: string;
+        isLoading: boolean;
+        error?: unknown;
+        optimistic_metadata?: any;
+      }[];
+      failedAddDeadlineMutations: {
+        request: AddDeadlineRequest;
+        idempotencyKey: string;
+        isLoading: boolean;
+        error?: unknown;
+      }[];
+      recoveredAddDeadlineMutations: {
+        request: AddDeadlineRequest;
+        idempotencyKey: string;
+        run: () => void;
+      }[];
+      pendingReminderTextTaskMutations: {
+        request: ReminderTextTaskRequest;
+        idempotencyKey: string;
+        isLoading: boolean;
+        error?: unknown;
+        optimistic_metadata?: any;
+      }[];
+      failedReminderTextTaskMutations: {
+        request: ReminderTextTaskRequest;
+        idempotencyKey: string;
+        isLoading: boolean;
+        error?: unknown;
+      }[];
+      recoveredReminderTextTaskMutations: {
+        request: ReminderTextTaskRequest;
+        idempotencyKey: string;
+        run: () => void;
+      }[];
   };
 }
 
@@ -206,6 +258,30 @@ export interface TodoListMutators {
       >>;
 
     pending: resemble_react.Mutation<CompleteTodoRequest>[];
+  };
+  addDeadline: {
+    // Mutators are functions and can be called directly.
+    (partialRequest?: __bufbuildProtobufPartialMessage<AddDeadlineRequest>,
+     optimistic_metadata?: any
+    ): Promise<
+      resemble_react.ResponseOrErrors<
+        AddDealineResponse,
+        resemble_api.SystemErrorDetails
+      >>;
+
+    pending: resemble_react.Mutation<AddDeadlineRequest>[];
+  };
+  reminderTextTask: {
+    // Mutators are functions and can be called directly.
+    (partialRequest?: __bufbuildProtobufPartialMessage<ReminderTextTaskRequest>,
+     optimistic_metadata?: any
+    ): Promise<
+      resemble_react.ResponseOrErrors<
+        Empty,
+        resemble_api.SystemErrorDetails
+      >>;
+
+    pending: resemble_react.Mutation<ReminderTextTaskRequest>[];
   };
 }
 
@@ -427,7 +503,9 @@ function hasRunningMutations(): boolean {
       runningCreateMutations.current.length > 0||
       runningAddTodoMutations.current.length > 0||
       runningDeleteTodoMutations.current.length > 0||
-      runningCompleteTodoMutations.current.length > 0) {
+      runningCompleteTodoMutations.current.length > 0||
+      runningAddDeadlineMutations.current.length > 0||
+      runningReminderTextTaskMutations.current.length > 0) {
         return true;
       }
       return false;
@@ -1026,6 +1104,302 @@ function hasRunningMutations(): boolean {
       return _CompleteTodo(mutation);
     }
 
+    const runningAddDeadlineMutations = useRef<resemble_react.Mutation<AddDeadlineRequest>[]>([]);
+    const recoveredAddDeadlineMutations = useRef<
+      [resemble_react.Mutation<AddDeadlineRequest>, () => void][]
+    >([]);
+    const shouldClearFailedAddDeadlineMutations = useRef(false);
+    const [failedAddDeadlineMutations, setFailedAddDeadlineMutations] = useState<
+      resemble_react.Mutation<AddDeadlineRequest>[]
+    >([]);
+    const queuedAddDeadlineMutations = useRef<[resemble_react.Mutation<AddDeadlineRequest>, () => void][]>(
+      []
+    );
+    const recoverAndPurgeAddDeadlineMutations = (): [
+      resemble_react.Mutation<AddDeadlineRequest>,
+      () => void
+    ][] => {
+      if (localStorageKeyRef.current === undefined) {
+        return [];
+      }
+      const suffix = AddDeadline
+      const value = localStorage.getItem(localStorageKeyRef.current + suffix);
+      if (value === null) {
+        return [];
+      }
+
+      localStorage.removeItem(localStorageKeyRef.current);
+      const mutations: resemble_react.Mutation<AddDeadlineRequest>[] = JSON.parse(value);
+      const recoveredAddDeadlineMutations: [
+        resemble_react.Mutation<AddDeadlineRequest>,
+        () => void
+      ][] = [];
+      for (const mutation of mutations) {
+        recoveredAddDeadlineMutations.push([mutation, () => __AddDeadline(mutation)]);
+      }
+      return recoveredAddDeadlineMutations;
+    }
+    const doOnceAddDeadline = useRef(true)
+    if (doOnceAddDeadline.current) {
+      doOnceAddDeadline.current = false
+      recoveredAddDeadlineMutations.current = recoverAndPurgeAddDeadlineMutations()
+    }
+
+    // User facing state that only includes the pending mutations that
+    // have not been observed.
+    const [unobservedPendingAddDeadlineMutations, setUnobservedPendingAddDeadlineMutations] =
+      useState<resemble_react.Mutation<AddDeadlineRequest>[]>([]);
+
+    useEffect(() => {
+      shouldClearFailedAddDeadlineMutations.current = true;
+    }, [failedAddDeadlineMutations]);
+
+    async function __AddDeadline(
+      mutation: resemble_react.Mutation<AddDeadlineRequest>
+    ): Promise<resemble_react.ResponseOrError<AddDealineResponse>> {
+      try {
+        // Invariant that we won't yield to event loop before pushing to
+        // runningAddDeadlineMutations
+        runningAddDeadlineMutations.current.push(mutation)
+        return _Mutation<AddDeadlineRequest, AddDealineResponse>(
+          // Invariant here is that we use the '/package.service.method'.
+          //
+          // See also 'resemble/helpers.py'.
+          "/todo_app.v1.TodoList.AddDeadline",
+          mutation,
+          mutation.request,
+          mutation.idempotencyKey,
+          setUnobservedPendingAddDeadlineMutations,
+          abortController,
+          shouldClearFailedAddDeadlineMutations,
+          setFailedAddDeadlineMutations,
+          runningAddDeadlineMutations,
+          flushMutations,
+          queuedMutations,
+          AddDeadlineRequest,
+          AddDealineResponse.fromJson
+        );
+      } finally {
+        runningAddDeadlineMutations.current = runningAddDeadlineMutations.current.filter(
+          ({ idempotencyKey }) => mutation.idempotencyKey !== idempotencyKey
+        );
+
+        resemble_react.popMutationMaybeFromLocalStorage(
+          localStorageKeyRef.current,
+          "AddDeadline",
+          (mutationRequest: resemble_react.Mutation<Request>) =>
+            mutationRequest.idempotencyKey !== mutation.idempotencyKey
+        );
+
+
+      }
+    }
+    async function _AddDeadline(mutation: resemble_react.Mutation<AddDeadlineRequest>) {
+      setUnobservedPendingAddDeadlineMutations(
+        (mutations) => [...mutations, mutation]
+      )
+
+      // NOTE: we only run one mutation at a time so that we provide a
+      // serializable experience for the end user but we will
+      // eventually support mutations in parallel when we have strong
+      // eventually consistent writers.
+      if (
+        hasRunningMutations() ||
+        queuedMutations.current.length > 0 ||
+        flushMutations.current !== undefined
+      ) {
+        const deferred = new resemble_react.Deferred<resemble_react.ResponseOrError<AddDealineResponse>>(() =>
+          __AddDeadline(mutation)
+        );
+
+        // Add to localStorage here.
+        queuedAddDeadlineMutations.current.push([mutation, () => deferred.start()]);
+        queuedMutations.current.push(() => {
+          for (const [, run] of queuedAddDeadlineMutations.current) {
+            queuedAddDeadlineMutations.current.shift();
+            run();
+            break;
+          }
+        });
+        // Maybe add to localStorage.
+        resemble_react.pushMutationMaybeToLocalStorage(localStorageKeyRef.current, "AddDeadline", mutation);
+
+        return deferred.promise;
+      } else {
+        // NOTE: we'll add this mutation to `runningAddDeadlineMutations` in `__AddDeadline`
+        // without yielding to event loop so that we are guaranteed atomicity with checking `hasRunningMutations()`.
+        return await __AddDeadline(mutation);
+      }
+    }
+
+    async function AddDeadline(
+      partialRequest: __bufbuildProtobufPartialMessage<AddDeadlineRequest>,
+      optimistic_metadata?: any
+    ): Promise<resemble_react.ResponseOrError<AddDealineResponse>> {
+      const idempotencyKey = uuidv4();
+
+      const request = partialRequest instanceof AddDeadlineRequest
+        ? partialRequest
+        : new AddDeadlineRequest(partialRequest);
+
+      const mutation = {
+        request,
+        idempotencyKey,
+        optimistic_metadata,
+        isLoading: false, // Won't start loading if we're flushing mutations.
+      };
+
+      return _AddDeadline(mutation);
+    }
+
+    const runningReminderTextTaskMutations = useRef<resemble_react.Mutation<ReminderTextTaskRequest>[]>([]);
+    const recoveredReminderTextTaskMutations = useRef<
+      [resemble_react.Mutation<ReminderTextTaskRequest>, () => void][]
+    >([]);
+    const shouldClearFailedReminderTextTaskMutations = useRef(false);
+    const [failedReminderTextTaskMutations, setFailedReminderTextTaskMutations] = useState<
+      resemble_react.Mutation<ReminderTextTaskRequest>[]
+    >([]);
+    const queuedReminderTextTaskMutations = useRef<[resemble_react.Mutation<ReminderTextTaskRequest>, () => void][]>(
+      []
+    );
+    const recoverAndPurgeReminderTextTaskMutations = (): [
+      resemble_react.Mutation<ReminderTextTaskRequest>,
+      () => void
+    ][] => {
+      if (localStorageKeyRef.current === undefined) {
+        return [];
+      }
+      const suffix = ReminderTextTask
+      const value = localStorage.getItem(localStorageKeyRef.current + suffix);
+      if (value === null) {
+        return [];
+      }
+
+      localStorage.removeItem(localStorageKeyRef.current);
+      const mutations: resemble_react.Mutation<ReminderTextTaskRequest>[] = JSON.parse(value);
+      const recoveredReminderTextTaskMutations: [
+        resemble_react.Mutation<ReminderTextTaskRequest>,
+        () => void
+      ][] = [];
+      for (const mutation of mutations) {
+        recoveredReminderTextTaskMutations.push([mutation, () => __ReminderTextTask(mutation)]);
+      }
+      return recoveredReminderTextTaskMutations;
+    }
+    const doOnceReminderTextTask = useRef(true)
+    if (doOnceReminderTextTask.current) {
+      doOnceReminderTextTask.current = false
+      recoveredReminderTextTaskMutations.current = recoverAndPurgeReminderTextTaskMutations()
+    }
+
+    // User facing state that only includes the pending mutations that
+    // have not been observed.
+    const [unobservedPendingReminderTextTaskMutations, setUnobservedPendingReminderTextTaskMutations] =
+      useState<resemble_react.Mutation<ReminderTextTaskRequest>[]>([]);
+
+    useEffect(() => {
+      shouldClearFailedReminderTextTaskMutations.current = true;
+    }, [failedReminderTextTaskMutations]);
+
+    async function __ReminderTextTask(
+      mutation: resemble_react.Mutation<ReminderTextTaskRequest>
+    ): Promise<resemble_react.ResponseOrError<Empty>> {
+      try {
+        // Invariant that we won't yield to event loop before pushing to
+        // runningReminderTextTaskMutations
+        runningReminderTextTaskMutations.current.push(mutation)
+        return _Mutation<ReminderTextTaskRequest, Empty>(
+          // Invariant here is that we use the '/package.service.method'.
+          //
+          // See also 'resemble/helpers.py'.
+          "/todo_app.v1.TodoList.ReminderTextTask",
+          mutation,
+          mutation.request,
+          mutation.idempotencyKey,
+          setUnobservedPendingReminderTextTaskMutations,
+          abortController,
+          shouldClearFailedReminderTextTaskMutations,
+          setFailedReminderTextTaskMutations,
+          runningReminderTextTaskMutations,
+          flushMutations,
+          queuedMutations,
+          ReminderTextTaskRequest,
+          Empty.fromJson
+        );
+      } finally {
+        runningReminderTextTaskMutations.current = runningReminderTextTaskMutations.current.filter(
+          ({ idempotencyKey }) => mutation.idempotencyKey !== idempotencyKey
+        );
+
+        resemble_react.popMutationMaybeFromLocalStorage(
+          localStorageKeyRef.current,
+          "ReminderTextTask",
+          (mutationRequest: resemble_react.Mutation<Request>) =>
+            mutationRequest.idempotencyKey !== mutation.idempotencyKey
+        );
+
+
+      }
+    }
+    async function _ReminderTextTask(mutation: resemble_react.Mutation<ReminderTextTaskRequest>) {
+      setUnobservedPendingReminderTextTaskMutations(
+        (mutations) => [...mutations, mutation]
+      )
+
+      // NOTE: we only run one mutation at a time so that we provide a
+      // serializable experience for the end user but we will
+      // eventually support mutations in parallel when we have strong
+      // eventually consistent writers.
+      if (
+        hasRunningMutations() ||
+        queuedMutations.current.length > 0 ||
+        flushMutations.current !== undefined
+      ) {
+        const deferred = new resemble_react.Deferred<resemble_react.ResponseOrError<Empty>>(() =>
+          __ReminderTextTask(mutation)
+        );
+
+        // Add to localStorage here.
+        queuedReminderTextTaskMutations.current.push([mutation, () => deferred.start()]);
+        queuedMutations.current.push(() => {
+          for (const [, run] of queuedReminderTextTaskMutations.current) {
+            queuedReminderTextTaskMutations.current.shift();
+            run();
+            break;
+          }
+        });
+        // Maybe add to localStorage.
+        resemble_react.pushMutationMaybeToLocalStorage(localStorageKeyRef.current, "ReminderTextTask", mutation);
+
+        return deferred.promise;
+      } else {
+        // NOTE: we'll add this mutation to `runningReminderTextTaskMutations` in `__ReminderTextTask`
+        // without yielding to event loop so that we are guaranteed atomicity with checking `hasRunningMutations()`.
+        return await __ReminderTextTask(mutation);
+      }
+    }
+
+    async function ReminderTextTask(
+      partialRequest: __bufbuildProtobufPartialMessage<ReminderTextTaskRequest>,
+      optimistic_metadata?: any
+    ): Promise<resemble_react.ResponseOrError<Empty>> {
+      const idempotencyKey = uuidv4();
+
+      const request = partialRequest instanceof ReminderTextTaskRequest
+        ? partialRequest
+        : new ReminderTextTaskRequest(partialRequest);
+
+      const mutation = {
+        request,
+        idempotencyKey,
+        optimistic_metadata,
+        isLoading: false, // Won't start loading if we're flushing mutations.
+      };
+
+      return _ReminderTextTask(mutation);
+    }
+
     useEffect(() => {
       if (abortController === undefined ) {
         return;
@@ -1035,7 +1409,7 @@ function hasRunningMutations(): boolean {
           try {// Wait for any mutations to complete before starting to
             // read so that we read the latest state including those
             // mutations.
-            if (runningCreateMutations.current.length > 0 || runningAddTodoMutations.current.length > 0 || runningDeleteTodoMutations.current.length > 0 || runningCompleteTodoMutations.current.length > 0) {
+            if (runningCreateMutations.current.length > 0 || runningAddTodoMutations.current.length > 0 || runningDeleteTodoMutations.current.length > 0 || runningCompleteTodoMutations.current.length > 0 || runningAddDeadlineMutations.current.length > 0 || runningReminderTextTaskMutations.current.length > 0) {
               // TODO(benh): check invariant
               // 'flushMutations.current !== undefined' but don't
               // throw an error since that will just retry, instead
@@ -1070,6 +1444,8 @@ function hasRunningMutations(): boolean {
                   ...runningAddTodoMutations.current,
                   ...runningDeleteTodoMutations.current,
                   ...runningCompleteTodoMutations.current,
+                  ...runningAddDeadlineMutations.current,
+                  ...runningReminderTextTaskMutations.current,
                   ].some(
                     (mutation) =>
                       observedIdempotencyKey === mutation.idempotencyKey
@@ -1201,6 +1577,60 @@ function hasRunningMutations(): boolean {
                   )
               )
 
+              setUnobservedPendingAddDeadlineMutations(
+              (mutations) =>
+                mutations
+                  .filter(
+                    (mutation) =>
+                      // Only keep mutations that are queued, pending or
+                      // recovered.
+                      queuedAddDeadlineMutations.current.some(
+                        ([queuedAddDeadlineMutation]) =>
+                          mutation.idempotencyKey ===
+                          queuedAddDeadlineMutation.idempotencyKey
+                      ) ||
+                      runningAddDeadlineMutations.current.some(
+                        (runningAddDeadlineMutations) =>
+                          mutation.idempotencyKey ===
+                          runningAddDeadlineMutations.idempotencyKey
+                      )
+                  )
+                  .filter(
+                    (mutation) =>
+                      // Only keep mutations whose effects haven't been observed.
+                      !observedIdempotencyKeys.current.has(
+                        mutation.idempotencyKey
+                      )
+                  )
+              )
+
+              setUnobservedPendingReminderTextTaskMutations(
+              (mutations) =>
+                mutations
+                  .filter(
+                    (mutation) =>
+                      // Only keep mutations that are queued, pending or
+                      // recovered.
+                      queuedReminderTextTaskMutations.current.some(
+                        ([queuedReminderTextTaskMutation]) =>
+                          mutation.idempotencyKey ===
+                          queuedReminderTextTaskMutation.idempotencyKey
+                      ) ||
+                      runningReminderTextTaskMutations.current.some(
+                        (runningReminderTextTaskMutations) =>
+                          mutation.idempotencyKey ===
+                          runningReminderTextTaskMutations.idempotencyKey
+                      )
+                  )
+                  .filter(
+                    (mutation) =>
+                      // Only keep mutations whose effects haven't been observed.
+                      !observedIdempotencyKeys.current.has(
+                        mutation.idempotencyKey
+                      )
+                  )
+              )
+
 
               if (response.response !== undefined) {
                 setResponse(ListTodosResponse.fromBinary(response.response));
@@ -1250,6 +1680,8 @@ function hasRunningMutations(): boolean {
         AddTodo,
         DeleteTodo,
         CompleteTodo,
+        AddDeadline,
+        ReminderTextTask,
       },
       pendingCreateMutations: unobservedPendingCreateMutations,
       failedCreateMutations,
@@ -1269,6 +1701,16 @@ function hasRunningMutations(): boolean {
       pendingCompleteTodoMutations: unobservedPendingCompleteTodoMutations,
       failedCompleteTodoMutations,
       recoveredCompleteTodoMutations: recoveredCompleteTodoMutations.current.map(
+        ([mutation, run]) => ({ ...mutation, run: run })
+      ),
+      pendingAddDeadlineMutations: unobservedPendingAddDeadlineMutations,
+      failedAddDeadlineMutations,
+      recoveredAddDeadlineMutations: recoveredAddDeadlineMutations.current.map(
+        ([mutation, run]) => ({ ...mutation, run: run })
+      ),
+      pendingReminderTextTaskMutations: unobservedPendingReminderTextTaskMutations,
+      failedReminderTextTaskMutations,
+      recoveredReminderTextTaskMutations: recoveredReminderTextTaskMutations.current.map(
         ([mutation, run]) => ({ ...mutation, run: run })
       ),
     };
@@ -1321,11 +1763,57 @@ function hasRunningMutations(): boolean {
     return await response.json();
   };
 
+  const AddDeadline = async (
+    partialRequest: __bufbuildProtobufPartialMessage<AddDeadlineRequest> = {}
+  ) => {
+    const request = partialRequest instanceof AddDeadlineRequest
+      ? partialRequest
+      : new AddDeadlineRequest(partialRequest);
+
+    const requestBody = request.toJson();
+
+    // Invariant here is that we use the '/package.service.method' path and
+    // HTTP 'POST' method (we need 'POST' because we send an HTTP body).
+    //
+    // See also 'resemble/helpers.py'.
+    const response = await resemble_react.guardedFetch(
+      newRequest(
+        requestBody,
+        "/todo_app.v1.TodoList.AddDeadline", "POST"
+      )
+    );
+
+    return await response.json();
+  };
+
+  const ReminderTextTask = async (
+    partialRequest: __bufbuildProtobufPartialMessage<ReminderTextTaskRequest> = {}
+  ) => {
+    const request = partialRequest instanceof ReminderTextTaskRequest
+      ? partialRequest
+      : new ReminderTextTaskRequest(partialRequest);
+
+    const requestBody = request.toJson();
+
+    // Invariant here is that we use the '/package.service.method' path and
+    // HTTP 'POST' method (we need 'POST' because we send an HTTP body).
+    //
+    // See also 'resemble/helpers.py'.
+    const response = await resemble_react.guardedFetch(
+      newRequest(
+        requestBody,
+        "/todo_app.v1.TodoList.ReminderTextTask", "POST"
+      )
+    );
+
+    return await response.json();
+  };
+
 
 async function _Mutation<
     Request extends
-CreateRequest    |AddTodoRequest    |DeleteTodoRequest    |CompleteTodoRequest,
-    Response extends    CreateResponse    |    AddTodoResponse    |    DeleteTodoResponse    |    CompleteTodoResponse  >(
+CreateRequest    |AddTodoRequest    |DeleteTodoRequest    |CompleteTodoRequest    |AddDeadlineRequest    |ReminderTextTaskRequest,
+    Response extends    CreateResponse    |    AddTodoResponse    |    DeleteTodoResponse    |    CompleteTodoResponse    |    AddDealineResponse    |    Empty  >(
     path: string,
     mutation: resemble_react.Mutation<Request>,
     request: Request,
@@ -1530,6 +2018,8 @@ CreateRequest    |AddTodoRequest    |DeleteTodoRequest    |CompleteTodoRequest,
     useListTodos,
     DeleteTodo,
     CompleteTodo,
+    AddDeadline,
+    ReminderTextTask,
   };
 };
 
@@ -2554,6 +3044,288 @@ class TodoListInstance {
   }
 
 
+  private useAddDeadlineMutations: (
+    resemble_react.Mutation<AddDeadlineRequest>)[] = [];
+
+  private useAddDeadlineSetPendings: {
+    [id: string]: (mutations: resemble_react.Mutation<AddDeadlineRequest>[]) => void
+  } = {};
+
+  async addDeadline(
+    mutation: resemble_react.Mutation<AddDeadlineRequest>
+  ): Promise<
+    resemble_react.ResponseOrErrors<
+      AddDealineResponse,
+      resemble_api.SystemErrorDetails
+  >> {
+    // We always have at least 1 observer which is this function!
+    let remainingObservers = 1;
+
+    const event = new resemble_react.Event();
+
+    const callbacks: (() => void)[] = [];
+
+    const observed = (callback: () => void) => {
+      callbacks.push(callback);
+      remainingObservers -= 1;
+      if (remainingObservers === 0) {
+        unstable_batchedUpdates(() => {
+          for (const callback of callbacks) {
+            callback();
+          }
+        });
+        event.set();
+      }
+      return event.wait();
+    };
+
+    const aborted = () => {
+      observed(() => {});
+    }
+
+    // Tell observers about this pending mutation.
+    for (const id in this.observers) {
+      remainingObservers += 1;
+      this.observers[id].observe(mutation.idempotencyKey, observed, aborted);
+    }
+
+    this.useAddDeadlineMutations.push(mutation);
+
+    unstable_batchedUpdates(() => {
+      for (const setPending of Object.values(this.useAddDeadlineSetPendings)) {
+        setPending(this.useAddDeadlineMutations);
+      }
+    });
+
+    return new Promise<
+      resemble_react.ResponseOrErrors<
+        AddDealineResponse,
+        resemble_api.SystemErrorDetails
+      >>(
+      async (resolve, reject) => {
+        const { responseOrStatus } = await this.mutate(
+          {
+            method: "AddDeadline",
+            request: mutation.request.toBinary(),
+            idempotencyKey: mutation.idempotencyKey,
+          },
+          ({ isLoading, error }: { isLoading: boolean; error?: any }) => {
+            for (const m of this.useAddDeadlineMutations) {
+              if (m === mutation) {
+                m.isLoading = isLoading;
+                if (error !== undefined) {
+                  m.error = error;
+                }
+              }
+              return m;
+            }
+
+            unstable_batchedUpdates(() => {
+              for (const setPending of Object.values(this.useAddDeadlineSetPendings)) {
+                setPending(this.useAddDeadlineMutations);
+              }
+            });
+          }
+        );
+
+        switch (responseOrStatus.case) {
+          case "response":
+            await observed(() => {
+              this.useAddDeadlineMutations =
+                this.useAddDeadlineMutations.filter(m => m !== mutation);
+
+              unstable_batchedUpdates(() => {
+                for (const setPending of Object.values(this.useAddDeadlineSetPendings)) {
+                  setPending(this.useAddDeadlineMutations);
+                }
+              });
+
+              resolve({
+                response: AddDealineResponse.fromBinary(
+                  responseOrStatus.value
+                )
+              });
+            });
+            break;
+          case "status":
+            // Let the observers know they no longer should expect to
+            // observe this idempotency key.
+            for (const id in this.observers) {
+              this.observers[id].unobserve(mutation.idempotencyKey);
+            }
+
+            const status = resemble_api.Status.fromJsonString(responseOrStatus.value);
+
+            let error;
+            if ((error = resemble_api.SystemError.fromStatus(status)) !== undefined) {
+              resolve({ error });
+            } else {
+              reject(
+                new Error(
+                  `Unknown error with gRPC status ${JSON.stringify(status)}`
+                )
+              );
+            }
+            break;
+          default:
+            reject(new Error('Expecting either a response or an error'));
+        }
+      });
+  }
+
+  useAddDeadline(
+    id: string,
+    setPending: (mutations: resemble_react.Mutation<AddDeadlineRequest>[]) => void
+  ) {
+    this.useAddDeadlineSetPendings[id] = setPending;
+  }
+
+  unuseAddDeadline(id: string) {
+    delete this.useAddDeadlineSetPendings[id];
+  }
+
+
+  private useReminderTextTaskMutations: (
+    resemble_react.Mutation<ReminderTextTaskRequest>)[] = [];
+
+  private useReminderTextTaskSetPendings: {
+    [id: string]: (mutations: resemble_react.Mutation<ReminderTextTaskRequest>[]) => void
+  } = {};
+
+  async reminderTextTask(
+    mutation: resemble_react.Mutation<ReminderTextTaskRequest>
+  ): Promise<
+    resemble_react.ResponseOrErrors<
+      Empty,
+      resemble_api.SystemErrorDetails
+  >> {
+    // We always have at least 1 observer which is this function!
+    let remainingObservers = 1;
+
+    const event = new resemble_react.Event();
+
+    const callbacks: (() => void)[] = [];
+
+    const observed = (callback: () => void) => {
+      callbacks.push(callback);
+      remainingObservers -= 1;
+      if (remainingObservers === 0) {
+        unstable_batchedUpdates(() => {
+          for (const callback of callbacks) {
+            callback();
+          }
+        });
+        event.set();
+      }
+      return event.wait();
+    };
+
+    const aborted = () => {
+      observed(() => {});
+    }
+
+    // Tell observers about this pending mutation.
+    for (const id in this.observers) {
+      remainingObservers += 1;
+      this.observers[id].observe(mutation.idempotencyKey, observed, aborted);
+    }
+
+    this.useReminderTextTaskMutations.push(mutation);
+
+    unstable_batchedUpdates(() => {
+      for (const setPending of Object.values(this.useReminderTextTaskSetPendings)) {
+        setPending(this.useReminderTextTaskMutations);
+      }
+    });
+
+    return new Promise<
+      resemble_react.ResponseOrErrors<
+        Empty,
+        resemble_api.SystemErrorDetails
+      >>(
+      async (resolve, reject) => {
+        const { responseOrStatus } = await this.mutate(
+          {
+            method: "ReminderTextTask",
+            request: mutation.request.toBinary(),
+            idempotencyKey: mutation.idempotencyKey,
+          },
+          ({ isLoading, error }: { isLoading: boolean; error?: any }) => {
+            for (const m of this.useReminderTextTaskMutations) {
+              if (m === mutation) {
+                m.isLoading = isLoading;
+                if (error !== undefined) {
+                  m.error = error;
+                }
+              }
+              return m;
+            }
+
+            unstable_batchedUpdates(() => {
+              for (const setPending of Object.values(this.useReminderTextTaskSetPendings)) {
+                setPending(this.useReminderTextTaskMutations);
+              }
+            });
+          }
+        );
+
+        switch (responseOrStatus.case) {
+          case "response":
+            await observed(() => {
+              this.useReminderTextTaskMutations =
+                this.useReminderTextTaskMutations.filter(m => m !== mutation);
+
+              unstable_batchedUpdates(() => {
+                for (const setPending of Object.values(this.useReminderTextTaskSetPendings)) {
+                  setPending(this.useReminderTextTaskMutations);
+                }
+              });
+
+              resolve({
+                response: Empty.fromBinary(
+                  responseOrStatus.value
+                )
+              });
+            });
+            break;
+          case "status":
+            // Let the observers know they no longer should expect to
+            // observe this idempotency key.
+            for (const id in this.observers) {
+              this.observers[id].unobserve(mutation.idempotencyKey);
+            }
+
+            const status = resemble_api.Status.fromJsonString(responseOrStatus.value);
+
+            let error;
+            if ((error = resemble_api.SystemError.fromStatus(status)) !== undefined) {
+              resolve({ error });
+            } else {
+              reject(
+                new Error(
+                  `Unknown error with gRPC status ${JSON.stringify(status)}`
+                )
+              );
+            }
+            break;
+          default:
+            reject(new Error('Expecting either a response or an error'));
+        }
+      });
+  }
+
+  useReminderTextTask(
+    id: string,
+    setPending: (mutations: resemble_react.Mutation<ReminderTextTaskRequest>[]) => void
+  ) {
+    this.useReminderTextTaskSetPendings[id] = setPending;
+  }
+
+  unuseReminderTextTask(id: string) {
+    delete this.useReminderTextTaskSetPendings[id];
+  }
+
+
   private static instances: { [id: string]: TodoListInstance } = {};
 
   static use(id: string, endpoint: string) {
@@ -2923,12 +3695,112 @@ export const useTodoList = (
   const completeTodo = useCompleteTodo();
 
 
+  function useAddDeadline() {
+    const [
+      pending,
+      setPending
+    ] = useState<resemble_react.Mutation<AddDeadlineRequest>[]>([]);
+
+    useEffect(() => {
+      const id = uuidv4();
+      instance.useAddDeadline(id, setPending);
+      return () => {
+        instance.unuseAddDeadline(id);
+      };
+    }, []);
+
+    const addDeadline = useMemo(() => {
+      const method = async (
+        partialRequest: __bufbuildProtobufPartialMessage<AddDeadlineRequest> = {},
+        optimistic_metadata?: any
+      ) => {
+        const request = partialRequest instanceof AddDeadlineRequest
+          ? partialRequest.clone()
+          : new AddDeadlineRequest(partialRequest);
+
+        const idempotencyKey = uuidv4();
+
+        const mutation = {
+          request,
+          idempotencyKey,
+          optimistic_metadata,
+          isLoading: false, // Won't start loading if we're flushing mutations.
+        };
+
+        return instance.addDeadline(mutation);
+      };
+
+      method.pending =
+        new Array<resemble_react.Mutation<AddDeadlineRequest>>();
+
+      return method;
+    }, []);
+
+    addDeadline.pending = pending;
+
+    return addDeadline;
+  }
+
+  const addDeadline = useAddDeadline();
+
+
+  function useReminderTextTask() {
+    const [
+      pending,
+      setPending
+    ] = useState<resemble_react.Mutation<ReminderTextTaskRequest>[]>([]);
+
+    useEffect(() => {
+      const id = uuidv4();
+      instance.useReminderTextTask(id, setPending);
+      return () => {
+        instance.unuseReminderTextTask(id);
+      };
+    }, []);
+
+    const reminderTextTask = useMemo(() => {
+      const method = async (
+        partialRequest: __bufbuildProtobufPartialMessage<ReminderTextTaskRequest> = {},
+        optimistic_metadata?: any
+      ) => {
+        const request = partialRequest instanceof ReminderTextTaskRequest
+          ? partialRequest.clone()
+          : new ReminderTextTaskRequest(partialRequest);
+
+        const idempotencyKey = uuidv4();
+
+        const mutation = {
+          request,
+          idempotencyKey,
+          optimistic_metadata,
+          isLoading: false, // Won't start loading if we're flushing mutations.
+        };
+
+        return instance.reminderTextTask(mutation);
+      };
+
+      method.pending =
+        new Array<resemble_react.Mutation<ReminderTextTaskRequest>>();
+
+      return method;
+    }, []);
+
+    reminderTextTask.pending = pending;
+
+    return reminderTextTask;
+  }
+
+  const reminderTextTask = useReminderTextTask();
+
+
   return {
     mutators: {
       create,
       addTodo,
       deleteTodo,
       completeTodo,
+      addDeadline,
+      reminderTextTask,
     },
     listTodos,
     useListTodos,
