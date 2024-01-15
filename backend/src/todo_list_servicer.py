@@ -184,8 +184,8 @@ async def send_text(message_body: str):
     # twilio code here to send a text
 
     # lets send a message using twillio
-    account_sid = 'AC03d5902ba89dd69e3a8b7dc25b61b325'
-    auth_token = 'ead405d440ee803fe2139003c20c1d47'
+    account_sid = 'account_sid'
+    auth_token = 'auth_token'
     client = Client(account_sid, auth_token)
 
     message = client.messages.create(body=message_body, from_='+18554612173', to='+18777804236')
