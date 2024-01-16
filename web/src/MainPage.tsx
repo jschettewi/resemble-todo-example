@@ -22,6 +22,9 @@ const MainPage = ({ selectedTodoList } : MainPageArgs) => {
   
   const { useListTodos, mutators } = useTodoList({ id: todolistId });
 
+  console.log(`pending: ${mutators.addTodo.pending}`);
+
+
   const { response /* , isLoading */ } = useListTodos();
 
   const todos = response?.todos || [];
@@ -90,8 +93,8 @@ const Todo = ({ id, text, complete, deadline, selectedTodoList }: TodoArgs) => {
 
   const { response /* , isLoading */ } = useListTodos();
 
-  const [date, setDate] = useState(null);
-  // const [date, setDate] = useState<Date | null>(new Date());
+  // const [date, setDate] = useState(null);
+  const [date, setDate] = useState<Date | null>(new Date());
   // const [date, setDate] = useState("");
   // const [date1, setDate1] = useState(new Date());
 
@@ -105,7 +108,8 @@ const Todo = ({ id, text, complete, deadline, selectedTodoList }: TodoArgs) => {
 
   const onAddDeadline = (event: any) => {
     event.preventDefault();
-    const dateString = date?.toISOString();
+    // const dateString = date?.toISOString();
+    const dateString = "";
     console.log(dateString)
     mutators.addDeadline( {todoId: id, date: dateString} );
     
