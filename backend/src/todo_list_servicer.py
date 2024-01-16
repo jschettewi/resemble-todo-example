@@ -1,4 +1,5 @@
 import asyncio
+import traceback
 import todo_app.v1.todo_list_pb2
 import uuid
 from twilio.rest import Client
@@ -136,23 +137,31 @@ class TodoListServicer(TodoList.Interface):
         state: TodoListState,
         request: AddDeadlineRequest,
     ) -> TodoList.AddDeadlineEffects:
-        todoId = request.todoId
-        date = request.date
-        for todo in state.todos:
-            if todo.id == todoId:
-                todo.deadline = date
-        print("Calling AddDeadline", state)
+        try:
+            todoId = request.todoId
+            date = request.date
+            target_todo = None
+            for todo in state.todos:
+                if todo.id == todoId:
+                    todo.deadline = date
+                    target_todo = todo
+                    break
+            print("Calling AddDeadline", state)
 
-        # TODO: figure out how to execute scheduled tasks
-        reminder_text_task = self.schedule().ReminderTextTask(context, state, request)
-        #await self.ReminderTextTask(context, state, request)
+            # TODO: figure out how to execute scheduled tasks
+            reminder_text_task = self.schedule().ReminderTextTask(context, deadline=date, todo=target_todo.text)
+            #await self.ReminderTextTask(context, state, request)
 
-        return TodoList.AddDeadlineEffects(
-            state=state, 
-            response=AddDealineResponse(
-                reminder_text_task_id = reminder_text_task.task_id
-            ),
-        )
+            return TodoList.AddDeadlineEffects(
+                state=state, 
+                tasks=[reminder_text_task],
+                response=AddDealineResponse(
+                    reminder_text_task_id = reminder_text_task.task_id
+                ),
+            )
+        except:
+            traceback.print_exc()
+            raise
     
     async def ReminderTextTask(
         self,
@@ -161,14 +170,10 @@ class TodoListServicer(TodoList.Interface):
         request: ReminderTextTaskRequest,
     ) -> TodoList.ReminderTextTaskEffects:
         
-        todoId = request.todoId
-        date = request.date
-        todoText = None
-        for todo in state.todos:
-            if todo.id == todoId:
-                todoText = todo.text
+        deadline = request.deadline
+        todo = request.todo
         
-        message_body = "Reminder! You have to complete task '"+todoText+"' by "+date
+        message_body = "Reminder! You have to complete task '"+todo+"' by "+deadline
         await send_text(message_body)
 
         return TodoList.ReminderTextTaskEffects(
