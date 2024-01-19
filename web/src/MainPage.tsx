@@ -1,11 +1,12 @@
 import React from 'react';
 import './MainPage.css';
 import { useState, useEffect } from "react";
-import { useTodoLists } from './gen/todo_app/v1/todo_lists_rsm_react';
 import { useTodoList } from './gen/todo_app/v1/todo_list_rsm_react';
 import '@fortawesome/fontawesome-free/css/all.css';
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import moment from "moment";
 
 interface MainPageArgs {
   selectedTodoList: any;
@@ -22,7 +23,7 @@ const MainPage = ({ selectedTodoList } : MainPageArgs) => {
   
   const { useListTodos, mutators } = useTodoList({ id: todolistId });
 
-  console.log(`pending: ${mutators.addTodo.pending}`);
+  // console.log(`pending: ${mutators.addTodo.pending}`);
 
 
   const { response /* , isLoading */ } = useListTodos();
@@ -32,8 +33,6 @@ const MainPage = ({ selectedTodoList } : MainPageArgs) => {
 
   const onSubmitTodo = (event: any) => {
     event.preventDefault();
-    console.log("############");
-    console.log(todolistId)
     mutators.addTodo({ todo: todo });
     setTodo("");
   };
@@ -93,10 +92,14 @@ const Todo = ({ id, text, complete, deadline, selectedTodoList }: TodoArgs) => {
 
   const { response /* , isLoading */ } = useListTodos();
 
-  // const [date, setDate] = useState(null);
-  const [date, setDate] = useState<Date | null>(new Date());
-  // const [date, setDate] = useState("");
-  // const [date1, setDate1] = useState(new Date());
+  const [ showDate, setshowDate ] = useState(false);
+
+  const [date, setDate] = useState();
+  //const [date, setDate] = useState<Date | null>(new Date());
+
+  const deadlineDate = moment(deadline, 'DD/MM/YYYY').toDate()
+  console.log("##########")
+  console.log(deadlineDate)
 
   const onCompleteTodo = () => {
     mutators.completeTodo( { todoId: id })
@@ -108,11 +111,15 @@ const Todo = ({ id, text, complete, deadline, selectedTodoList }: TodoArgs) => {
 
   const onAddDeadline = (event: any) => {
     event.preventDefault();
-    // const dateString = date?.toISOString();
-    const dateString = "";
-    console.log(dateString)
+    const dateString = moment(date).format('DD/MM/YYYY')
+    const dateString2 = moment(deadlineDate).format('DD/MM/YYYY')
+    const dateString3 = '30/01/2024'
     mutators.addDeadline( {todoId: id, date: dateString} );
-    
+    setshowDate(false);
+  }
+
+  const onShowDatePicker = () => {
+    setshowDate(true);
   }
 
   return (
@@ -126,26 +133,29 @@ const Todo = ({ id, text, complete, deadline, selectedTodoList }: TodoArgs) => {
       >
         <span>{text}</span>
       </button>
-      {/* <form onSubmit={onAddDeadline} className="todo-form">
-        <input
-          required
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
-          placeholder="Add a date"
-          className=""
-        />
-      </form> */}
-      <form onSubmit={onAddDeadline} className="todo-form">
-        <DatePicker  
-        showIcon
-        showTimeSelect
-        dateFormat="MMMM d, yyyy h:mmaa"
-        selected={date} 
-        onChange={(date) => date && setDate(date)} 
-        placeholderText="Select Deadline" 
-        />
-        <button type="submit">Submit</button>
-      </form>
+      <button
+        className={`todo-delete-button ${showDate ? "showDate" : ""}`}
+        onClick={() => onShowDatePicker() }>
+        <i className="fa-solid fa-calendar"></i>
+      </button>
+      {
+        showDate ?
+        (
+        <form onSubmit={onAddDeadline} className="todo-form">
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DatePicker 
+            label="Select deadline"
+            value={date}
+            onChange={(newDate) => {
+              newDate && setDate(newDate);
+            }}
+            />
+          </LocalizationProvider>
+          <button type="submit">Submit</button>
+        </form>
+        )
+        : null
+      }
     </div>
   );
 };

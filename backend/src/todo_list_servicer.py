@@ -67,7 +67,6 @@ class TodoListServicer(TodoList.Interface):
         todoObject = Todo(id=unique_id, text=todo, complete=False, deadline="")
         state.todos.extend([todoObject])
         print("adding Todo", todo)
-
         return TodoList.AddTodoEffects(state=state, response=AddTodoResponse())
 
     async def ListTodos(
@@ -76,17 +75,6 @@ class TodoListServicer(TodoList.Interface):
         state: TodoListState,
         request: ListTodosRequest,
     ) -> ListTodosResponse:
-        # todolistId = request.todolistId
-        # targetlist = None
-        # # for todolist in state.todolists:
-        # #     if todolist.id == todolistId:
-        # #         targetlist = todolist
-        # if targetlist:
-        #     return ListTodosResponse(todos=targetlist.todos)
-        # else:
-        #     return ListTodosResponse(todos=[])
-        print("ListTodos Called")
-        print(state)
         return ListTodosResponse(todos=state.todos)
     
     async def DeleteTodo(
@@ -95,19 +83,12 @@ class TodoListServicer(TodoList.Interface):
         state: TodoListState,
         request: DeleteTodoRequest,
     ) -> TodoList.DeleteTodoEffects:
-        # we need the id of the todolist and the id of the todo
-        # todolistId = request.todolistId
         todoId = request.todoId
-        # # first find the target list matching the todolist id
-        # targetlist = None
-        # for todolist in state.todolists:
-        #     if todolist.id == todolistId:
-        #         targetlist = todolist
-        # # now find the correct todo to remove from the target list
         targetTodo = None
         for todo in state.todos:
             if todo.id == todoId:
                 targetTodo = todo
+                break
         state.todos.remove(targetTodo)
         return TodoList.DeleteTodoEffects(state=state, response=DeleteTodoResponse())
     
@@ -117,17 +98,11 @@ class TodoListServicer(TodoList.Interface):
         state: TodoListState, 
         request: CompleteTodoRequest,
         ) -> TodoList.CompleteTodoEffects:
-        # todolistId = request.todolistId
         todoId = request.todoId
-        # first find the target list matching the todolist id
-        # targetlist = None
-        # for todolist in state.todolists:
-        #     if todolist.id == todolistId:
-        #         targetlist = todolist
-        # now find the correct todo to change to complete from the target list
         for todo in state.todos:
             if todo.id == todoId:
                 todo.complete = not todo.complete
+                break
         print("todo:", todoId)
         return TodoList.CompleteTodoEffects(state=state, response=CompleteTodoResponse())
     
@@ -137,31 +112,26 @@ class TodoListServicer(TodoList.Interface):
         state: TodoListState,
         request: AddDeadlineRequest,
     ) -> TodoList.AddDeadlineEffects:
-        try:
-            todoId = request.todoId
-            date = request.date
-            target_todo = None
-            for todo in state.todos:
-                if todo.id == todoId:
-                    todo.deadline = date
-                    target_todo = todo
-                    break
-            print("Calling AddDeadline", state)
+        
+        todoId = request.todoId
+        date = request.date
+        target_todo = None
+        for todo in state.todos:
+            if todo.id == todoId:
+                todo.deadline = date
+                target_todo = todo
+                break
+        print("Calling AddDeadline")
 
-            # TODO: figure out how to execute scheduled tasks
-            reminder_text_task = self.schedule().ReminderTextTask(context, deadline=date, todo=target_todo.text)
-            #await self.ReminderTextTask(context, state, request)
+        reminder_text_task = self.schedule().ReminderTextTask(context, deadline=date, todo=target_todo.text)
 
-            return TodoList.AddDeadlineEffects(
-                state=state, 
-                tasks=[reminder_text_task],
-                response=AddDealineResponse(
-                    reminder_text_task_id = reminder_text_task.task_id
-                ),
-            )
-        except:
-            traceback.print_exc()
-            raise
+        return TodoList.AddDeadlineEffects(
+            state=state, 
+            tasks=[reminder_text_task],
+            response=AddDealineResponse(
+                reminder_text_task_id = reminder_text_task.task_id
+            ),
+        )
     
     async def ReminderTextTask(
         self,
@@ -174,7 +144,10 @@ class TodoListServicer(TodoList.Interface):
         todo = request.todo
         
         message_body = "Reminder! You have to complete task '"+todo+"' by "+deadline
-        await send_text(message_body)
+        # uncomment line below to send the message in twilio
+        #await send_text(message_body)
+
+        print("Message:", message_body)
 
         return TodoList.ReminderTextTaskEffects(
             state=state,

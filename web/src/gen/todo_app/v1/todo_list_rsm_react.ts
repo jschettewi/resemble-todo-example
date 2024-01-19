@@ -9,12 +9,8 @@ import {
 import * as resemble_react from "@reboot-dev/resemble-react";
 import * as resemble_api from "@reboot-dev/resemble-api";
 import {
-  Dispatch,
-  MutableRefObject,
-  SetStateAction,
   useEffect,
   useMemo,
-  useRef,
   useState,
 } from "react";
 import { unstable_batchedUpdates } from "react-dom";
@@ -56,159 +52,6 @@ export {
 	ReminderTextTaskRequest,
 };
 
-// Start of service specific code.
-///////////////////////////////////////////////////////////////////////////
-
-
-export interface TodoListApi {
-  Create: (partialRequest?: __bufbuildProtobufPartialMessage<CreateRequest>) =>
-  Promise<CreateResponse>;
-  AddTodo: (partialRequest?: __bufbuildProtobufPartialMessage<AddTodoRequest>) =>
-  Promise<AddTodoResponse>;
-  ListTodos: (partialRequest?: __bufbuildProtobufPartialMessage<ListTodosRequest>) =>
-  Promise<ListTodosResponse>;
-  DeleteTodo: (partialRequest?: __bufbuildProtobufPartialMessage<DeleteTodoRequest>) =>
-  Promise<DeleteTodoResponse>;
-  CompleteTodo: (partialRequest?: __bufbuildProtobufPartialMessage<CompleteTodoRequest>) =>
-  Promise<CompleteTodoResponse>;
-  AddDeadline: (partialRequest?: __bufbuildProtobufPartialMessage<AddDeadlineRequest>) =>
-  Promise<AddDealineResponse>;
-  ReminderTextTask: (partialRequest?: __bufbuildProtobufPartialMessage<ReminderTextTaskRequest>) =>
-  Promise<Empty>;
-  useListTodos: (partialRequest?: __bufbuildProtobufPartialMessage<ListTodosRequest>) => {
-   response: ListTodosResponse | undefined;
-    isLoading: boolean;
-    error: unknown;
-    mutations: {
-       Create: (request: __bufbuildProtobufPartialMessage<CreateRequest>,
-       optimistic_metadata?: any ) =>
-      Promise<resemble_react.ResponseOrError<CreateResponse>>;
-       AddTodo: (request: __bufbuildProtobufPartialMessage<AddTodoRequest>,
-       optimistic_metadata?: any ) =>
-      Promise<resemble_react.ResponseOrError<AddTodoResponse>>;
-       DeleteTodo: (request: __bufbuildProtobufPartialMessage<DeleteTodoRequest>,
-       optimistic_metadata?: any ) =>
-      Promise<resemble_react.ResponseOrError<DeleteTodoResponse>>;
-       CompleteTodo: (request: __bufbuildProtobufPartialMessage<CompleteTodoRequest>,
-       optimistic_metadata?: any ) =>
-      Promise<resemble_react.ResponseOrError<CompleteTodoResponse>>;
-       AddDeadline: (request: __bufbuildProtobufPartialMessage<AddDeadlineRequest>,
-       optimistic_metadata?: any ) =>
-      Promise<resemble_react.ResponseOrError<AddDealineResponse>>;
-       ReminderTextTask: (request: __bufbuildProtobufPartialMessage<ReminderTextTaskRequest>,
-       optimistic_metadata?: any ) =>
-      Promise<resemble_react.ResponseOrError<Empty>>;
-    };
-      pendingCreateMutations: {
-        request: CreateRequest;
-        idempotencyKey: string;
-        isLoading: boolean;
-        error?: unknown;
-        optimistic_metadata?: any;
-      }[];
-      failedCreateMutations: {
-        request: CreateRequest;
-        idempotencyKey: string;
-        isLoading: boolean;
-        error?: unknown;
-      }[];
-      recoveredCreateMutations: {
-        request: CreateRequest;
-        idempotencyKey: string;
-        run: () => void;
-      }[];
-      pendingAddTodoMutations: {
-        request: AddTodoRequest;
-        idempotencyKey: string;
-        isLoading: boolean;
-        error?: unknown;
-        optimistic_metadata?: any;
-      }[];
-      failedAddTodoMutations: {
-        request: AddTodoRequest;
-        idempotencyKey: string;
-        isLoading: boolean;
-        error?: unknown;
-      }[];
-      recoveredAddTodoMutations: {
-        request: AddTodoRequest;
-        idempotencyKey: string;
-        run: () => void;
-      }[];
-      pendingDeleteTodoMutations: {
-        request: DeleteTodoRequest;
-        idempotencyKey: string;
-        isLoading: boolean;
-        error?: unknown;
-        optimistic_metadata?: any;
-      }[];
-      failedDeleteTodoMutations: {
-        request: DeleteTodoRequest;
-        idempotencyKey: string;
-        isLoading: boolean;
-        error?: unknown;
-      }[];
-      recoveredDeleteTodoMutations: {
-        request: DeleteTodoRequest;
-        idempotencyKey: string;
-        run: () => void;
-      }[];
-      pendingCompleteTodoMutations: {
-        request: CompleteTodoRequest;
-        idempotencyKey: string;
-        isLoading: boolean;
-        error?: unknown;
-        optimistic_metadata?: any;
-      }[];
-      failedCompleteTodoMutations: {
-        request: CompleteTodoRequest;
-        idempotencyKey: string;
-        isLoading: boolean;
-        error?: unknown;
-      }[];
-      recoveredCompleteTodoMutations: {
-        request: CompleteTodoRequest;
-        idempotencyKey: string;
-        run: () => void;
-      }[];
-      pendingAddDeadlineMutations: {
-        request: AddDeadlineRequest;
-        idempotencyKey: string;
-        isLoading: boolean;
-        error?: unknown;
-        optimistic_metadata?: any;
-      }[];
-      failedAddDeadlineMutations: {
-        request: AddDeadlineRequest;
-        idempotencyKey: string;
-        isLoading: boolean;
-        error?: unknown;
-      }[];
-      recoveredAddDeadlineMutations: {
-        request: AddDeadlineRequest;
-        idempotencyKey: string;
-        run: () => void;
-      }[];
-      pendingReminderTextTaskMutations: {
-        request: ReminderTextTaskRequest;
-        idempotencyKey: string;
-        isLoading: boolean;
-        error?: unknown;
-        optimistic_metadata?: any;
-      }[];
-      failedReminderTextTaskMutations: {
-        request: ReminderTextTaskRequest;
-        idempotencyKey: string;
-        isLoading: boolean;
-        error?: unknown;
-      }[];
-      recoveredReminderTextTaskMutations: {
-        request: ReminderTextTaskRequest;
-        idempotencyKey: string;
-        run: () => void;
-      }[];
-  };
-}
 
 export interface TodoListMutators {
   create: {
@@ -295,6 +138,7 @@ export interface UseTodoListApi {
     isLoading: boolean;
     error: undefined | resemble_api.SystemErrorDetails
 ;
+    exception: undefined | Error;
   };
   listTodos: (
     partialRequest?: __bufbuildProtobufPartialMessage<ListTodosRequest>
@@ -311,1719 +155,6 @@ export interface SettingsParams {
   storeMutationsLocallyInNamespace?: string;
 }
 
-// *********** NOTE NOTE NOTE NOTE NOTE ***********
-//
-// Old style `Actor` generated code is deprecated in favor of
-// `useActor` (see that code below) and will be removed in an
-// upcoming release!
-//
-// ************************************************
-
-export const TodoList = (
-  { id, storeMutationsLocallyInNamespace }: SettingsParams
-): TodoListApi => {
-  const headers = new Headers();
-  headers.set("Content-Type", "application/json");
-  headers.append("x-resemble-service-name", "todo_app.v1.TodoList");
-  headers.append("x-resemble-actor-id", id);
-  headers.append("Connection", "keep-alive");
-
-  const resembleContext = resemble_react.useResembleContext();
-
-  const newRequest = (
-    requestBody: any,
-    path: string,
-    method: "GET" | "POST",
-    idempotencyKey?: string,
-  ) => {
-    if (idempotencyKey !== undefined) {
-      headers.set("x-resemble-idempotency-key", idempotencyKey);
-    }
-    return new Request(`${resembleContext.client?.endpoint}${path}`, {
-      method: method,
-      headers: headers,
-      body:
-        Object.keys(requestBody).length !== 0
-          ? JSON.stringify(requestBody)
-          : null,
-    });
-  };
-
-  const Create = async (
-    partialRequest: __bufbuildProtobufPartialMessage<CreateRequest> = {}
-  ) => {
-    const request = partialRequest instanceof CreateRequest
-      ? partialRequest
-      : new CreateRequest(partialRequest);
-
-    const requestBody = request.toJson();
-
-    // Invariant here is that we use the '/package.service.method' path and
-    // HTTP 'POST' method (we need 'POST' because we send an HTTP body).
-    //
-    // See also 'resemble/helpers.py'.
-    const response = await resemble_react.guardedFetch(
-      newRequest(
-        requestBody,
-        "/todo_app.v1.TodoList.Create", "POST"
-      )
-    );
-
-    return await response.json();
-  };
-
-  const AddTodo = async (
-    partialRequest: __bufbuildProtobufPartialMessage<AddTodoRequest> = {}
-  ) => {
-    const request = partialRequest instanceof AddTodoRequest
-      ? partialRequest
-      : new AddTodoRequest(partialRequest);
-
-    const requestBody = request.toJson();
-
-    // Invariant here is that we use the '/package.service.method' path and
-    // HTTP 'POST' method (we need 'POST' because we send an HTTP body).
-    //
-    // See also 'resemble/helpers.py'.
-    const response = await resemble_react.guardedFetch(
-      newRequest(
-        requestBody,
-        "/todo_app.v1.TodoList.AddTodo", "POST"
-      )
-    );
-
-    return await response.json();
-  };
-
-  const ListTodos = async (
-    partialRequest: __bufbuildProtobufPartialMessage<ListTodosRequest> = {}
-  ) => {
-    const request = partialRequest instanceof ListTodosRequest
-      ? partialRequest
-      : new ListTodosRequest(partialRequest);
-
-    const requestBody = request.toJson();
-
-    // Invariant here is that we use the '/package.service.method' path and
-    // HTTP 'POST' method (we need 'POST' because we send an HTTP body).
-    //
-    // See also 'resemble/helpers.py'.
-    const response = await resemble_react.guardedFetch(
-      newRequest(
-        requestBody,
-        "/todo_app.v1.TodoList.ListTodos", "POST"
-      )
-    );
-
-    if (!response.ok && response.headers.has("grpc-status")) {
-      const grpcStatus = response.headers.get("grpc-status");
-      let grpcMessage = response.headers.get("grpc-message");
-      throw new Error(
-        `'todo_app.v1.TodoList.ListTodos' for '${id}' responded ` +
-          `with status ${grpcStatus}` +
-          `${grpcMessage !== null ? ": " + grpcMessage : ""}`
-      );
-    } else if (!response.ok) {
-      throw new Error(
-        `'todo_app.v1.TodoList.ListTodos' failed: ${response.body}`
-      );
-    }
-
-    return await response.json();
-  };
-
-  const useListTodos = (
-    partialRequest: __bufbuildProtobufPartialMessage<ListTodosRequest> = {}
-  ) => {
-    const [response, setResponse] = useState<ListTodosResponse>();
-    const [isLoading, setIsLoading] = useState<boolean>(true);
-    const [error, setError] = useState<unknown>();
-
-    // NOTE: using "refs" here because we want to "remember" some
-    // state, but don't want setting that state to trigger new renders (see
-    // https://react.dev/learn/referencing-values-with-refs).
-    // Using a ref here so that we don't render every time we set it.
-
-    const observedIdempotencyKeys = useRef(new Set<string>());
-    // NOTE: rather than starting with undefined for 'flushMutations'
-    // we start with an event so any mutations that may get created
-    // before we've started reading will get queued.
-    const flushMutations = useRef<resemble_react.Event | undefined>(new resemble_react.Event());
-
-    const [abortController, setAbortController] = useState<AbortController | undefined>();
-
-    useEffect(() => {
-      if (abortController === undefined) {
-        setAbortController(new AbortController());
-      }
-      return () => {
-        abortController?.abort();
-      };
-    }, [abortController]);
-
-    const request = partialRequest instanceof ListTodosRequest
-      ? partialRequest
-      : new ListTodosRequest(partialRequest);
-
-    // NOTE: using a ref for the 'request' and 'settings' (below) so
-    // that it doesn't get changed after the first time calling 'useListTodos'.
-    const requestRef = useRef(request);
-
-    // We are using serialized string comparison here since we can't do value
-    // equality of anonymous objects. We must use the proto library's toBinary()
-    // since JavaScript's standard JSON library can't serialize every possible
-    // field type (notably BigInt).
-    //
-    // TODO(benh): this comment doesn't make sense because `request` should
-    // not be an anonymous object, maybe this was added before we did
-    // `partialRequest` and we now need to revisit this and use the equality
-    // mechanisms provided by `protoc-gen-es`?
-    const first_request_serialized = requestRef.current.toBinary().toString();
-    const current_request_serialized = request.toBinary().toString();
-    if (current_request_serialized !== first_request_serialized) {
-      throw new Error("Changing the request is not supported!");
-    }
-
-    const settingsRef = useRef({id, storeMutationsLocallyInNamespace});
-    // We are using string comparison here since we can't do value
-    // equality of anonymous objects.
-    //
-    // TODO(benh): create a `compareSettings()` or similar so we don't
-    // have to `JSON.stringify()` every time!
-    if (JSON.stringify(settingsRef.current) !== JSON.stringify({id, storeMutationsLocallyInNamespace})) {
-      throw new Error("Changing settings is not supported!");
-    }
-
-    const localStorageKeyRef = useRef(storeMutationsLocallyInNamespace);
-
-    const queuedMutations = useRef<Array<() => void>>([]);
-
-function hasRunningMutations(): boolean {
-      if (
-      runningCreateMutations.current.length > 0||
-      runningAddTodoMutations.current.length > 0||
-      runningDeleteTodoMutations.current.length > 0||
-      runningCompleteTodoMutations.current.length > 0||
-      runningAddDeadlineMutations.current.length > 0||
-      runningReminderTextTaskMutations.current.length > 0) {
-        return true;
-      }
-      return false;
-    }
-
-
-    const runningCreateMutations = useRef<resemble_react.Mutation<CreateRequest>[]>([]);
-    const recoveredCreateMutations = useRef<
-      [resemble_react.Mutation<CreateRequest>, () => void][]
-    >([]);
-    const shouldClearFailedCreateMutations = useRef(false);
-    const [failedCreateMutations, setFailedCreateMutations] = useState<
-      resemble_react.Mutation<CreateRequest>[]
-    >([]);
-    const queuedCreateMutations = useRef<[resemble_react.Mutation<CreateRequest>, () => void][]>(
-      []
-    );
-    const recoverAndPurgeCreateMutations = (): [
-      resemble_react.Mutation<CreateRequest>,
-      () => void
-    ][] => {
-      if (localStorageKeyRef.current === undefined) {
-        return [];
-      }
-      const suffix = Create
-      const value = localStorage.getItem(localStorageKeyRef.current + suffix);
-      if (value === null) {
-        return [];
-      }
-
-      localStorage.removeItem(localStorageKeyRef.current);
-      const mutations: resemble_react.Mutation<CreateRequest>[] = JSON.parse(value);
-      const recoveredCreateMutations: [
-        resemble_react.Mutation<CreateRequest>,
-        () => void
-      ][] = [];
-      for (const mutation of mutations) {
-        recoveredCreateMutations.push([mutation, () => __Create(mutation)]);
-      }
-      return recoveredCreateMutations;
-    }
-    const doOnceCreate = useRef(true)
-    if (doOnceCreate.current) {
-      doOnceCreate.current = false
-      recoveredCreateMutations.current = recoverAndPurgeCreateMutations()
-    }
-
-    // User facing state that only includes the pending mutations that
-    // have not been observed.
-    const [unobservedPendingCreateMutations, setUnobservedPendingCreateMutations] =
-      useState<resemble_react.Mutation<CreateRequest>[]>([]);
-
-    useEffect(() => {
-      shouldClearFailedCreateMutations.current = true;
-    }, [failedCreateMutations]);
-
-    async function __Create(
-      mutation: resemble_react.Mutation<CreateRequest>
-    ): Promise<resemble_react.ResponseOrError<CreateResponse>> {
-      try {
-        // Invariant that we won't yield to event loop before pushing to
-        // runningCreateMutations
-        runningCreateMutations.current.push(mutation)
-        return _Mutation<CreateRequest, CreateResponse>(
-          // Invariant here is that we use the '/package.service.method'.
-          //
-          // See also 'resemble/helpers.py'.
-          "/todo_app.v1.TodoList.Create",
-          mutation,
-          mutation.request,
-          mutation.idempotencyKey,
-          setUnobservedPendingCreateMutations,
-          abortController,
-          shouldClearFailedCreateMutations,
-          setFailedCreateMutations,
-          runningCreateMutations,
-          flushMutations,
-          queuedMutations,
-          CreateRequest,
-          CreateResponse.fromJson
-        );
-      } finally {
-        runningCreateMutations.current = runningCreateMutations.current.filter(
-          ({ idempotencyKey }) => mutation.idempotencyKey !== idempotencyKey
-        );
-
-        resemble_react.popMutationMaybeFromLocalStorage(
-          localStorageKeyRef.current,
-          "Create",
-          (mutationRequest: resemble_react.Mutation<Request>) =>
-            mutationRequest.idempotencyKey !== mutation.idempotencyKey
-        );
-
-
-      }
-    }
-    async function _Create(mutation: resemble_react.Mutation<CreateRequest>) {
-      setUnobservedPendingCreateMutations(
-        (mutations) => [...mutations, mutation]
-      )
-
-      // NOTE: we only run one mutation at a time so that we provide a
-      // serializable experience for the end user but we will
-      // eventually support mutations in parallel when we have strong
-      // eventually consistent writers.
-      if (
-        hasRunningMutations() ||
-        queuedMutations.current.length > 0 ||
-        flushMutations.current !== undefined
-      ) {
-        const deferred = new resemble_react.Deferred<resemble_react.ResponseOrError<CreateResponse>>(() =>
-          __Create(mutation)
-        );
-
-        // Add to localStorage here.
-        queuedCreateMutations.current.push([mutation, () => deferred.start()]);
-        queuedMutations.current.push(() => {
-          for (const [, run] of queuedCreateMutations.current) {
-            queuedCreateMutations.current.shift();
-            run();
-            break;
-          }
-        });
-        // Maybe add to localStorage.
-        resemble_react.pushMutationMaybeToLocalStorage(localStorageKeyRef.current, "Create", mutation);
-
-        return deferred.promise;
-      } else {
-        // NOTE: we'll add this mutation to `runningCreateMutations` in `__Create`
-        // without yielding to event loop so that we are guaranteed atomicity with checking `hasRunningMutations()`.
-        return await __Create(mutation);
-      }
-    }
-
-    async function Create(
-      partialRequest: __bufbuildProtobufPartialMessage<CreateRequest>,
-      optimistic_metadata?: any
-    ): Promise<resemble_react.ResponseOrError<CreateResponse>> {
-      const idempotencyKey = uuidv4();
-
-      const request = partialRequest instanceof CreateRequest
-        ? partialRequest
-        : new CreateRequest(partialRequest);
-
-      const mutation = {
-        request,
-        idempotencyKey,
-        optimistic_metadata,
-        isLoading: false, // Won't start loading if we're flushing mutations.
-      };
-
-      return _Create(mutation);
-    }
-
-    const runningAddTodoMutations = useRef<resemble_react.Mutation<AddTodoRequest>[]>([]);
-    const recoveredAddTodoMutations = useRef<
-      [resemble_react.Mutation<AddTodoRequest>, () => void][]
-    >([]);
-    const shouldClearFailedAddTodoMutations = useRef(false);
-    const [failedAddTodoMutations, setFailedAddTodoMutations] = useState<
-      resemble_react.Mutation<AddTodoRequest>[]
-    >([]);
-    const queuedAddTodoMutations = useRef<[resemble_react.Mutation<AddTodoRequest>, () => void][]>(
-      []
-    );
-    const recoverAndPurgeAddTodoMutations = (): [
-      resemble_react.Mutation<AddTodoRequest>,
-      () => void
-    ][] => {
-      if (localStorageKeyRef.current === undefined) {
-        return [];
-      }
-      const suffix = AddTodo
-      const value = localStorage.getItem(localStorageKeyRef.current + suffix);
-      if (value === null) {
-        return [];
-      }
-
-      localStorage.removeItem(localStorageKeyRef.current);
-      const mutations: resemble_react.Mutation<AddTodoRequest>[] = JSON.parse(value);
-      const recoveredAddTodoMutations: [
-        resemble_react.Mutation<AddTodoRequest>,
-        () => void
-      ][] = [];
-      for (const mutation of mutations) {
-        recoveredAddTodoMutations.push([mutation, () => __AddTodo(mutation)]);
-      }
-      return recoveredAddTodoMutations;
-    }
-    const doOnceAddTodo = useRef(true)
-    if (doOnceAddTodo.current) {
-      doOnceAddTodo.current = false
-      recoveredAddTodoMutations.current = recoverAndPurgeAddTodoMutations()
-    }
-
-    // User facing state that only includes the pending mutations that
-    // have not been observed.
-    const [unobservedPendingAddTodoMutations, setUnobservedPendingAddTodoMutations] =
-      useState<resemble_react.Mutation<AddTodoRequest>[]>([]);
-
-    useEffect(() => {
-      shouldClearFailedAddTodoMutations.current = true;
-    }, [failedAddTodoMutations]);
-
-    async function __AddTodo(
-      mutation: resemble_react.Mutation<AddTodoRequest>
-    ): Promise<resemble_react.ResponseOrError<AddTodoResponse>> {
-      try {
-        // Invariant that we won't yield to event loop before pushing to
-        // runningAddTodoMutations
-        runningAddTodoMutations.current.push(mutation)
-        return _Mutation<AddTodoRequest, AddTodoResponse>(
-          // Invariant here is that we use the '/package.service.method'.
-          //
-          // See also 'resemble/helpers.py'.
-          "/todo_app.v1.TodoList.AddTodo",
-          mutation,
-          mutation.request,
-          mutation.idempotencyKey,
-          setUnobservedPendingAddTodoMutations,
-          abortController,
-          shouldClearFailedAddTodoMutations,
-          setFailedAddTodoMutations,
-          runningAddTodoMutations,
-          flushMutations,
-          queuedMutations,
-          AddTodoRequest,
-          AddTodoResponse.fromJson
-        );
-      } finally {
-        runningAddTodoMutations.current = runningAddTodoMutations.current.filter(
-          ({ idempotencyKey }) => mutation.idempotencyKey !== idempotencyKey
-        );
-
-        resemble_react.popMutationMaybeFromLocalStorage(
-          localStorageKeyRef.current,
-          "AddTodo",
-          (mutationRequest: resemble_react.Mutation<Request>) =>
-            mutationRequest.idempotencyKey !== mutation.idempotencyKey
-        );
-
-
-      }
-    }
-    async function _AddTodo(mutation: resemble_react.Mutation<AddTodoRequest>) {
-      setUnobservedPendingAddTodoMutations(
-        (mutations) => [...mutations, mutation]
-      )
-
-      // NOTE: we only run one mutation at a time so that we provide a
-      // serializable experience for the end user but we will
-      // eventually support mutations in parallel when we have strong
-      // eventually consistent writers.
-      if (
-        hasRunningMutations() ||
-        queuedMutations.current.length > 0 ||
-        flushMutations.current !== undefined
-      ) {
-        const deferred = new resemble_react.Deferred<resemble_react.ResponseOrError<AddTodoResponse>>(() =>
-          __AddTodo(mutation)
-        );
-
-        // Add to localStorage here.
-        queuedAddTodoMutations.current.push([mutation, () => deferred.start()]);
-        queuedMutations.current.push(() => {
-          for (const [, run] of queuedAddTodoMutations.current) {
-            queuedAddTodoMutations.current.shift();
-            run();
-            break;
-          }
-        });
-        // Maybe add to localStorage.
-        resemble_react.pushMutationMaybeToLocalStorage(localStorageKeyRef.current, "AddTodo", mutation);
-
-        return deferred.promise;
-      } else {
-        // NOTE: we'll add this mutation to `runningAddTodoMutations` in `__AddTodo`
-        // without yielding to event loop so that we are guaranteed atomicity with checking `hasRunningMutations()`.
-        return await __AddTodo(mutation);
-      }
-    }
-
-    async function AddTodo(
-      partialRequest: __bufbuildProtobufPartialMessage<AddTodoRequest>,
-      optimistic_metadata?: any
-    ): Promise<resemble_react.ResponseOrError<AddTodoResponse>> {
-      const idempotencyKey = uuidv4();
-
-      const request = partialRequest instanceof AddTodoRequest
-        ? partialRequest
-        : new AddTodoRequest(partialRequest);
-
-      const mutation = {
-        request,
-        idempotencyKey,
-        optimistic_metadata,
-        isLoading: false, // Won't start loading if we're flushing mutations.
-      };
-
-      return _AddTodo(mutation);
-    }
-
-    const runningDeleteTodoMutations = useRef<resemble_react.Mutation<DeleteTodoRequest>[]>([]);
-    const recoveredDeleteTodoMutations = useRef<
-      [resemble_react.Mutation<DeleteTodoRequest>, () => void][]
-    >([]);
-    const shouldClearFailedDeleteTodoMutations = useRef(false);
-    const [failedDeleteTodoMutations, setFailedDeleteTodoMutations] = useState<
-      resemble_react.Mutation<DeleteTodoRequest>[]
-    >([]);
-    const queuedDeleteTodoMutations = useRef<[resemble_react.Mutation<DeleteTodoRequest>, () => void][]>(
-      []
-    );
-    const recoverAndPurgeDeleteTodoMutations = (): [
-      resemble_react.Mutation<DeleteTodoRequest>,
-      () => void
-    ][] => {
-      if (localStorageKeyRef.current === undefined) {
-        return [];
-      }
-      const suffix = DeleteTodo
-      const value = localStorage.getItem(localStorageKeyRef.current + suffix);
-      if (value === null) {
-        return [];
-      }
-
-      localStorage.removeItem(localStorageKeyRef.current);
-      const mutations: resemble_react.Mutation<DeleteTodoRequest>[] = JSON.parse(value);
-      const recoveredDeleteTodoMutations: [
-        resemble_react.Mutation<DeleteTodoRequest>,
-        () => void
-      ][] = [];
-      for (const mutation of mutations) {
-        recoveredDeleteTodoMutations.push([mutation, () => __DeleteTodo(mutation)]);
-      }
-      return recoveredDeleteTodoMutations;
-    }
-    const doOnceDeleteTodo = useRef(true)
-    if (doOnceDeleteTodo.current) {
-      doOnceDeleteTodo.current = false
-      recoveredDeleteTodoMutations.current = recoverAndPurgeDeleteTodoMutations()
-    }
-
-    // User facing state that only includes the pending mutations that
-    // have not been observed.
-    const [unobservedPendingDeleteTodoMutations, setUnobservedPendingDeleteTodoMutations] =
-      useState<resemble_react.Mutation<DeleteTodoRequest>[]>([]);
-
-    useEffect(() => {
-      shouldClearFailedDeleteTodoMutations.current = true;
-    }, [failedDeleteTodoMutations]);
-
-    async function __DeleteTodo(
-      mutation: resemble_react.Mutation<DeleteTodoRequest>
-    ): Promise<resemble_react.ResponseOrError<DeleteTodoResponse>> {
-      try {
-        // Invariant that we won't yield to event loop before pushing to
-        // runningDeleteTodoMutations
-        runningDeleteTodoMutations.current.push(mutation)
-        return _Mutation<DeleteTodoRequest, DeleteTodoResponse>(
-          // Invariant here is that we use the '/package.service.method'.
-          //
-          // See also 'resemble/helpers.py'.
-          "/todo_app.v1.TodoList.DeleteTodo",
-          mutation,
-          mutation.request,
-          mutation.idempotencyKey,
-          setUnobservedPendingDeleteTodoMutations,
-          abortController,
-          shouldClearFailedDeleteTodoMutations,
-          setFailedDeleteTodoMutations,
-          runningDeleteTodoMutations,
-          flushMutations,
-          queuedMutations,
-          DeleteTodoRequest,
-          DeleteTodoResponse.fromJson
-        );
-      } finally {
-        runningDeleteTodoMutations.current = runningDeleteTodoMutations.current.filter(
-          ({ idempotencyKey }) => mutation.idempotencyKey !== idempotencyKey
-        );
-
-        resemble_react.popMutationMaybeFromLocalStorage(
-          localStorageKeyRef.current,
-          "DeleteTodo",
-          (mutationRequest: resemble_react.Mutation<Request>) =>
-            mutationRequest.idempotencyKey !== mutation.idempotencyKey
-        );
-
-
-      }
-    }
-    async function _DeleteTodo(mutation: resemble_react.Mutation<DeleteTodoRequest>) {
-      setUnobservedPendingDeleteTodoMutations(
-        (mutations) => [...mutations, mutation]
-      )
-
-      // NOTE: we only run one mutation at a time so that we provide a
-      // serializable experience for the end user but we will
-      // eventually support mutations in parallel when we have strong
-      // eventually consistent writers.
-      if (
-        hasRunningMutations() ||
-        queuedMutations.current.length > 0 ||
-        flushMutations.current !== undefined
-      ) {
-        const deferred = new resemble_react.Deferred<resemble_react.ResponseOrError<DeleteTodoResponse>>(() =>
-          __DeleteTodo(mutation)
-        );
-
-        // Add to localStorage here.
-        queuedDeleteTodoMutations.current.push([mutation, () => deferred.start()]);
-        queuedMutations.current.push(() => {
-          for (const [, run] of queuedDeleteTodoMutations.current) {
-            queuedDeleteTodoMutations.current.shift();
-            run();
-            break;
-          }
-        });
-        // Maybe add to localStorage.
-        resemble_react.pushMutationMaybeToLocalStorage(localStorageKeyRef.current, "DeleteTodo", mutation);
-
-        return deferred.promise;
-      } else {
-        // NOTE: we'll add this mutation to `runningDeleteTodoMutations` in `__DeleteTodo`
-        // without yielding to event loop so that we are guaranteed atomicity with checking `hasRunningMutations()`.
-        return await __DeleteTodo(mutation);
-      }
-    }
-
-    async function DeleteTodo(
-      partialRequest: __bufbuildProtobufPartialMessage<DeleteTodoRequest>,
-      optimistic_metadata?: any
-    ): Promise<resemble_react.ResponseOrError<DeleteTodoResponse>> {
-      const idempotencyKey = uuidv4();
-
-      const request = partialRequest instanceof DeleteTodoRequest
-        ? partialRequest
-        : new DeleteTodoRequest(partialRequest);
-
-      const mutation = {
-        request,
-        idempotencyKey,
-        optimistic_metadata,
-        isLoading: false, // Won't start loading if we're flushing mutations.
-      };
-
-      return _DeleteTodo(mutation);
-    }
-
-    const runningCompleteTodoMutations = useRef<resemble_react.Mutation<CompleteTodoRequest>[]>([]);
-    const recoveredCompleteTodoMutations = useRef<
-      [resemble_react.Mutation<CompleteTodoRequest>, () => void][]
-    >([]);
-    const shouldClearFailedCompleteTodoMutations = useRef(false);
-    const [failedCompleteTodoMutations, setFailedCompleteTodoMutations] = useState<
-      resemble_react.Mutation<CompleteTodoRequest>[]
-    >([]);
-    const queuedCompleteTodoMutations = useRef<[resemble_react.Mutation<CompleteTodoRequest>, () => void][]>(
-      []
-    );
-    const recoverAndPurgeCompleteTodoMutations = (): [
-      resemble_react.Mutation<CompleteTodoRequest>,
-      () => void
-    ][] => {
-      if (localStorageKeyRef.current === undefined) {
-        return [];
-      }
-      const suffix = CompleteTodo
-      const value = localStorage.getItem(localStorageKeyRef.current + suffix);
-      if (value === null) {
-        return [];
-      }
-
-      localStorage.removeItem(localStorageKeyRef.current);
-      const mutations: resemble_react.Mutation<CompleteTodoRequest>[] = JSON.parse(value);
-      const recoveredCompleteTodoMutations: [
-        resemble_react.Mutation<CompleteTodoRequest>,
-        () => void
-      ][] = [];
-      for (const mutation of mutations) {
-        recoveredCompleteTodoMutations.push([mutation, () => __CompleteTodo(mutation)]);
-      }
-      return recoveredCompleteTodoMutations;
-    }
-    const doOnceCompleteTodo = useRef(true)
-    if (doOnceCompleteTodo.current) {
-      doOnceCompleteTodo.current = false
-      recoveredCompleteTodoMutations.current = recoverAndPurgeCompleteTodoMutations()
-    }
-
-    // User facing state that only includes the pending mutations that
-    // have not been observed.
-    const [unobservedPendingCompleteTodoMutations, setUnobservedPendingCompleteTodoMutations] =
-      useState<resemble_react.Mutation<CompleteTodoRequest>[]>([]);
-
-    useEffect(() => {
-      shouldClearFailedCompleteTodoMutations.current = true;
-    }, [failedCompleteTodoMutations]);
-
-    async function __CompleteTodo(
-      mutation: resemble_react.Mutation<CompleteTodoRequest>
-    ): Promise<resemble_react.ResponseOrError<CompleteTodoResponse>> {
-      try {
-        // Invariant that we won't yield to event loop before pushing to
-        // runningCompleteTodoMutations
-        runningCompleteTodoMutations.current.push(mutation)
-        return _Mutation<CompleteTodoRequest, CompleteTodoResponse>(
-          // Invariant here is that we use the '/package.service.method'.
-          //
-          // See also 'resemble/helpers.py'.
-          "/todo_app.v1.TodoList.CompleteTodo",
-          mutation,
-          mutation.request,
-          mutation.idempotencyKey,
-          setUnobservedPendingCompleteTodoMutations,
-          abortController,
-          shouldClearFailedCompleteTodoMutations,
-          setFailedCompleteTodoMutations,
-          runningCompleteTodoMutations,
-          flushMutations,
-          queuedMutations,
-          CompleteTodoRequest,
-          CompleteTodoResponse.fromJson
-        );
-      } finally {
-        runningCompleteTodoMutations.current = runningCompleteTodoMutations.current.filter(
-          ({ idempotencyKey }) => mutation.idempotencyKey !== idempotencyKey
-        );
-
-        resemble_react.popMutationMaybeFromLocalStorage(
-          localStorageKeyRef.current,
-          "CompleteTodo",
-          (mutationRequest: resemble_react.Mutation<Request>) =>
-            mutationRequest.idempotencyKey !== mutation.idempotencyKey
-        );
-
-
-      }
-    }
-    async function _CompleteTodo(mutation: resemble_react.Mutation<CompleteTodoRequest>) {
-      setUnobservedPendingCompleteTodoMutations(
-        (mutations) => [...mutations, mutation]
-      )
-
-      // NOTE: we only run one mutation at a time so that we provide a
-      // serializable experience for the end user but we will
-      // eventually support mutations in parallel when we have strong
-      // eventually consistent writers.
-      if (
-        hasRunningMutations() ||
-        queuedMutations.current.length > 0 ||
-        flushMutations.current !== undefined
-      ) {
-        const deferred = new resemble_react.Deferred<resemble_react.ResponseOrError<CompleteTodoResponse>>(() =>
-          __CompleteTodo(mutation)
-        );
-
-        // Add to localStorage here.
-        queuedCompleteTodoMutations.current.push([mutation, () => deferred.start()]);
-        queuedMutations.current.push(() => {
-          for (const [, run] of queuedCompleteTodoMutations.current) {
-            queuedCompleteTodoMutations.current.shift();
-            run();
-            break;
-          }
-        });
-        // Maybe add to localStorage.
-        resemble_react.pushMutationMaybeToLocalStorage(localStorageKeyRef.current, "CompleteTodo", mutation);
-
-        return deferred.promise;
-      } else {
-        // NOTE: we'll add this mutation to `runningCompleteTodoMutations` in `__CompleteTodo`
-        // without yielding to event loop so that we are guaranteed atomicity with checking `hasRunningMutations()`.
-        return await __CompleteTodo(mutation);
-      }
-    }
-
-    async function CompleteTodo(
-      partialRequest: __bufbuildProtobufPartialMessage<CompleteTodoRequest>,
-      optimistic_metadata?: any
-    ): Promise<resemble_react.ResponseOrError<CompleteTodoResponse>> {
-      const idempotencyKey = uuidv4();
-
-      const request = partialRequest instanceof CompleteTodoRequest
-        ? partialRequest
-        : new CompleteTodoRequest(partialRequest);
-
-      const mutation = {
-        request,
-        idempotencyKey,
-        optimistic_metadata,
-        isLoading: false, // Won't start loading if we're flushing mutations.
-      };
-
-      return _CompleteTodo(mutation);
-    }
-
-    const runningAddDeadlineMutations = useRef<resemble_react.Mutation<AddDeadlineRequest>[]>([]);
-    const recoveredAddDeadlineMutations = useRef<
-      [resemble_react.Mutation<AddDeadlineRequest>, () => void][]
-    >([]);
-    const shouldClearFailedAddDeadlineMutations = useRef(false);
-    const [failedAddDeadlineMutations, setFailedAddDeadlineMutations] = useState<
-      resemble_react.Mutation<AddDeadlineRequest>[]
-    >([]);
-    const queuedAddDeadlineMutations = useRef<[resemble_react.Mutation<AddDeadlineRequest>, () => void][]>(
-      []
-    );
-    const recoverAndPurgeAddDeadlineMutations = (): [
-      resemble_react.Mutation<AddDeadlineRequest>,
-      () => void
-    ][] => {
-      if (localStorageKeyRef.current === undefined) {
-        return [];
-      }
-      const suffix = AddDeadline
-      const value = localStorage.getItem(localStorageKeyRef.current + suffix);
-      if (value === null) {
-        return [];
-      }
-
-      localStorage.removeItem(localStorageKeyRef.current);
-      const mutations: resemble_react.Mutation<AddDeadlineRequest>[] = JSON.parse(value);
-      const recoveredAddDeadlineMutations: [
-        resemble_react.Mutation<AddDeadlineRequest>,
-        () => void
-      ][] = [];
-      for (const mutation of mutations) {
-        recoveredAddDeadlineMutations.push([mutation, () => __AddDeadline(mutation)]);
-      }
-      return recoveredAddDeadlineMutations;
-    }
-    const doOnceAddDeadline = useRef(true)
-    if (doOnceAddDeadline.current) {
-      doOnceAddDeadline.current = false
-      recoveredAddDeadlineMutations.current = recoverAndPurgeAddDeadlineMutations()
-    }
-
-    // User facing state that only includes the pending mutations that
-    // have not been observed.
-    const [unobservedPendingAddDeadlineMutations, setUnobservedPendingAddDeadlineMutations] =
-      useState<resemble_react.Mutation<AddDeadlineRequest>[]>([]);
-
-    useEffect(() => {
-      shouldClearFailedAddDeadlineMutations.current = true;
-    }, [failedAddDeadlineMutations]);
-
-    async function __AddDeadline(
-      mutation: resemble_react.Mutation<AddDeadlineRequest>
-    ): Promise<resemble_react.ResponseOrError<AddDealineResponse>> {
-      try {
-        // Invariant that we won't yield to event loop before pushing to
-        // runningAddDeadlineMutations
-        runningAddDeadlineMutations.current.push(mutation)
-        return _Mutation<AddDeadlineRequest, AddDealineResponse>(
-          // Invariant here is that we use the '/package.service.method'.
-          //
-          // See also 'resemble/helpers.py'.
-          "/todo_app.v1.TodoList.AddDeadline",
-          mutation,
-          mutation.request,
-          mutation.idempotencyKey,
-          setUnobservedPendingAddDeadlineMutations,
-          abortController,
-          shouldClearFailedAddDeadlineMutations,
-          setFailedAddDeadlineMutations,
-          runningAddDeadlineMutations,
-          flushMutations,
-          queuedMutations,
-          AddDeadlineRequest,
-          AddDealineResponse.fromJson
-        );
-      } finally {
-        runningAddDeadlineMutations.current = runningAddDeadlineMutations.current.filter(
-          ({ idempotencyKey }) => mutation.idempotencyKey !== idempotencyKey
-        );
-
-        resemble_react.popMutationMaybeFromLocalStorage(
-          localStorageKeyRef.current,
-          "AddDeadline",
-          (mutationRequest: resemble_react.Mutation<Request>) =>
-            mutationRequest.idempotencyKey !== mutation.idempotencyKey
-        );
-
-
-      }
-    }
-    async function _AddDeadline(mutation: resemble_react.Mutation<AddDeadlineRequest>) {
-      setUnobservedPendingAddDeadlineMutations(
-        (mutations) => [...mutations, mutation]
-      )
-
-      // NOTE: we only run one mutation at a time so that we provide a
-      // serializable experience for the end user but we will
-      // eventually support mutations in parallel when we have strong
-      // eventually consistent writers.
-      if (
-        hasRunningMutations() ||
-        queuedMutations.current.length > 0 ||
-        flushMutations.current !== undefined
-      ) {
-        const deferred = new resemble_react.Deferred<resemble_react.ResponseOrError<AddDealineResponse>>(() =>
-          __AddDeadline(mutation)
-        );
-
-        // Add to localStorage here.
-        queuedAddDeadlineMutations.current.push([mutation, () => deferred.start()]);
-        queuedMutations.current.push(() => {
-          for (const [, run] of queuedAddDeadlineMutations.current) {
-            queuedAddDeadlineMutations.current.shift();
-            run();
-            break;
-          }
-        });
-        // Maybe add to localStorage.
-        resemble_react.pushMutationMaybeToLocalStorage(localStorageKeyRef.current, "AddDeadline", mutation);
-
-        return deferred.promise;
-      } else {
-        // NOTE: we'll add this mutation to `runningAddDeadlineMutations` in `__AddDeadline`
-        // without yielding to event loop so that we are guaranteed atomicity with checking `hasRunningMutations()`.
-        return await __AddDeadline(mutation);
-      }
-    }
-
-    async function AddDeadline(
-      partialRequest: __bufbuildProtobufPartialMessage<AddDeadlineRequest>,
-      optimistic_metadata?: any
-    ): Promise<resemble_react.ResponseOrError<AddDealineResponse>> {
-      const idempotencyKey = uuidv4();
-
-      const request = partialRequest instanceof AddDeadlineRequest
-        ? partialRequest
-        : new AddDeadlineRequest(partialRequest);
-
-      const mutation = {
-        request,
-        idempotencyKey,
-        optimistic_metadata,
-        isLoading: false, // Won't start loading if we're flushing mutations.
-      };
-
-      return _AddDeadline(mutation);
-    }
-
-    const runningReminderTextTaskMutations = useRef<resemble_react.Mutation<ReminderTextTaskRequest>[]>([]);
-    const recoveredReminderTextTaskMutations = useRef<
-      [resemble_react.Mutation<ReminderTextTaskRequest>, () => void][]
-    >([]);
-    const shouldClearFailedReminderTextTaskMutations = useRef(false);
-    const [failedReminderTextTaskMutations, setFailedReminderTextTaskMutations] = useState<
-      resemble_react.Mutation<ReminderTextTaskRequest>[]
-    >([]);
-    const queuedReminderTextTaskMutations = useRef<[resemble_react.Mutation<ReminderTextTaskRequest>, () => void][]>(
-      []
-    );
-    const recoverAndPurgeReminderTextTaskMutations = (): [
-      resemble_react.Mutation<ReminderTextTaskRequest>,
-      () => void
-    ][] => {
-      if (localStorageKeyRef.current === undefined) {
-        return [];
-      }
-      const suffix = ReminderTextTask
-      const value = localStorage.getItem(localStorageKeyRef.current + suffix);
-      if (value === null) {
-        return [];
-      }
-
-      localStorage.removeItem(localStorageKeyRef.current);
-      const mutations: resemble_react.Mutation<ReminderTextTaskRequest>[] = JSON.parse(value);
-      const recoveredReminderTextTaskMutations: [
-        resemble_react.Mutation<ReminderTextTaskRequest>,
-        () => void
-      ][] = [];
-      for (const mutation of mutations) {
-        recoveredReminderTextTaskMutations.push([mutation, () => __ReminderTextTask(mutation)]);
-      }
-      return recoveredReminderTextTaskMutations;
-    }
-    const doOnceReminderTextTask = useRef(true)
-    if (doOnceReminderTextTask.current) {
-      doOnceReminderTextTask.current = false
-      recoveredReminderTextTaskMutations.current = recoverAndPurgeReminderTextTaskMutations()
-    }
-
-    // User facing state that only includes the pending mutations that
-    // have not been observed.
-    const [unobservedPendingReminderTextTaskMutations, setUnobservedPendingReminderTextTaskMutations] =
-      useState<resemble_react.Mutation<ReminderTextTaskRequest>[]>([]);
-
-    useEffect(() => {
-      shouldClearFailedReminderTextTaskMutations.current = true;
-    }, [failedReminderTextTaskMutations]);
-
-    async function __ReminderTextTask(
-      mutation: resemble_react.Mutation<ReminderTextTaskRequest>
-    ): Promise<resemble_react.ResponseOrError<Empty>> {
-      try {
-        // Invariant that we won't yield to event loop before pushing to
-        // runningReminderTextTaskMutations
-        runningReminderTextTaskMutations.current.push(mutation)
-        return _Mutation<ReminderTextTaskRequest, Empty>(
-          // Invariant here is that we use the '/package.service.method'.
-          //
-          // See also 'resemble/helpers.py'.
-          "/todo_app.v1.TodoList.ReminderTextTask",
-          mutation,
-          mutation.request,
-          mutation.idempotencyKey,
-          setUnobservedPendingReminderTextTaskMutations,
-          abortController,
-          shouldClearFailedReminderTextTaskMutations,
-          setFailedReminderTextTaskMutations,
-          runningReminderTextTaskMutations,
-          flushMutations,
-          queuedMutations,
-          ReminderTextTaskRequest,
-          Empty.fromJson
-        );
-      } finally {
-        runningReminderTextTaskMutations.current = runningReminderTextTaskMutations.current.filter(
-          ({ idempotencyKey }) => mutation.idempotencyKey !== idempotencyKey
-        );
-
-        resemble_react.popMutationMaybeFromLocalStorage(
-          localStorageKeyRef.current,
-          "ReminderTextTask",
-          (mutationRequest: resemble_react.Mutation<Request>) =>
-            mutationRequest.idempotencyKey !== mutation.idempotencyKey
-        );
-
-
-      }
-    }
-    async function _ReminderTextTask(mutation: resemble_react.Mutation<ReminderTextTaskRequest>) {
-      setUnobservedPendingReminderTextTaskMutations(
-        (mutations) => [...mutations, mutation]
-      )
-
-      // NOTE: we only run one mutation at a time so that we provide a
-      // serializable experience for the end user but we will
-      // eventually support mutations in parallel when we have strong
-      // eventually consistent writers.
-      if (
-        hasRunningMutations() ||
-        queuedMutations.current.length > 0 ||
-        flushMutations.current !== undefined
-      ) {
-        const deferred = new resemble_react.Deferred<resemble_react.ResponseOrError<Empty>>(() =>
-          __ReminderTextTask(mutation)
-        );
-
-        // Add to localStorage here.
-        queuedReminderTextTaskMutations.current.push([mutation, () => deferred.start()]);
-        queuedMutations.current.push(() => {
-          for (const [, run] of queuedReminderTextTaskMutations.current) {
-            queuedReminderTextTaskMutations.current.shift();
-            run();
-            break;
-          }
-        });
-        // Maybe add to localStorage.
-        resemble_react.pushMutationMaybeToLocalStorage(localStorageKeyRef.current, "ReminderTextTask", mutation);
-
-        return deferred.promise;
-      } else {
-        // NOTE: we'll add this mutation to `runningReminderTextTaskMutations` in `__ReminderTextTask`
-        // without yielding to event loop so that we are guaranteed atomicity with checking `hasRunningMutations()`.
-        return await __ReminderTextTask(mutation);
-      }
-    }
-
-    async function ReminderTextTask(
-      partialRequest: __bufbuildProtobufPartialMessage<ReminderTextTaskRequest>,
-      optimistic_metadata?: any
-    ): Promise<resemble_react.ResponseOrError<Empty>> {
-      const idempotencyKey = uuidv4();
-
-      const request = partialRequest instanceof ReminderTextTaskRequest
-        ? partialRequest
-        : new ReminderTextTaskRequest(partialRequest);
-
-      const mutation = {
-        request,
-        idempotencyKey,
-        optimistic_metadata,
-        isLoading: false, // Won't start loading if we're flushing mutations.
-      };
-
-      return _ReminderTextTask(mutation);
-    }
-
-    useEffect(() => {
-      if (abortController === undefined ) {
-        return;
-      }
-      const loop = async () => {
-        await resemble_react.retryForever(async () => {
-          try {// Wait for any mutations to complete before starting to
-            // read so that we read the latest state including those
-            // mutations.
-            if (runningCreateMutations.current.length > 0 || runningAddTodoMutations.current.length > 0 || runningDeleteTodoMutations.current.length > 0 || runningCompleteTodoMutations.current.length > 0 || runningAddDeadlineMutations.current.length > 0 || runningReminderTextTaskMutations.current.length > 0) {
-              // TODO(benh): check invariant
-              // 'flushMutations.current !== undefined' but don't
-              // throw an error since that will just retry, instead
-              // add support for "bailing" from a 'retry' by calling a
-              // function passed into the lambda that 'retry' takes.
-              await flushMutations.current?.wait();
-            }
-
-
-            const responses = ReactQuery(
-              new resemble_api.react_pb.QueryRequest({
-                method: "ListTodos",
-                request: requestRef.current.toBinary(),
-              }),
-              abortController?.signal
-            );
-
-            for await (const response of responses) {
-              setIsLoading(false);
-
-              for (const idempotencyKey of response.idempotencyKeys) {
-                observedIdempotencyKeys.current.add(idempotencyKey);
-              }
-
-              // Only keep around the idempotency keys that are
-              // still pending as the rest are not useful for us.
-              observedIdempotencyKeys.current = resemble_react.filterSet(
-                observedIdempotencyKeys.current,
-                (observedIdempotencyKey) =>
-                  [
-                  ...runningCreateMutations.current,
-                  ...runningAddTodoMutations.current,
-                  ...runningDeleteTodoMutations.current,
-                  ...runningCompleteTodoMutations.current,
-                  ...runningAddDeadlineMutations.current,
-                  ...runningReminderTextTaskMutations.current,
-                  ].some(
-                    (mutation) =>
-                      observedIdempotencyKey === mutation.idempotencyKey
-                  )
-              );
-
-              if (flushMutations.current !== undefined) {
-                // TODO(benh): check invariant
-                // 'pendingMutations.current.length === 0' but don't
-                // throw an error since that will just retry, instead
-                // add support for "bailing" from a 'retry' by calling a
-                // function passed into the lambda that 'retry' takes.
-
-                flushMutations.current = undefined;
-
-                // Dequeue the next mutation and run it.
-                for (const run of queuedMutations.current) {
-                  queuedMutations.current.shift();
-                  run();
-                  break;
-                }
-              }
-
-              setUnobservedPendingCreateMutations(
-              (mutations) =>
-                mutations
-                  .filter(
-                    (mutation) =>
-                      // Only keep mutations that are queued, pending or
-                      // recovered.
-                      queuedCreateMutations.current.some(
-                        ([queuedCreateMutation]) =>
-                          mutation.idempotencyKey ===
-                          queuedCreateMutation.idempotencyKey
-                      ) ||
-                      runningCreateMutations.current.some(
-                        (runningCreateMutations) =>
-                          mutation.idempotencyKey ===
-                          runningCreateMutations.idempotencyKey
-                      )
-                  )
-                  .filter(
-                    (mutation) =>
-                      // Only keep mutations whose effects haven't been observed.
-                      !observedIdempotencyKeys.current.has(
-                        mutation.idempotencyKey
-                      )
-                  )
-              )
-
-              setUnobservedPendingAddTodoMutations(
-              (mutations) =>
-                mutations
-                  .filter(
-                    (mutation) =>
-                      // Only keep mutations that are queued, pending or
-                      // recovered.
-                      queuedAddTodoMutations.current.some(
-                        ([queuedAddTodoMutation]) =>
-                          mutation.idempotencyKey ===
-                          queuedAddTodoMutation.idempotencyKey
-                      ) ||
-                      runningAddTodoMutations.current.some(
-                        (runningAddTodoMutations) =>
-                          mutation.idempotencyKey ===
-                          runningAddTodoMutations.idempotencyKey
-                      )
-                  )
-                  .filter(
-                    (mutation) =>
-                      // Only keep mutations whose effects haven't been observed.
-                      !observedIdempotencyKeys.current.has(
-                        mutation.idempotencyKey
-                      )
-                  )
-              )
-
-              setUnobservedPendingDeleteTodoMutations(
-              (mutations) =>
-                mutations
-                  .filter(
-                    (mutation) =>
-                      // Only keep mutations that are queued, pending or
-                      // recovered.
-                      queuedDeleteTodoMutations.current.some(
-                        ([queuedDeleteTodoMutation]) =>
-                          mutation.idempotencyKey ===
-                          queuedDeleteTodoMutation.idempotencyKey
-                      ) ||
-                      runningDeleteTodoMutations.current.some(
-                        (runningDeleteTodoMutations) =>
-                          mutation.idempotencyKey ===
-                          runningDeleteTodoMutations.idempotencyKey
-                      )
-                  )
-                  .filter(
-                    (mutation) =>
-                      // Only keep mutations whose effects haven't been observed.
-                      !observedIdempotencyKeys.current.has(
-                        mutation.idempotencyKey
-                      )
-                  )
-              )
-
-              setUnobservedPendingCompleteTodoMutations(
-              (mutations) =>
-                mutations
-                  .filter(
-                    (mutation) =>
-                      // Only keep mutations that are queued, pending or
-                      // recovered.
-                      queuedCompleteTodoMutations.current.some(
-                        ([queuedCompleteTodoMutation]) =>
-                          mutation.idempotencyKey ===
-                          queuedCompleteTodoMutation.idempotencyKey
-                      ) ||
-                      runningCompleteTodoMutations.current.some(
-                        (runningCompleteTodoMutations) =>
-                          mutation.idempotencyKey ===
-                          runningCompleteTodoMutations.idempotencyKey
-                      )
-                  )
-                  .filter(
-                    (mutation) =>
-                      // Only keep mutations whose effects haven't been observed.
-                      !observedIdempotencyKeys.current.has(
-                        mutation.idempotencyKey
-                      )
-                  )
-              )
-
-              setUnobservedPendingAddDeadlineMutations(
-              (mutations) =>
-                mutations
-                  .filter(
-                    (mutation) =>
-                      // Only keep mutations that are queued, pending or
-                      // recovered.
-                      queuedAddDeadlineMutations.current.some(
-                        ([queuedAddDeadlineMutation]) =>
-                          mutation.idempotencyKey ===
-                          queuedAddDeadlineMutation.idempotencyKey
-                      ) ||
-                      runningAddDeadlineMutations.current.some(
-                        (runningAddDeadlineMutations) =>
-                          mutation.idempotencyKey ===
-                          runningAddDeadlineMutations.idempotencyKey
-                      )
-                  )
-                  .filter(
-                    (mutation) =>
-                      // Only keep mutations whose effects haven't been observed.
-                      !observedIdempotencyKeys.current.has(
-                        mutation.idempotencyKey
-                      )
-                  )
-              )
-
-              setUnobservedPendingReminderTextTaskMutations(
-              (mutations) =>
-                mutations
-                  .filter(
-                    (mutation) =>
-                      // Only keep mutations that are queued, pending or
-                      // recovered.
-                      queuedReminderTextTaskMutations.current.some(
-                        ([queuedReminderTextTaskMutation]) =>
-                          mutation.idempotencyKey ===
-                          queuedReminderTextTaskMutation.idempotencyKey
-                      ) ||
-                      runningReminderTextTaskMutations.current.some(
-                        (runningReminderTextTaskMutations) =>
-                          mutation.idempotencyKey ===
-                          runningReminderTextTaskMutations.idempotencyKey
-                      )
-                  )
-                  .filter(
-                    (mutation) =>
-                      // Only keep mutations whose effects haven't been observed.
-                      !observedIdempotencyKeys.current.has(
-                        mutation.idempotencyKey
-                      )
-                  )
-              )
-
-
-              if (response.response !== undefined) {
-                setResponse(ListTodosResponse.fromBinary(response.response));
-              }
-            }
-          } catch (e: unknown) {
-            if (abortController?.signal.aborted) {
-              return;
-            }
-
-            setError(e);
-            setIsLoading(true);
-
-            // Run a mutation in the event that we are trying to read
-            // from an unconstructed actor and the mutation will perform
-            // the construction.
-            //
-            // TODO(benh): only do this if the reason we failed to
-            // read was because the actor does not exist.
-            for (const run of queuedMutations.current) {
-              queuedMutations.current.shift();
-              run();
-              break;
-            }
-
-            // TODO(benh): check invariant
-            // 'flushMutations.current === undefined' but don't
-            // throw an error since that will just retry, instead
-            // add support for "bailing" from a 'retry' by calling a
-            // function passed into the lambda that 'retry' takes.
-            flushMutations.current = new resemble_react.Event();
-
-            throw e;
-          }
-        });
-      };
-
-      loop();
-    }, [abortController]);
-
-    return {
-      response,
-      isLoading,
-      error,
-      mutations: {
-        Create,
-        AddTodo,
-        DeleteTodo,
-        CompleteTodo,
-        AddDeadline,
-        ReminderTextTask,
-      },
-      pendingCreateMutations: unobservedPendingCreateMutations,
-      failedCreateMutations,
-      recoveredCreateMutations: recoveredCreateMutations.current.map(
-        ([mutation, run]) => ({ ...mutation, run: run })
-      ),
-      pendingAddTodoMutations: unobservedPendingAddTodoMutations,
-      failedAddTodoMutations,
-      recoveredAddTodoMutations: recoveredAddTodoMutations.current.map(
-        ([mutation, run]) => ({ ...mutation, run: run })
-      ),
-      pendingDeleteTodoMutations: unobservedPendingDeleteTodoMutations,
-      failedDeleteTodoMutations,
-      recoveredDeleteTodoMutations: recoveredDeleteTodoMutations.current.map(
-        ([mutation, run]) => ({ ...mutation, run: run })
-      ),
-      pendingCompleteTodoMutations: unobservedPendingCompleteTodoMutations,
-      failedCompleteTodoMutations,
-      recoveredCompleteTodoMutations: recoveredCompleteTodoMutations.current.map(
-        ([mutation, run]) => ({ ...mutation, run: run })
-      ),
-      pendingAddDeadlineMutations: unobservedPendingAddDeadlineMutations,
-      failedAddDeadlineMutations,
-      recoveredAddDeadlineMutations: recoveredAddDeadlineMutations.current.map(
-        ([mutation, run]) => ({ ...mutation, run: run })
-      ),
-      pendingReminderTextTaskMutations: unobservedPendingReminderTextTaskMutations,
-      failedReminderTextTaskMutations,
-      recoveredReminderTextTaskMutations: recoveredReminderTextTaskMutations.current.map(
-        ([mutation, run]) => ({ ...mutation, run: run })
-      ),
-    };
-  };
-
-
-  const DeleteTodo = async (
-    partialRequest: __bufbuildProtobufPartialMessage<DeleteTodoRequest> = {}
-  ) => {
-    const request = partialRequest instanceof DeleteTodoRequest
-      ? partialRequest
-      : new DeleteTodoRequest(partialRequest);
-
-    const requestBody = request.toJson();
-
-    // Invariant here is that we use the '/package.service.method' path and
-    // HTTP 'POST' method (we need 'POST' because we send an HTTP body).
-    //
-    // See also 'resemble/helpers.py'.
-    const response = await resemble_react.guardedFetch(
-      newRequest(
-        requestBody,
-        "/todo_app.v1.TodoList.DeleteTodo", "POST"
-      )
-    );
-
-    return await response.json();
-  };
-
-  const CompleteTodo = async (
-    partialRequest: __bufbuildProtobufPartialMessage<CompleteTodoRequest> = {}
-  ) => {
-    const request = partialRequest instanceof CompleteTodoRequest
-      ? partialRequest
-      : new CompleteTodoRequest(partialRequest);
-
-    const requestBody = request.toJson();
-
-    // Invariant here is that we use the '/package.service.method' path and
-    // HTTP 'POST' method (we need 'POST' because we send an HTTP body).
-    //
-    // See also 'resemble/helpers.py'.
-    const response = await resemble_react.guardedFetch(
-      newRequest(
-        requestBody,
-        "/todo_app.v1.TodoList.CompleteTodo", "POST"
-      )
-    );
-
-    return await response.json();
-  };
-
-  const AddDeadline = async (
-    partialRequest: __bufbuildProtobufPartialMessage<AddDeadlineRequest> = {}
-  ) => {
-    const request = partialRequest instanceof AddDeadlineRequest
-      ? partialRequest
-      : new AddDeadlineRequest(partialRequest);
-
-    const requestBody = request.toJson();
-
-    // Invariant here is that we use the '/package.service.method' path and
-    // HTTP 'POST' method (we need 'POST' because we send an HTTP body).
-    //
-    // See also 'resemble/helpers.py'.
-    const response = await resemble_react.guardedFetch(
-      newRequest(
-        requestBody,
-        "/todo_app.v1.TodoList.AddDeadline", "POST"
-      )
-    );
-
-    return await response.json();
-  };
-
-  const ReminderTextTask = async (
-    partialRequest: __bufbuildProtobufPartialMessage<ReminderTextTaskRequest> = {}
-  ) => {
-    const request = partialRequest instanceof ReminderTextTaskRequest
-      ? partialRequest
-      : new ReminderTextTaskRequest(partialRequest);
-
-    const requestBody = request.toJson();
-
-    // Invariant here is that we use the '/package.service.method' path and
-    // HTTP 'POST' method (we need 'POST' because we send an HTTP body).
-    //
-    // See also 'resemble/helpers.py'.
-    const response = await resemble_react.guardedFetch(
-      newRequest(
-        requestBody,
-        "/todo_app.v1.TodoList.ReminderTextTask", "POST"
-      )
-    );
-
-    return await response.json();
-  };
-
-
-async function _Mutation<
-    Request extends
-CreateRequest    |AddTodoRequest    |DeleteTodoRequest    |CompleteTodoRequest    |AddDeadlineRequest    |ReminderTextTaskRequest,
-    Response extends    CreateResponse    |    AddTodoResponse    |    DeleteTodoResponse    |    CompleteTodoResponse    |    AddDealineResponse    |    Empty  >(
-    path: string,
-    mutation: resemble_react.Mutation<Request>,
-    request: Request,
-    idempotencyKey: string,
-    setUnobservedPendingMutations: Dispatch<
-      SetStateAction<resemble_react.Mutation<Request>[]>
-    >,
-    abortController: AbortController | undefined,
-    shouldClearFailedMutations: MutableRefObject<boolean>,
-    setFailedMutations: Dispatch<SetStateAction<resemble_react.Mutation<Request>[]>>,
-    runningMutations: MutableRefObject<resemble_react.Mutation<Request>[]>,
-    flushMutations: MutableRefObject<resemble_react.Event | undefined>,
-    queuedMutations: MutableRefObject<Array<() => void>>,
-    requestType: { new (request: Request): Request },
-    responseTypeFromJson: (json: any) => Response
-  ): Promise<resemble_react.ResponseOrError<Response>> {
-
-    try {
-      return await resemble_react.retryForever(
-        async () => {
-          try {
-            setUnobservedPendingMutations(
-              (mutations) => {
-                return mutations.map((mutation) => {
-                  if (mutation.idempotencyKey === idempotencyKey) {
-                    return { ...mutation, isLoading: true };
-                  }
-                  return mutation;
-                });
-              }
-            );
-            const req: Request =
-              request instanceof requestType
-                ? request
-                : new requestType(request);
-
-            const response = await resemble_react.guardedFetch(
-              newRequest(req.toJson(), path, "POST", idempotencyKey),
-              { signal: abortController?.signal }
-            );
-
-            if (!response.ok && response.headers.has("grpc-status")) {
-              const grpcStatus = response.headers.get("grpc-status");
-              let grpcMessage = response.headers.get("grpc-message");
-              const error = new Error(
-                `'todo_app.v1.TodoList' for '${id}' responded ` +
-                  `with status ${grpcStatus}` +
-                  `${grpcMessage !== null ? ": " + grpcMessage : ""}`
-              );
-
-              if (shouldClearFailedMutations.current) {
-                shouldClearFailedMutations.current = false;
-                setFailedMutations([
-                  { request, idempotencyKey, isLoading: false, error },
-                ]);
-              } else {
-                setFailedMutations((failedMutations) => [
-                  ...failedMutations,
-                  { request, idempotencyKey, isLoading: false, error },
-                ]);
-              }
-              setUnobservedPendingMutations(
-                (mutations) =>
-                  mutations.filter(
-                    (mutation) => mutation.idempotencyKey !== idempotencyKey
-                  )
-              );
-
-              return { error } as resemble_react.ResponseOrError<Response>;
-            }
-            if (!response.ok) {
-              throw new Error("Failed to fetch");
-            }
-            const jsonResponse = await response.json();
-            return {
-              response: responseTypeFromJson(jsonResponse),
-            };
-          } catch (e: unknown) {
-            setUnobservedPendingMutations(
-              (mutations) =>
-                mutations.map((mutation) => {
-                  if (mutation.idempotencyKey === idempotencyKey) {
-                    return { ...mutation, error: e, isLoading: false };
-                  } else {
-                    return mutation;
-                  }
-                })
-            );
-
-            if (abortController?.signal.aborted) {
-              // TODO(benh): instead of returning 'undefined' as a
-              // means of knowing that we've aborted provide a way
-              // of "bailing" from a 'retry' by calling a function
-              // passed into the lambda that 'retry' takes.
-              return { error: new Error("Aborted") };
-            } else {
-              throw e;
-            }
-          }
-        },
-        {
-          maxBackoffSeconds: 3,
-        }
-      );
-    } finally {
-      // NOTE: we deliberately DO NOT remove from
-      // 'unobservedPendingMutations' but instead wait
-      // for a response first so that we don't cause a render
-      // before getting the updated state from the server.
-
-      if (
-        flushMutations.current !== undefined &&
-        runningMutations.current.length === 0
-      ) {
-        flushMutations.current.set();
-      } else {
-        // Dequeue 1 queue and run 1 mutation from it.
-        for (const run of queuedMutations.current) {
-          queuedMutations.current.shift();
-          run();
-          break;
-        }
-      }
-    }
-  }
-
-  async function* ReactQuery(
-    request: resemble_api.react_pb.QueryRequest,
-    signal: AbortSignal
-  ): AsyncGenerator<resemble_api.react_pb.QueryResponse, void, unknown> {
-    const response = await resemble_react.guardedFetch(
-      newRequest(request, "/query", "POST"),
-      { signal: signal }
-    );
-
-    if (response.body === null) {
-      throw new Error("Unable to read body of response");
-    }
-
-    const reader = response.body
-      .pipeThrough(new TextDecoderStream())
-      .getReader();
-
-    if (reader === undefined) {
-      throw new Error("Not able to instantiate reader on response body");
-    }
-
-    let accumulated = "";
-
-    while (true) {
-      const { value, done } = await reader.read();
-
-      if (!response.ok && response.headers.has("grpc-status")) {
-        const grpcStatus = response.headers.get("grpc-status");
-        let grpcMessage = response.headers.get("grpc-message");
-        throw new Error(
-          `'ReactQuery responded ` +
-            `with status ${grpcStatus}` +
-            `${grpcMessage !== null ? ": " + grpcMessage : ""}`
-        );
-      } else if (!response.ok) {
-        throw new Error(
-          `'ReactQuery' failed: ${value}`
-        );
-      } else if (done) {
-        break;
-      } else {
-        accumulated += value.trim();
-
-        if (accumulated.startsWith(",")) {
-          accumulated = accumulated.substring(1);
-        }
-
-        if (!accumulated.startsWith("[")) {
-          accumulated = "[" + accumulated;
-        }
-
-        if (!accumulated.endsWith("]")) {
-          accumulated = accumulated + "]";
-        }
-
-        try {
-          const json = JSON.parse(accumulated);
-          accumulated = "";
-          yield resemble_api.react_pb.QueryResponse.fromJson(json.at(-1));
-        } catch (e) {
-          if (e instanceof SyntaxError) {
-            accumulated = accumulated.substring(0, accumulated.length - 1);
-            continue;
-          } else {
-            throw e;
-          }
-        }
-      }
-    }
-  }
-
-  return {
-    Create,
-    AddTodo,
-    ListTodos,
-    useListTodos,
-    DeleteTodo,
-    CompleteTodo,
-    AddDeadline,
-    ReminderTextTask,
-  };
-};
-
-
 class TodoListInstance {
 
   constructor(id: string, endpoint: string) {
@@ -2034,16 +165,19 @@ class TodoListInstance {
     this.initializeWebSocket();
   }
 
-  ref() {
+  private ref() {
     this.refs += 1;
+    return this.refs;
   }
 
-  unref() {
+  private unref() {
     this.refs -= 1;
 
     if (this.refs === 0 && this.websocket !== undefined) {
       this.websocket.close();
     }
+
+    return this.refs;
   }
 
   readonly id: string;
@@ -2481,21 +615,27 @@ class TodoListInstance {
             idempotencyKey: mutation.idempotencyKey,
           },
           ({ isLoading, error }: { isLoading: boolean; error?: any }) => {
+            let rerender = false;
             for (const m of this.useCreateMutations) {
               if (m === mutation) {
-                m.isLoading = isLoading;
-                if (error !== undefined) {
+                if (m.isLoading !== isLoading) {
+                  m.isLoading = isLoading;
+                  rerender = true;
+                }
+                if (error !== undefined && m.error !== error) {
                   m.error = error;
+                  rerender = true;
                 }
               }
-              return m;
             }
 
-            unstable_batchedUpdates(() => {
-              for (const setPending of Object.values(this.useCreateSetPendings)) {
-                setPending(this.useCreateMutations);
-              }
-            });
+            if (rerender) {
+              unstable_batchedUpdates(() => {
+                for (const setPending of Object.values(this.useCreateSetPendings)) {
+                  setPending(this.useCreateMutations);
+                }
+              });
+            }
           }
         );
 
@@ -2529,6 +669,7 @@ class TodoListInstance {
 
             let error;
             if ((error = resemble_api.SystemError.fromStatus(status)) !== undefined) {
+              console.warn(`Error '${error.getType().typeName}' received`);
               resolve({ error });
             } else {
               reject(
@@ -2622,21 +763,27 @@ class TodoListInstance {
             idempotencyKey: mutation.idempotencyKey,
           },
           ({ isLoading, error }: { isLoading: boolean; error?: any }) => {
+            let rerender = false;
             for (const m of this.useAddTodoMutations) {
               if (m === mutation) {
-                m.isLoading = isLoading;
-                if (error !== undefined) {
+                if (m.isLoading !== isLoading) {
+                  m.isLoading = isLoading;
+                  rerender = true;
+                }
+                if (error !== undefined && m.error !== error) {
                   m.error = error;
+                  rerender = true;
                 }
               }
-              return m;
             }
 
-            unstable_batchedUpdates(() => {
-              for (const setPending of Object.values(this.useAddTodoSetPendings)) {
-                setPending(this.useAddTodoMutations);
-              }
-            });
+            if (rerender) {
+              unstable_batchedUpdates(() => {
+                for (const setPending of Object.values(this.useAddTodoSetPendings)) {
+                  setPending(this.useAddTodoMutations);
+                }
+              });
+            }
           }
         );
 
@@ -2670,6 +817,7 @@ class TodoListInstance {
 
             let error;
             if ((error = resemble_api.SystemError.fromStatus(status)) !== undefined) {
+              console.warn(`Error '${error.getType().typeName}' received`);
               resolve({ error });
             } else {
               reject(
@@ -2828,21 +976,27 @@ class TodoListInstance {
             idempotencyKey: mutation.idempotencyKey,
           },
           ({ isLoading, error }: { isLoading: boolean; error?: any }) => {
+            let rerender = false;
             for (const m of this.useDeleteTodoMutations) {
               if (m === mutation) {
-                m.isLoading = isLoading;
-                if (error !== undefined) {
+                if (m.isLoading !== isLoading) {
+                  m.isLoading = isLoading;
+                  rerender = true;
+                }
+                if (error !== undefined && m.error !== error) {
                   m.error = error;
+                  rerender = true;
                 }
               }
-              return m;
             }
 
-            unstable_batchedUpdates(() => {
-              for (const setPending of Object.values(this.useDeleteTodoSetPendings)) {
-                setPending(this.useDeleteTodoMutations);
-              }
-            });
+            if (rerender) {
+              unstable_batchedUpdates(() => {
+                for (const setPending of Object.values(this.useDeleteTodoSetPendings)) {
+                  setPending(this.useDeleteTodoMutations);
+                }
+              });
+            }
           }
         );
 
@@ -2876,6 +1030,7 @@ class TodoListInstance {
 
             let error;
             if ((error = resemble_api.SystemError.fromStatus(status)) !== undefined) {
+              console.warn(`Error '${error.getType().typeName}' received`);
               resolve({ error });
             } else {
               reject(
@@ -2969,21 +1124,27 @@ class TodoListInstance {
             idempotencyKey: mutation.idempotencyKey,
           },
           ({ isLoading, error }: { isLoading: boolean; error?: any }) => {
+            let rerender = false;
             for (const m of this.useCompleteTodoMutations) {
               if (m === mutation) {
-                m.isLoading = isLoading;
-                if (error !== undefined) {
+                if (m.isLoading !== isLoading) {
+                  m.isLoading = isLoading;
+                  rerender = true;
+                }
+                if (error !== undefined && m.error !== error) {
                   m.error = error;
+                  rerender = true;
                 }
               }
-              return m;
             }
 
-            unstable_batchedUpdates(() => {
-              for (const setPending of Object.values(this.useCompleteTodoSetPendings)) {
-                setPending(this.useCompleteTodoMutations);
-              }
-            });
+            if (rerender) {
+              unstable_batchedUpdates(() => {
+                for (const setPending of Object.values(this.useCompleteTodoSetPendings)) {
+                  setPending(this.useCompleteTodoMutations);
+                }
+              });
+            }
           }
         );
 
@@ -3017,6 +1178,7 @@ class TodoListInstance {
 
             let error;
             if ((error = resemble_api.SystemError.fromStatus(status)) !== undefined) {
+              console.warn(`Error '${error.getType().typeName}' received`);
               resolve({ error });
             } else {
               reject(
@@ -3110,21 +1272,27 @@ class TodoListInstance {
             idempotencyKey: mutation.idempotencyKey,
           },
           ({ isLoading, error }: { isLoading: boolean; error?: any }) => {
+            let rerender = false;
             for (const m of this.useAddDeadlineMutations) {
               if (m === mutation) {
-                m.isLoading = isLoading;
-                if (error !== undefined) {
+                if (m.isLoading !== isLoading) {
+                  m.isLoading = isLoading;
+                  rerender = true;
+                }
+                if (error !== undefined && m.error !== error) {
                   m.error = error;
+                  rerender = true;
                 }
               }
-              return m;
             }
 
-            unstable_batchedUpdates(() => {
-              for (const setPending of Object.values(this.useAddDeadlineSetPendings)) {
-                setPending(this.useAddDeadlineMutations);
-              }
-            });
+            if (rerender) {
+              unstable_batchedUpdates(() => {
+                for (const setPending of Object.values(this.useAddDeadlineSetPendings)) {
+                  setPending(this.useAddDeadlineMutations);
+                }
+              });
+            }
           }
         );
 
@@ -3158,6 +1326,7 @@ class TodoListInstance {
 
             let error;
             if ((error = resemble_api.SystemError.fromStatus(status)) !== undefined) {
+              console.warn(`Error '${error.getType().typeName}' received`);
               resolve({ error });
             } else {
               reject(
@@ -3251,21 +1420,27 @@ class TodoListInstance {
             idempotencyKey: mutation.idempotencyKey,
           },
           ({ isLoading, error }: { isLoading: boolean; error?: any }) => {
+            let rerender = false;
             for (const m of this.useReminderTextTaskMutations) {
               if (m === mutation) {
-                m.isLoading = isLoading;
-                if (error !== undefined) {
+                if (m.isLoading !== isLoading) {
+                  m.isLoading = isLoading;
+                  rerender = true;
+                }
+                if (error !== undefined && m.error !== error) {
                   m.error = error;
+                  rerender = true;
                 }
               }
-              return m;
             }
 
-            unstable_batchedUpdates(() => {
-              for (const setPending of Object.values(this.useReminderTextTaskSetPendings)) {
-                setPending(this.useReminderTextTaskMutations);
-              }
-            });
+            if (rerender) {
+              unstable_batchedUpdates(() => {
+                for (const setPending of Object.values(this.useReminderTextTaskSetPendings)) {
+                  setPending(this.useReminderTextTaskMutations);
+                }
+              });
+            }
           }
         );
 
@@ -3299,6 +1474,7 @@ class TodoListInstance {
 
             let error;
             if ((error = resemble_api.SystemError.fromStatus(status)) !== undefined) {
+              console.warn(`Error '${error.getType().typeName}' received`);
               resolve({ error });
             } else {
               reject(
@@ -3339,7 +1515,9 @@ class TodoListInstance {
   }
 
   unuse() {
-    this.unref();
+    if (this.unref() === 0) {
+      delete TodoListInstance.instances[this.id];
+    }
   }
 }
 
@@ -3348,7 +1526,7 @@ export const useTodoList = (
 ): UseTodoListApi => {
   const resembleContext = resemble_react.useResembleContext();
 
-  const endpoint = resembleContext.client?.endpoint || "";
+  const endpoint = resembleContext.client.endpoint;
 
   const [instance, setInstance] = useState(() => {
     return TodoListInstance.use(
@@ -3498,7 +1676,6 @@ export const useTodoList = (
       undefined
       | resemble_api.SystemErrorDetails
       >();
-
     const [exception, setException] = useState<Error>();
 
     useEffect(() => {
@@ -3516,13 +1693,14 @@ export const useTodoList = (
         (status: resemble_api.Status) => {
           let error;
           if ((error = resemble_api.SystemError.fromStatus(status)) !== undefined) {
+            console.warn(`Error '${error.getType().typeName}' received`);
             setError(error);
           } else {
-            setException(
-              new Error(
-                `Unknown error with gRPC status ${JSON.stringify(status)}`
-              )
+            error = new Error(
+              `Unknown error with gRPC status ${JSON.stringify(status)}`
             );
+            console.warn(error.message);
+            setException(error);
           }
         },
       );
@@ -3531,11 +1709,7 @@ export const useTodoList = (
       };
     }, [request]);
 
-    if (exception !== undefined) {
-      throw exception;
-    }
-
-    return { response, isLoading, error };
+    return { response, isLoading, error, exception };
   }
 
   async function listTodos(
@@ -3557,7 +1731,7 @@ export const useTodoList = (
           // See also 'resemble/helpers.py'.
           return await resemble_react.guardedFetch(
             new Request(
-              `${resembleContext.client?.endpoint}/todo_app.v1.TodoList.ListTodos`, {
+              `${resembleContext.client.endpoint}/todo_app.v1.TodoList.ListTodos`, {
                 method: "POST",
                 headers,
                 body: request.toJsonString()
@@ -3582,6 +1756,7 @@ export const useTodoList = (
 
         let error;
         if ((error = resemble_api.SystemError.fromStatus(status)) !== undefined) {
+          console.warn(`Error '${error.getType().typeName}' received`);
           return { error };
         } else {
           throw new Error(

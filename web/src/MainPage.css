@@ -123,3 +123,7 @@
   text-decoration: line-through; /* Strikethrough for completed items */
   color: #1b1818; /* Lighter color for completed items */
 }
+
+.showDate {
+  display: None;
+}
