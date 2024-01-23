@@ -1,6 +1,28 @@
 .main {
   position: relative;
-  height: 100vh; /* Full viewport height */
+  height: 90vh; /* Full viewport height */
+  margin-left: auto;
+  margin-right: auto;
+  /* background-color: aquamarine; */
+  width: 600px;
+  overflow: auto; /* Makes content scrollable when it overflows */
+  scrollbar-width: none;
+}
+
+.main::-webkit-scrollbar {
+  display: none;
+}
+
+/* Media query for smaller screens */
+@media screen and (max-width: 850px) {
+  .main {
+      width: 100%;
+  }
+
+  /* .todo-list-name {
+    margin-left: auto;
+    margin-left: auto;
+  } */
 }
 
 .todo-content {
@@ -57,23 +79,26 @@
   background-color: #0056b3;
 }
 
-
-
-
-
-
 .todo-and-name {
-  margin-left: 200px; /* This should match the width of your sidebar */
-  padding: 20px; /* Adjust padding as needed */
+  margin-left: auto;
+  /* margin-left: 200px; */
+  margin-right: auto;
+  padding: 20px;
+  /* background-color: #0056b3; */
 }
 
 /* Style for the TodoList name */
 .todo-list-name {
   position: absolute;
-  text-align: center; /* Left align to match the items */
-  padding-left: 20px;
-  margin-top: 0; /* Remove default margin from the top */
+  text-align: center;
+  margin-top: 0;
   width: 60%;
+  /* background-color: aqua; */
+  /* padding-left: 0;
+  padding-right: 0; */
+  /* padding-left: 30px; */
+  margin-left: 100px;
+  margin-right: 0px;
 }
 
 .todo-content {
@@ -91,19 +116,28 @@
   justify-content: space-between;
   text-align: left;
   margin-right: auto;
+  /* background-color: #333; */
+  width: 70%;
+  margin-left: auto;
+  margin-right: auto;
+  height: 45px;
 }
 
 .todo-item {
   background-color: #fff; /* Ensure the background matches the main content area */
   width: 100%;
-  font-size: 18px; /* Consistent font size for todo items */
-  color: #333; /* Dark color for text */
-  padding: 2px; /* Spacing around the text */
-  margin: 2px; /* Space between items */
-  background-color: transparent; /* White background for items */
-  border: none; /* Hide borders */
+  font-size: 18px;
+  color: #333;
+  padding: 2px;
+  margin: 2px;
+  background-color: transparent;
+  border: none;
   box-shadow: none;
   cursor: pointer; /* Indicates the item is clickable */
+  text-align: left;
+  max-width:inherit;
+  max-width: 310px;
+  overflow: scroll;
 }
 
 .todo-delete-button {
@@ -127,3 +161,15 @@
 .showDate {
   display: None;
 }
+
+.date-submit {
+  height: 40px;
+  width: 60px;
+  border-radius: 5px;
+  border-width: 1px;
+  background-color: #fff;
+}
+
+/* .fa-calendar {
+  
+} */

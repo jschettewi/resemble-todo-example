@@ -19,9 +19,9 @@ const App = () => {
 
   return (
     <div className={css.app}>
-      <Sidebar onTodoListClick={handleTodoListClick} selectedTodoList={selectedTodoList}/>
-      {selectedTodoList.id && <MainPage key={selectedTodoList?.id} selectedTodoList={selectedTodoList}/>}
-      {/* <MainPage key={selectedTodoList?.id} selectedTodoList={selectedTodoList}/> */}
+      <Sidebar onTodoListClick={handleTodoListClick} selectedTodoList={selectedTodoList} 
+      setSelectedTodoList={setSelectedTodoList}/>
+      {selectedTodoList.id && <MainPage key={selectedTodoList?.id} selectedTodoList={selectedTodoList} />}
     </div>
   );
 };

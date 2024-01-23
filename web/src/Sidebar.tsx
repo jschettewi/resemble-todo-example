@@ -9,10 +9,11 @@ const STATE_MACHINE_ID = "todo-lists" ;
 interface SidebarArgs {
   onTodoListClick: any;
   selectedTodoList: any;
+  setSelectedTodoList: any;
 }
 
 
-const Sidebar = ({ onTodoListClick, selectedTodoList } : SidebarArgs) => {
+const Sidebar = ({ onTodoListClick, selectedTodoList, setSelectedTodoList } : SidebarArgs) => {
 
   const [text, setTodo] = useState("");
 
@@ -22,11 +23,6 @@ const Sidebar = ({ onTodoListClick, selectedTodoList } : SidebarArgs) => {
 
   const todolists = response?.todolists || [];
 
-  // const onSubmitTodoList = (event: any) => {
-  //   event.preventDefault();
-  //   console.log(text)
-  //   AddTodoList( {name: text} ).then(() => setTodo(""));
-  // };
 
   const onSubmitTodoList = (event: any) => {
     event.preventDefault();
@@ -49,7 +45,8 @@ const Sidebar = ({ onTodoListClick, selectedTodoList } : SidebarArgs) => {
         />
       </form>
       {todolists && todolists.map(({ id, name }) => <TodoList key={id} text={name} id={id} 
-      onClickTodoList={() => onTodoListClick(id, name)} isSelected={selectedTodoList?.id === id}/>)}
+      onClickTodoList={() => onTodoListClick(id, name)} isSelected={selectedTodoList?.id === id} 
+      selectedTodoList={selectedTodoList} setSelectedTodoList={setSelectedTodoList}/>)}
     </div>
   );
 };
@@ -59,15 +56,22 @@ interface TodoListArgs {
   text: string;
   onClickTodoList: any;
   isSelected: any;
+  selectedTodoList: any;
+  setSelectedTodoList: any;
 }
 
-const TodoList = ({ id, text, onClickTodoList, isSelected}: TodoListArgs) => {
+const TodoList = ({ id, text, onClickTodoList, isSelected, selectedTodoList, setSelectedTodoList}: TodoListArgs) => {
 
   const { useListTodoLists, mutators } = useTodoLists({ id: STATE_MACHINE_ID });
 
   const { response /* , isLoading */ } = useListTodoLists();
 
   const onDeleteTodoList = () => {
+    // if our selected todolist id is our selected todolist then we don't want to display that todolist on 
+    // the mainpage once it is deleted
+    if (isSelected) {
+      setSelectedTodoList({id: "", name: ""});
+    }
     mutators.deleteTodoList( { id: id });
   }
 

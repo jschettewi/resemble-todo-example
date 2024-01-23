@@ -40,7 +40,7 @@ const MainPage = ({ selectedTodoList } : MainPageArgs) => {
   // Update todos when selectedTodoListId changes
   useEffect(() => {
     settodolistId(selectedTodoList?.id);
-  }, [selectedTodoList.id]);
+  }, [selectedTodoList]);
 
   return (
     <>
@@ -97,9 +97,17 @@ const Todo = ({ id, text, complete, deadline, selectedTodoList }: TodoArgs) => {
   const [date, setDate] = useState();
   //const [date, setDate] = useState<Date | null>(new Date());
 
+  var isValidDate = false
   const deadlineDate = moment(deadline, 'DD/MM/YYYY').toDate()
-  console.log("##########")
-  console.log(deadlineDate)
+  if (moment(deadline, 'DD/MM/YYYY').isValid()) {
+    isValidDate = true
+  }
+  
+  if (isValidDate) {
+    // console.log("##########")
+    // console.log(deadlineDate)
+    // setDate(deadlineDate)
+  }
 
   const onCompleteTodo = () => {
     mutators.completeTodo( { todoId: id })
@@ -144,6 +152,9 @@ const Todo = ({ id, text, complete, deadline, selectedTodoList }: TodoArgs) => {
         <form onSubmit={onAddDeadline} className="todo-form">
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DatePicker 
+            slotProps={{ textField: { size: 'small' } }}
+            sx={{ width: "160px" }}
+            className="datepicker"
             label="Select deadline"
             value={date}
             onChange={(newDate) => {
@@ -151,7 +162,7 @@ const Todo = ({ id, text, complete, deadline, selectedTodoList }: TodoArgs) => {
             }}
             />
           </LocalizationProvider>
-          <button type="submit">Submit</button>
+          <button className="date-submit" type="submit">Submit</button>
         </form>
         )
         : null
