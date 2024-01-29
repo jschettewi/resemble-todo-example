@@ -97,17 +97,17 @@ const Todo = ({ id, text, complete, deadline, selectedTodoList }: TodoArgs) => {
   const [date, setDate] = useState();
   //const [date, setDate] = useState<Date | null>(new Date());
 
-  var isValidDate = false
-  const deadlineDate = moment(deadline, 'DD/MM/YYYY').toDate()
-  if (moment(deadline, 'DD/MM/YYYY').isValid()) {
-    isValidDate = true
-  }
+  // var isValidDate = false
+  // const deadlineDate = moment(deadline, 'DD/MM/YYYY').toDate()
+  // if (moment(deadline, 'DD/MM/YYYY').isValid()) {
+  //   isValidDate = true
+  // }
   
-  if (isValidDate) {
-    // console.log("##########")
-    // console.log(deadlineDate)
-    // setDate(deadlineDate)
-  }
+  // if (isValidDate) {
+  //   // console.log("##########")
+  //   // console.log(deadlineDate)
+  //   // setDate(deadlineDate)
+  // }
 
   const onCompleteTodo = () => {
     mutators.completeTodo( { todoId: id })
@@ -119,9 +119,11 @@ const Todo = ({ id, text, complete, deadline, selectedTodoList }: TodoArgs) => {
 
   const onAddDeadline = (event: any) => {
     event.preventDefault();
-    const dateString = moment(date).format('DD/MM/YYYY')
-    const dateString2 = moment(deadlineDate).format('DD/MM/YYYY')
-    const dateString3 = '30/01/2024'
+    const dateString = moment(date.$d).format('MM/DD/YYYY');
+    console.log(date);
+    // console.log(dateString);
+    // const dateString2 = moment(deadlineDate).format('DD/MM/YYYY')
+    const dateString3 = '30/01/2024';
     mutators.addDeadline( {todoId: id, date: dateString} );
     setshowDate(false);
   }

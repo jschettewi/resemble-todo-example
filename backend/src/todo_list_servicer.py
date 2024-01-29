@@ -145,7 +145,7 @@ class TodoListServicer(TodoList.Interface):
         
         message_body = "Reminder! You have to complete task '"+todo+"' by "+deadline
         # uncomment line below to send the message in twilio
-        #await send_text(message_body)
+        await send_text(message_body)
 
         print("Message:", message_body)
 
@@ -162,12 +162,12 @@ async def send_text(message_body: str):
     # twilio code here to send a text
 
     # lets send a message using twillio
-    account_sid = 'account_sid'
-    auth_token = 'auth_token'
+    account_sid = 'AC03d5902ba89dd69e3a8b7dc25b61b325'
+    auth_token = '2666834c9ccd4a18a3d8be2079bf7145'
     client = Client(account_sid, auth_token)
 
     message = client.messages.create(body=message_body, from_='+18554612173', to='+18777804236')
 
-    print(message.sid)
+    #print(message.sid)
 
         
