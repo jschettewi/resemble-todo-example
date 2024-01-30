@@ -23,7 +23,6 @@ const Sidebar = ({ onTodoListClick, selectedTodoList, setSelectedTodoList } : Si
 
   const todolists = response?.todolists || [];
 
-
   const onSubmitTodoList = (event: any) => {
     event.preventDefault();
     mutators.addTodoList({ name: text }).then(() => setTodo(""));
@@ -47,6 +46,13 @@ const Sidebar = ({ onTodoListClick, selectedTodoList, setSelectedTodoList } : Si
       {todolists && todolists.map(({ id, name }) => <TodoList key={id} text={name} id={id} 
       onClickTodoList={() => onTodoListClick(id, name)} isSelected={selectedTodoList?.id === id} 
       selectedTodoList={selectedTodoList} setSelectedTodoList={setSelectedTodoList}/>)}
+
+      {/* We want to render out TodoLists optimistically */}
+
+      {mutators.addTodoList.pending.map(({ request: { name }, isLoading }) => (
+        <PendingTodoList text={name} isLoading={isLoading} key={name} />
+      ))}
+
     </div>
   );
 };
@@ -86,5 +92,29 @@ const TodoList = ({ id, text, onClickTodoList, isSelected, selectedTodoList, set
     </div>
   );
 };
+
+interface PendingTodoListArgs {
+  text: string;
+  isLoading: boolean;
+}
+
+const PendingTodoList = ({ text, isLoading}:
+  PendingTodoListArgs) => {
+
+  const { useListTodoLists, mutators } = useTodoLists({ id: STATE_MACHINE_ID });
+
+  return (
+    <div key={text} className="todo-list-container">
+      <button className='text-button'>
+        { text }
+      </button>
+      <button className="text-button delete-button">
+        <i className="fa fa-trash"></i>
+      </button>
+    </div>
+  );
+};
+
+
 
 export default Sidebar;

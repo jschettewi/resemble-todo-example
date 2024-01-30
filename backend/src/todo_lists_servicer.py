@@ -24,6 +24,7 @@ class TodoListsServicer(TodoLists.Interface):
         request: AddTodoListRequest,
     ) -> AddTodoListResponse:
         
+        await asyncio.sleep(10)
         unique_id = str(uuid.uuid4())
         name = request.name
         
@@ -38,22 +39,13 @@ class TodoListsServicer(TodoLists.Interface):
             return TodoLists.Effects(state=state)
         
         await self.write(context, add_todolist)
-       
-        # name = request.name
-        # unique_id = str(uuid.uuid4())
-        # todoListObject = TodoListMessage(id=unique_id, name=name)
-        # state.todolists.extend([todoListObject])
-        # print(state)
-        # return TodoLists.AddTodoListEffects(state=state, response=AddTodoListResponse())
     
         # Let's go create the todolist.
         newtodolist = TodoList(unique_id)
         await newtodolist.Create(context, name=name)
-        #await newtodolist.AddTodo(context, todo="Added from todo_lists_servicer")
 
         return AddTodoListResponse(id=unique_id)
 
-        #return TodoLists.AddTodoListEffects(state=state, response=AddTodoListResponse(id=unique_id))
 
     async def ListTodoLists(
         self,
