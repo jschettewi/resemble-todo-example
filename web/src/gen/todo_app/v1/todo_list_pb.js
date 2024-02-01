@@ -4,7 +4,6 @@
 // @ts-nocheck
 
 import { proto3 } from "@bufbuild/protobuf";
-import { TaskId } from "../../resemble/v1alpha1/tasks_pb.js";
 
 /**
  * @generated from message todo_app.v1.Todo
@@ -134,23 +133,12 @@ export const AddDeadlineRequest = proto3.makeMessageType(
 );
 
 /**
- * @generated from message todo_app.v1.AddDealineResponse
+ * resemble.v1alpha1.TaskId reminder_text_task_id = 1;
+ *
+ * @generated from message todo_app.v1.AddDeadlineResponse
  */
-export const AddDealineResponse = proto3.makeMessageType(
-  "todo_app.v1.AddDealineResponse",
-  () => [
-    { no: 1, name: "reminder_text_task_id", kind: "message", T: TaskId },
-  ],
-);
-
-/**
- * @generated from message todo_app.v1.ReminderTextTaskRequest
- */
-export const ReminderTextTaskRequest = proto3.makeMessageType(
-  "todo_app.v1.ReminderTextTaskRequest",
-  () => [
-    { no: 1, name: "todo", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-    { no: 2, name: "deadline", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-  ],
+export const AddDeadlineResponse = proto3.makeMessageType(
+  "todo_app.v1.AddDeadlineResponse",
+  [],
 );
 

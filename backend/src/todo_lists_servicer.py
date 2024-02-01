@@ -24,7 +24,7 @@ class TodoListsServicer(TodoLists.Interface):
         request: AddTodoListRequest,
     ) -> AddTodoListResponse:
         
-        await asyncio.sleep(10)
+        # await asyncio.sleep(5)
         unique_id = str(uuid.uuid4())
         name = request.name
         

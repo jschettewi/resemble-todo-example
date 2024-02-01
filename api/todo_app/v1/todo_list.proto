@@ -37,18 +37,18 @@ service TodoList {
     };
   }
 
-  rpc AddDeadline(AddDeadlineRequest) returns (AddDealineResponse) {
-    option (resemble.v1alpha1.method).writer = {
+  rpc AddDeadline(AddDeadlineRequest) returns (AddDeadlineResponse) {
+    option (resemble.v1alpha1.method).transaction = {
     };
   }
 
   // An async task to send a reminder text to the person who set the deadline on a task
-  rpc ReminderTextTask(ReminderTextTaskRequest) returns (google.protobuf.Empty) {
-    option (resemble.v1alpha1.method) = {
-      writer: {},
-      task: true,
-    };
-  }
+  // rpc ReminderTextTask(ReminderTextTaskRequest) returns (google.protobuf.Empty) {
+  //   option (resemble.v1alpha1.method) = {
+  //     writer: {},
+  //     task: true,
+  //   };
+  // }
 
 }
 
@@ -110,11 +110,11 @@ message AddDeadlineRequest {
   string date = 2;
 }
 
-message AddDealineResponse {
-  resemble.v1alpha1.TaskId reminder_text_task_id = 1;
+message AddDeadlineResponse {
+  // resemble.v1alpha1.TaskId reminder_text_task_id = 1;
 }
 
-message ReminderTextTaskRequest {
-  string todo = 1;
-  string deadline = 2;
-}
+// message ReminderTextTaskRequest {
+//   string todo = 1;
+//   string deadline = 2;
+// }

@@ -1,0 +1,130 @@
+import asyncio
+import traceback
+import todo_app.v1.todo_list_pb2
+import uuid
+from datetime import datetime, timedelta
+from twilio.rest import Client
+from todo_app.v1.twilio_texts_rsm import (
+    UniqueText,
+    TwilioTexts,
+    TwilioTextsState,
+    CreateTwilioTextRequest,
+    CreateTwilioTextResponse,
+    AddTextRequest,
+    AddTextResponse,
+    ListTextsRequest,
+    ListTextsResponse,
+    TwilioReminderTextTaskRequest,
+)
+from google.protobuf.empty_pb2 import Empty
+from resemble.aio.contexts import ReaderContext, WriterContext, TransactionContext
+
+class TwilioTextsServicer(TwilioTexts.Interface):
+
+    async def Create(
+        self,
+        context: WriterContext,
+        request: CreateTwilioTextRequest,
+    ) -> TwilioTexts.CreateEffects:
+        # Since this is a constructor, we are setting the initial state of the
+        # state machine.
+        initial_state = TwilioTextsState(name=request.name)
+
+        # here we can schedule a task if we want to
+        # welcome_email_task = self.schedule().WelcomeEmailTask(context)
+
+        print(initial_state.todos)
+
+        return TwilioTexts.CreateEffects(
+            state=initial_state,
+            response=CreateTwilioTextResponse(),
+        )
+    
+    async def AddText(
+        self,
+        context: WriterContext,
+        state: TwilioTextsState,
+        request: AddTextRequest,
+    ) -> TwilioTexts.AddTextEffects:
+        to_number = request.to
+        body = request.body
+        create_time = request.create_time
+        # now we need to check if there are any texts that have the same 'to' and 'body'
+        # if there are: increment the num_times of this text
+        # else: make a new UniqueText
+
+        # TODO: fix this line
+        reminder_text_task = self.schedule().ReminderTextTask(context, to='', body='', create_time='',num_times=1)
+        
+        return TwilioTexts.AddTextEffects(
+            state=state, 
+            tasks=[reminder_text_task],
+            response=AddTextResponse(
+                reminder_text_task_id = reminder_text_task.task_id
+            ),
+        )
+
+    async def ListTexts(
+        self,
+        context: ReaderContext,
+        state: TwilioTextsState,
+        request: ListTextsRequest,
+    ) -> ListTextsResponse:
+        return ListTextsResponse(texts=state)
+    
+    async def ReminderTextTask(
+        self,
+        context: WriterContext,
+        state: TwilioTextsState,
+        request: TwilioReminderTextTaskRequest,
+    ) -> TwilioTexts.ReminderTextTaskEffects:
+        
+        deadline = request.deadline
+        todo = request.todo
+        
+        message_body = "Reminder! You have to complete task '"+todo+"' by "+deadline
+        # uncomment line below to send the message in twilio
+        await send_text(message_body)
+
+        print("Message:", message_body)
+
+        return TwilioTexts.ReminderTextTaskEffects(
+            state=state,
+            response=Empty(),
+        )
+
+
+async def send_text(message_body: str):
+    #logging.info(f"Sending text:\n====\n{message_body}\n====")
+    print("We are sending a text")
+
+    # twilio code here to send a text
+
+    # lets send a message using twillio
+    account_sid = 'AC03d5902ba89dd69e3a8b7dc25b61b325'
+    auth_token = '0434815514287f052b857a9fcead502c'
+    client = Client(account_sid, auth_token)
+
+    # messages = client.messages.list(date_sent_before=datetime(2019, 3, 1, 0, 0, 0), limit=20)
+
+    # lets get all the messages that were sent in the last 24 hours
+    # then make sure we aren't sending a message that has the same body as a message we already sent
+    messages = client.messages.list(date_sent_after=datetime.now() + timedelta(days=-1))
+
+    send_message = True
+    for record in messages:
+        if record.body == message_body:
+            send_message = False
+    
+    if send_message:
+        message = client.messages.create(body=message_body, from_='+18554612173', to='+18777804236')
+        print(message.sid)
+    else:
+        print("Reminder was already sent in the last 24 hours")
+    
+    # message = client.messages.create(body=message_body, from_='+18554612173', to='+18777804236')
+    # message = client.messages.create(body=message_body, from_='+18554612173', to='+18777804236')
+
+    #print(message.sid)
+
+        

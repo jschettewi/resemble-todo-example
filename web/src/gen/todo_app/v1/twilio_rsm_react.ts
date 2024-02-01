@@ -16,121 +16,87 @@ import {
 import { unstable_batchedUpdates } from "react-dom";
 import { v4 as uuidv4 } from "uuid";
 import {
-  Todo, 
-	TodoListState, 
-	CreateRequest, 
-	CreateResponse, 
-	AddTodoRequest, 
-	AddTodoResponse, 
-	ListTodosRequest, 
-	ListTodosResponse, 
-	DeleteTodoRequest, 
-	DeleteTodoResponse, 
-	CompleteTodoRequest, 
-	CompleteTodoResponse, 
-	AddDeadlineRequest, 
-	AddDeadlineResponse,
-} from "./todo_list_pb";
+  UniqueText, 
+	TwilioTextsState, 
+	CreateTwilioTextRequest, 
+	CreateTwilioTextResponse, 
+	AddTextRequest, 
+	AddTextResponse, 
+	ListTextsRequest, 
+	ListTextsResponse, 
+	TwilioReminderTextTaskRequest,
+} from "./twilio_pb";
 
 // Additionally re-export all messages from the pb module.
 export {
-  Todo, 
-	TodoListState, 
-	CreateRequest, 
-	CreateResponse, 
-	AddTodoRequest, 
-	AddTodoResponse, 
-	ListTodosRequest, 
-	ListTodosResponse, 
-	DeleteTodoRequest, 
-	DeleteTodoResponse, 
-	CompleteTodoRequest, 
-	CompleteTodoResponse, 
-	AddDeadlineRequest, 
-	AddDeadlineResponse,
+  UniqueText, 
+	TwilioTextsState, 
+	CreateTwilioTextRequest, 
+	CreateTwilioTextResponse, 
+	AddTextRequest, 
+	AddTextResponse, 
+	ListTextsRequest, 
+	ListTextsResponse, 
+	TwilioReminderTextTaskRequest,
 };
 
 
-export interface TodoListMutators {
+export interface TwilioTextsMutators {
   create: {
     // Mutators are functions and can be called directly.
-    (partialRequest?: __bufbuildProtobufPartialMessage<CreateRequest>,
+    (partialRequest?: __bufbuildProtobufPartialMessage<CreateTwilioTextRequest>,
      optimistic_metadata?: any
     ): Promise<
       resemble_react.ResponseOrErrors<
-        CreateResponse,
+        CreateTwilioTextResponse,
         resemble_api.SystemErrorDetails
       >>;
 
-    pending: resemble_react.Mutation<CreateRequest>[];
+    pending: resemble_react.Mutation<CreateTwilioTextRequest>[];
   };
-  addTodo: {
+  addText: {
     // Mutators are functions and can be called directly.
-    (partialRequest?: __bufbuildProtobufPartialMessage<AddTodoRequest>,
+    (partialRequest?: __bufbuildProtobufPartialMessage<AddTextRequest>,
      optimistic_metadata?: any
     ): Promise<
       resemble_react.ResponseOrErrors<
-        AddTodoResponse,
+        AddTextResponse,
         resemble_api.SystemErrorDetails
       >>;
 
-    pending: resemble_react.Mutation<AddTodoRequest>[];
+    pending: resemble_react.Mutation<AddTextRequest>[];
   };
-  deleteTodo: {
+  reminderTextTask: {
     // Mutators are functions and can be called directly.
-    (partialRequest?: __bufbuildProtobufPartialMessage<DeleteTodoRequest>,
+    (partialRequest?: __bufbuildProtobufPartialMessage<TwilioReminderTextTaskRequest>,
      optimistic_metadata?: any
     ): Promise<
       resemble_react.ResponseOrErrors<
-        DeleteTodoResponse,
+        Empty,
         resemble_api.SystemErrorDetails
       >>;
 
-    pending: resemble_react.Mutation<DeleteTodoRequest>[];
-  };
-  completeTodo: {
-    // Mutators are functions and can be called directly.
-    (partialRequest?: __bufbuildProtobufPartialMessage<CompleteTodoRequest>,
-     optimistic_metadata?: any
-    ): Promise<
-      resemble_react.ResponseOrErrors<
-        CompleteTodoResponse,
-        resemble_api.SystemErrorDetails
-      >>;
-
-    pending: resemble_react.Mutation<CompleteTodoRequest>[];
-  };
-  addDeadline: {
-    // Mutators are functions and can be called directly.
-    (partialRequest?: __bufbuildProtobufPartialMessage<AddDeadlineRequest>,
-     optimistic_metadata?: any
-    ): Promise<
-      resemble_react.ResponseOrErrors<
-        AddDeadlineResponse,
-        resemble_api.SystemErrorDetails
-      >>;
-
-    pending: resemble_react.Mutation<AddDeadlineRequest>[];
+    pending: resemble_react.Mutation<TwilioReminderTextTaskRequest>[];
   };
 }
 
 
-export interface UseTodoListApi {
-  mutators: TodoListMutators;
-  useListTodos: (
-    partialRequest?: __bufbuildProtobufPartialMessage<ListTodosRequest>
+export interface UseTwilioTextsApi {
+  mutators: TwilioTextsMutators;
+  useListTexts: (
+    partialRequest?: __bufbuildProtobufPartialMessage<ListTextsRequest>
   ) => {
-    response: ListTodosResponse | undefined;
+    response: ListTextsResponse | undefined;
     isLoading: boolean;
     error: undefined | resemble_api.SystemErrorDetails
 ;
     exception: undefined | Error;
   };
-  listTodos: (
-    partialRequest?: __bufbuildProtobufPartialMessage<ListTodosRequest>
+  listTexts: (
+    partialRequest?: __bufbuildProtobufPartialMessage<ListTextsRequest>
   ) => Promise<
     resemble_react.ResponseOrErrors<
-    ListTodosResponse,
+    ListTextsResponse,
     resemble_api.SystemErrorDetails
     >
   >;
@@ -141,7 +107,7 @@ export interface SettingsParams {
   storeMutationsLocallyInNamespace?: string;
 }
 
-class TodoListInstance {
+class TwilioTextsInstance {
 
   constructor(id: string, endpoint: string) {
     this.id = id;
@@ -212,7 +178,7 @@ class TodoListInstance {
     if (this.websocket === undefined && this.refs > 0) {
       const url = new URL(this.endpoint);
       this.websocket = new WebSocket(
-        `wss://${url.host}/__/resemble/websocket/todo_app.v1.TodoList/${this.id}`
+        `wss://${url.host}/__/resemble/websocket/todo_app.v1.TwilioTexts/${this.id}`
       );
 
       this.websocket.binaryType = "arraybuffer";
@@ -320,7 +286,7 @@ class TodoListInstance {
   ) {
     const headers = new Headers();
     headers.set("Content-Type", "application/json");
-    headers.append("x-resemble-service-name", "todo_app.v1.TodoList");
+    headers.append("x-resemble-service-name", "todo_app.v1.TwilioTexts");
     headers.append("x-resemble-actor-id", this.id);
     headers.append("Connection", "keep-alive");
 
@@ -536,17 +502,17 @@ class TodoListInstance {
 
 
   private useCreateMutations: (
-    resemble_react.Mutation<CreateRequest>)[] = [];
+    resemble_react.Mutation<CreateTwilioTextRequest>)[] = [];
 
   private useCreateSetPendings: {
-    [id: string]: (mutations: resemble_react.Mutation<CreateRequest>[]) => void
+    [id: string]: (mutations: resemble_react.Mutation<CreateTwilioTextRequest>[]) => void
   } = {};
 
   async create(
-    mutation: resemble_react.Mutation<CreateRequest>
+    mutation: resemble_react.Mutation<CreateTwilioTextRequest>
   ): Promise<
     resemble_react.ResponseOrErrors<
-      CreateResponse,
+      CreateTwilioTextResponse,
       resemble_api.SystemErrorDetails
   >> {
     // We always have at least 1 observer which is this function!
@@ -590,7 +556,7 @@ class TodoListInstance {
 
     return new Promise<
       resemble_react.ResponseOrErrors<
-        CreateResponse,
+        CreateTwilioTextResponse,
         resemble_api.SystemErrorDetails
       >>(
       async (resolve, reject) => {
@@ -638,7 +604,7 @@ class TodoListInstance {
               });
 
               resolve({
-                response: CreateResponse.fromBinary(
+                response: CreateTwilioTextResponse.fromBinary(
                   responseOrStatus.value
                 )
               });
@@ -673,7 +639,7 @@ class TodoListInstance {
 
   useCreate(
     id: string,
-    setPending: (mutations: resemble_react.Mutation<CreateRequest>[]) => void
+    setPending: (mutations: resemble_react.Mutation<CreateTwilioTextRequest>[]) => void
   ) {
     this.useCreateSetPendings[id] = setPending;
   }
@@ -683,18 +649,18 @@ class TodoListInstance {
   }
 
 
-  private useAddTodoMutations: (
-    resemble_react.Mutation<AddTodoRequest>)[] = [];
+  private useAddTextMutations: (
+    resemble_react.Mutation<AddTextRequest>)[] = [];
 
-  private useAddTodoSetPendings: {
-    [id: string]: (mutations: resemble_react.Mutation<AddTodoRequest>[]) => void
+  private useAddTextSetPendings: {
+    [id: string]: (mutations: resemble_react.Mutation<AddTextRequest>[]) => void
   } = {};
 
-  async addTodo(
-    mutation: resemble_react.Mutation<AddTodoRequest>
+  async addText(
+    mutation: resemble_react.Mutation<AddTextRequest>
   ): Promise<
     resemble_react.ResponseOrErrors<
-      AddTodoResponse,
+      AddTextResponse,
       resemble_api.SystemErrorDetails
   >> {
     // We always have at least 1 observer which is this function!
@@ -728,29 +694,29 @@ class TodoListInstance {
       this.observers[id].observe(mutation.idempotencyKey, observed, aborted);
     }
 
-    this.useAddTodoMutations.push(mutation);
+    this.useAddTextMutations.push(mutation);
 
     unstable_batchedUpdates(() => {
-      for (const setPending of Object.values(this.useAddTodoSetPendings)) {
-        setPending(this.useAddTodoMutations);
+      for (const setPending of Object.values(this.useAddTextSetPendings)) {
+        setPending(this.useAddTextMutations);
       }
     });
 
     return new Promise<
       resemble_react.ResponseOrErrors<
-        AddTodoResponse,
+        AddTextResponse,
         resemble_api.SystemErrorDetails
       >>(
       async (resolve, reject) => {
         const { responseOrStatus } = await this.mutate(
           {
-            method: "AddTodo",
+            method: "AddText",
             request: mutation.request.toBinary(),
             idempotencyKey: mutation.idempotencyKey,
           },
           ({ isLoading, error }: { isLoading: boolean; error?: any }) => {
             let rerender = false;
-            for (const m of this.useAddTodoMutations) {
+            for (const m of this.useAddTextMutations) {
               if (m === mutation) {
                 if (m.isLoading !== isLoading) {
                   m.isLoading = isLoading;
@@ -765,8 +731,8 @@ class TodoListInstance {
 
             if (rerender) {
               unstable_batchedUpdates(() => {
-                for (const setPending of Object.values(this.useAddTodoSetPendings)) {
-                  setPending(this.useAddTodoMutations);
+                for (const setPending of Object.values(this.useAddTextSetPendings)) {
+                  setPending(this.useAddTextMutations);
                 }
               });
             }
@@ -776,17 +742,17 @@ class TodoListInstance {
         switch (responseOrStatus.case) {
           case "response":
             await observed(() => {
-              this.useAddTodoMutations =
-                this.useAddTodoMutations.filter(m => m !== mutation);
+              this.useAddTextMutations =
+                this.useAddTextMutations.filter(m => m !== mutation);
 
               unstable_batchedUpdates(() => {
-                for (const setPending of Object.values(this.useAddTodoSetPendings)) {
-                  setPending(this.useAddTodoMutations);
+                for (const setPending of Object.values(this.useAddTextSetPendings)) {
+                  setPending(this.useAddTextMutations);
                 }
               });
 
               resolve({
-                response: AddTodoResponse.fromBinary(
+                response: AddTextResponse.fromBinary(
                   responseOrStatus.value
                 )
               });
@@ -819,26 +785,26 @@ class TodoListInstance {
       });
   }
 
-  useAddTodo(
+  useAddText(
     id: string,
-    setPending: (mutations: resemble_react.Mutation<AddTodoRequest>[]) => void
+    setPending: (mutations: resemble_react.Mutation<AddTextRequest>[]) => void
   ) {
-    this.useAddTodoSetPendings[id] = setPending;
+    this.useAddTextSetPendings[id] = setPending;
   }
 
-  unuseAddTodo(id: string) {
-    delete this.useAddTodoSetPendings[id];
+  unuseAddText(id: string) {
+    delete this.useAddTextSetPendings[id];
   }
 
 
-  private useListTodosReaders: {
-    [id: string]: resemble_react.Reader<ListTodosResponse>
+  private useListTextsReaders: {
+    [id: string]: resemble_react.Reader<ListTextsResponse>
   } = {};
 
-  useListTodos(
+  useListTexts(
     id: string,
-    request: ListTodosRequest,
-    setResponse: (response: ListTodosResponse) => void,
+    request: ListTextsRequest,
+    setResponse: (response: ListTextsResponse) => void,
     setIsLoading: (isLoading: boolean) => void,
     setStatus: (status: resemble_api.Status) => void
   ) {
@@ -846,8 +812,8 @@ class TodoListInstance {
 
     const key = request.toJsonString();
 
-    if (!(key in this.useListTodosReaders)) {
-      this.useListTodosReaders[key] = {
+    if (!(key in this.useListTextsReaders)) {
+      this.useListTextsReaders[key] = {
         abortController: new AbortController(),
         setResponses: {},
         setIsLoadings: {},
@@ -857,7 +823,7 @@ class TodoListInstance {
       read = true;
     }
 
-    let reader = this.useListTodosReaders[key];
+    let reader = this.useListTextsReaders[key];
 
     reader.setResponses[id] = setResponse;
     reader.setIsLoadings[id] = setIsLoading;
@@ -869,45 +835,45 @@ class TodoListInstance {
 
     if (read) {
       this.read(
-        "ListTodos",
+        "ListTexts",
         request,
-        ListTodosResponse,
+        ListTextsResponse,
         reader
       );
     }
   }
 
-  unuseListTodos(
+  unuseListTexts(
     id: string,
-    request: ListTodosRequest
+    request: ListTextsRequest
   ) {
     const key = request.toJsonString();
 
-    const reader = this.useListTodosReaders[key];
+    const reader = this.useListTextsReaders[key];
 
     delete reader.setResponses[id];
     delete reader.setIsLoadings[id];
     delete reader.setStatuses[id];
 
     if (Object.values(reader.setResponses).length === 0) {
-      delete this.useListTodosReaders[key];
+      delete this.useListTextsReaders[key];
       reader.abortController.abort();
     }
   }
 
 
-  private useDeleteTodoMutations: (
-    resemble_react.Mutation<DeleteTodoRequest>)[] = [];
+  private useReminderTextTaskMutations: (
+    resemble_react.Mutation<TwilioReminderTextTaskRequest>)[] = [];
 
-  private useDeleteTodoSetPendings: {
-    [id: string]: (mutations: resemble_react.Mutation<DeleteTodoRequest>[]) => void
+  private useReminderTextTaskSetPendings: {
+    [id: string]: (mutations: resemble_react.Mutation<TwilioReminderTextTaskRequest>[]) => void
   } = {};
 
-  async deleteTodo(
-    mutation: resemble_react.Mutation<DeleteTodoRequest>
+  async reminderTextTask(
+    mutation: resemble_react.Mutation<TwilioReminderTextTaskRequest>
   ): Promise<
     resemble_react.ResponseOrErrors<
-      DeleteTodoResponse,
+      Empty,
       resemble_api.SystemErrorDetails
   >> {
     // We always have at least 1 observer which is this function!
@@ -941,29 +907,29 @@ class TodoListInstance {
       this.observers[id].observe(mutation.idempotencyKey, observed, aborted);
     }
 
-    this.useDeleteTodoMutations.push(mutation);
+    this.useReminderTextTaskMutations.push(mutation);
 
     unstable_batchedUpdates(() => {
-      for (const setPending of Object.values(this.useDeleteTodoSetPendings)) {
-        setPending(this.useDeleteTodoMutations);
+      for (const setPending of Object.values(this.useReminderTextTaskSetPendings)) {
+        setPending(this.useReminderTextTaskMutations);
       }
     });
 
     return new Promise<
       resemble_react.ResponseOrErrors<
-        DeleteTodoResponse,
+        Empty,
         resemble_api.SystemErrorDetails
       >>(
       async (resolve, reject) => {
         const { responseOrStatus } = await this.mutate(
           {
-            method: "DeleteTodo",
+            method: "ReminderTextTask",
             request: mutation.request.toBinary(),
             idempotencyKey: mutation.idempotencyKey,
           },
           ({ isLoading, error }: { isLoading: boolean; error?: any }) => {
             let rerender = false;
-            for (const m of this.useDeleteTodoMutations) {
+            for (const m of this.useReminderTextTaskMutations) {
               if (m === mutation) {
                 if (m.isLoading !== isLoading) {
                   m.isLoading = isLoading;
@@ -978,8 +944,8 @@ class TodoListInstance {
 
             if (rerender) {
               unstable_batchedUpdates(() => {
-                for (const setPending of Object.values(this.useDeleteTodoSetPendings)) {
-                  setPending(this.useDeleteTodoMutations);
+                for (const setPending of Object.values(this.useReminderTextTaskSetPendings)) {
+                  setPending(this.useReminderTextTaskMutations);
                 }
               });
             }
@@ -989,17 +955,17 @@ class TodoListInstance {
         switch (responseOrStatus.case) {
           case "response":
             await observed(() => {
-              this.useDeleteTodoMutations =
-                this.useDeleteTodoMutations.filter(m => m !== mutation);
+              this.useReminderTextTaskMutations =
+                this.useReminderTextTaskMutations.filter(m => m !== mutation);
 
               unstable_batchedUpdates(() => {
-                for (const setPending of Object.values(this.useDeleteTodoSetPendings)) {
-                  setPending(this.useDeleteTodoMutations);
+                for (const setPending of Object.values(this.useReminderTextTaskSetPendings)) {
+                  setPending(this.useReminderTextTaskMutations);
                 }
               });
 
               resolve({
-                response: DeleteTodoResponse.fromBinary(
+                response: Empty.fromBinary(
                   responseOrStatus.value
                 )
               });
@@ -1032,319 +998,23 @@ class TodoListInstance {
       });
   }
 
-  useDeleteTodo(
+  useReminderTextTask(
     id: string,
-    setPending: (mutations: resemble_react.Mutation<DeleteTodoRequest>[]) => void
+    setPending: (mutations: resemble_react.Mutation<TwilioReminderTextTaskRequest>[]) => void
   ) {
-    this.useDeleteTodoSetPendings[id] = setPending;
+    this.useReminderTextTaskSetPendings[id] = setPending;
   }
 
-  unuseDeleteTodo(id: string) {
-    delete this.useDeleteTodoSetPendings[id];
-  }
-
-
-  private useCompleteTodoMutations: (
-    resemble_react.Mutation<CompleteTodoRequest>)[] = [];
-
-  private useCompleteTodoSetPendings: {
-    [id: string]: (mutations: resemble_react.Mutation<CompleteTodoRequest>[]) => void
-  } = {};
-
-  async completeTodo(
-    mutation: resemble_react.Mutation<CompleteTodoRequest>
-  ): Promise<
-    resemble_react.ResponseOrErrors<
-      CompleteTodoResponse,
-      resemble_api.SystemErrorDetails
-  >> {
-    // We always have at least 1 observer which is this function!
-    let remainingObservers = 1;
-
-    const event = new resemble_react.Event();
-
-    const callbacks: (() => void)[] = [];
-
-    const observed = (callback: () => void) => {
-      callbacks.push(callback);
-      remainingObservers -= 1;
-      if (remainingObservers === 0) {
-        unstable_batchedUpdates(() => {
-          for (const callback of callbacks) {
-            callback();
-          }
-        });
-        event.set();
-      }
-      return event.wait();
-    };
-
-    const aborted = () => {
-      observed(() => {});
-    }
-
-    // Tell observers about this pending mutation.
-    for (const id in this.observers) {
-      remainingObservers += 1;
-      this.observers[id].observe(mutation.idempotencyKey, observed, aborted);
-    }
-
-    this.useCompleteTodoMutations.push(mutation);
-
-    unstable_batchedUpdates(() => {
-      for (const setPending of Object.values(this.useCompleteTodoSetPendings)) {
-        setPending(this.useCompleteTodoMutations);
-      }
-    });
-
-    return new Promise<
-      resemble_react.ResponseOrErrors<
-        CompleteTodoResponse,
-        resemble_api.SystemErrorDetails
-      >>(
-      async (resolve, reject) => {
-        const { responseOrStatus } = await this.mutate(
-          {
-            method: "CompleteTodo",
-            request: mutation.request.toBinary(),
-            idempotencyKey: mutation.idempotencyKey,
-          },
-          ({ isLoading, error }: { isLoading: boolean; error?: any }) => {
-            let rerender = false;
-            for (const m of this.useCompleteTodoMutations) {
-              if (m === mutation) {
-                if (m.isLoading !== isLoading) {
-                  m.isLoading = isLoading;
-                  rerender = true;
-                }
-                if (error !== undefined && m.error !== error) {
-                  m.error = error;
-                  rerender = true;
-                }
-              }
-            }
-
-            if (rerender) {
-              unstable_batchedUpdates(() => {
-                for (const setPending of Object.values(this.useCompleteTodoSetPendings)) {
-                  setPending(this.useCompleteTodoMutations);
-                }
-              });
-            }
-          }
-        );
-
-        switch (responseOrStatus.case) {
-          case "response":
-            await observed(() => {
-              this.useCompleteTodoMutations =
-                this.useCompleteTodoMutations.filter(m => m !== mutation);
-
-              unstable_batchedUpdates(() => {
-                for (const setPending of Object.values(this.useCompleteTodoSetPendings)) {
-                  setPending(this.useCompleteTodoMutations);
-                }
-              });
-
-              resolve({
-                response: CompleteTodoResponse.fromBinary(
-                  responseOrStatus.value
-                )
-              });
-            });
-            break;
-          case "status":
-            // Let the observers know they no longer should expect to
-            // observe this idempotency key.
-            for (const id in this.observers) {
-              this.observers[id].unobserve(mutation.idempotencyKey);
-            }
-
-            const status = resemble_api.Status.fromJsonString(responseOrStatus.value);
-
-            let error;
-            if ((error = resemble_api.SystemError.fromStatus(status)) !== undefined) {
-              console.warn(`Error '${error.getType().typeName}' received`);
-              resolve({ error });
-            } else {
-              reject(
-                new Error(
-                  `Unknown error with gRPC status ${JSON.stringify(status)}`
-                )
-              );
-            }
-            break;
-          default:
-            reject(new Error('Expecting either a response or an error'));
-        }
-      });
-  }
-
-  useCompleteTodo(
-    id: string,
-    setPending: (mutations: resemble_react.Mutation<CompleteTodoRequest>[]) => void
-  ) {
-    this.useCompleteTodoSetPendings[id] = setPending;
-  }
-
-  unuseCompleteTodo(id: string) {
-    delete this.useCompleteTodoSetPendings[id];
+  unuseReminderTextTask(id: string) {
+    delete this.useReminderTextTaskSetPendings[id];
   }
 
 
-  private useAddDeadlineMutations: (
-    resemble_react.Mutation<AddDeadlineRequest>)[] = [];
-
-  private useAddDeadlineSetPendings: {
-    [id: string]: (mutations: resemble_react.Mutation<AddDeadlineRequest>[]) => void
-  } = {};
-
-  async addDeadline(
-    mutation: resemble_react.Mutation<AddDeadlineRequest>
-  ): Promise<
-    resemble_react.ResponseOrErrors<
-      AddDeadlineResponse,
-      resemble_api.SystemErrorDetails
-  >> {
-    // We always have at least 1 observer which is this function!
-    let remainingObservers = 1;
-
-    const event = new resemble_react.Event();
-
-    const callbacks: (() => void)[] = [];
-
-    const observed = (callback: () => void) => {
-      callbacks.push(callback);
-      remainingObservers -= 1;
-      if (remainingObservers === 0) {
-        unstable_batchedUpdates(() => {
-          for (const callback of callbacks) {
-            callback();
-          }
-        });
-        event.set();
-      }
-      return event.wait();
-    };
-
-    const aborted = () => {
-      observed(() => {});
-    }
-
-    // Tell observers about this pending mutation.
-    for (const id in this.observers) {
-      remainingObservers += 1;
-      this.observers[id].observe(mutation.idempotencyKey, observed, aborted);
-    }
-
-    this.useAddDeadlineMutations.push(mutation);
-
-    unstable_batchedUpdates(() => {
-      for (const setPending of Object.values(this.useAddDeadlineSetPendings)) {
-        setPending(this.useAddDeadlineMutations);
-      }
-    });
-
-    return new Promise<
-      resemble_react.ResponseOrErrors<
-        AddDeadlineResponse,
-        resemble_api.SystemErrorDetails
-      >>(
-      async (resolve, reject) => {
-        const { responseOrStatus } = await this.mutate(
-          {
-            method: "AddDeadline",
-            request: mutation.request.toBinary(),
-            idempotencyKey: mutation.idempotencyKey,
-          },
-          ({ isLoading, error }: { isLoading: boolean; error?: any }) => {
-            let rerender = false;
-            for (const m of this.useAddDeadlineMutations) {
-              if (m === mutation) {
-                if (m.isLoading !== isLoading) {
-                  m.isLoading = isLoading;
-                  rerender = true;
-                }
-                if (error !== undefined && m.error !== error) {
-                  m.error = error;
-                  rerender = true;
-                }
-              }
-            }
-
-            if (rerender) {
-              unstable_batchedUpdates(() => {
-                for (const setPending of Object.values(this.useAddDeadlineSetPendings)) {
-                  setPending(this.useAddDeadlineMutations);
-                }
-              });
-            }
-          }
-        );
-
-        switch (responseOrStatus.case) {
-          case "response":
-            await observed(() => {
-              this.useAddDeadlineMutations =
-                this.useAddDeadlineMutations.filter(m => m !== mutation);
-
-              unstable_batchedUpdates(() => {
-                for (const setPending of Object.values(this.useAddDeadlineSetPendings)) {
-                  setPending(this.useAddDeadlineMutations);
-                }
-              });
-
-              resolve({
-                response: AddDeadlineResponse.fromBinary(
-                  responseOrStatus.value
-                )
-              });
-            });
-            break;
-          case "status":
-            // Let the observers know they no longer should expect to
-            // observe this idempotency key.
-            for (const id in this.observers) {
-              this.observers[id].unobserve(mutation.idempotencyKey);
-            }
-
-            const status = resemble_api.Status.fromJsonString(responseOrStatus.value);
-
-            let error;
-            if ((error = resemble_api.SystemError.fromStatus(status)) !== undefined) {
-              console.warn(`Error '${error.getType().typeName}' received`);
-              resolve({ error });
-            } else {
-              reject(
-                new Error(
-                  `Unknown error with gRPC status ${JSON.stringify(status)}`
-                )
-              );
-            }
-            break;
-          default:
-            reject(new Error('Expecting either a response or an error'));
-        }
-      });
-  }
-
-  useAddDeadline(
-    id: string,
-    setPending: (mutations: resemble_react.Mutation<AddDeadlineRequest>[]) => void
-  ) {
-    this.useAddDeadlineSetPendings[id] = setPending;
-  }
-
-  unuseAddDeadline(id: string) {
-    delete this.useAddDeadlineSetPendings[id];
-  }
-
-
-  private static instances: { [id: string]: TodoListInstance } = {};
+  private static instances: { [id: string]: TwilioTextsInstance } = {};
 
   static use(id: string, endpoint: string) {
     if (!(id in this.instances)) {
-      this.instances[id] = new TodoListInstance(id, endpoint);
+      this.instances[id] = new TwilioTextsInstance(id, endpoint);
     } else {
       this.instances[id].ref();
     }
@@ -1354,27 +1024,27 @@ class TodoListInstance {
 
   unuse() {
     if (this.unref() === 0) {
-      delete TodoListInstance.instances[this.id];
+      delete TwilioTextsInstance.instances[this.id];
     }
   }
 }
 
-export const useTodoList = (
+export const useTwilioTexts = (
   { id }: { id: string }
-): UseTodoListApi => {
+): UseTwilioTextsApi => {
   const resembleContext = resemble_react.useResembleContext();
 
   const endpoint = resembleContext.client.endpoint;
 
   const [instance, setInstance] = useState(() => {
-    return TodoListInstance.use(
+    return TwilioTextsInstance.use(
       id, endpoint
     );
   });
 
   if (instance.id !== id) {
     setInstance(
-      TodoListInstance.use(
+      TwilioTextsInstance.use(
         id, endpoint
       )
     );
@@ -1389,7 +1059,7 @@ export const useTodoList = (
   const headers = useMemo(() => {
     const headers = new Headers();
     headers.set("Content-Type", "application/json");
-    headers.append("x-resemble-service-name", "todo_app.v1.TodoList");
+    headers.append("x-resemble-service-name", "todo_app.v1.TwilioTexts");
     headers.append("x-resemble-actor-id", id);
     headers.append("Connection", "keep-alive");
     return headers;
@@ -1400,7 +1070,7 @@ export const useTodoList = (
     const [
       pending,
       setPending
-    ] = useState<resemble_react.Mutation<CreateRequest>[]>([]);
+    ] = useState<resemble_react.Mutation<CreateTwilioTextRequest>[]>([]);
 
     useEffect(() => {
       const id = uuidv4();
@@ -1412,12 +1082,12 @@ export const useTodoList = (
 
     const create = useMemo(() => {
       const method = async (
-        partialRequest: __bufbuildProtobufPartialMessage<CreateRequest> = {},
+        partialRequest: __bufbuildProtobufPartialMessage<CreateTwilioTextRequest> = {},
         optimistic_metadata?: any
       ) => {
-        const request = partialRequest instanceof CreateRequest
+        const request = partialRequest instanceof CreateTwilioTextRequest
           ? partialRequest.clone()
-          : new CreateRequest(partialRequest);
+          : new CreateTwilioTextRequest(partialRequest);
 
         const idempotencyKey = uuidv4();
 
@@ -1432,7 +1102,7 @@ export const useTodoList = (
       };
 
       method.pending =
-        new Array<resemble_react.Mutation<CreateRequest>>();
+        new Array<resemble_react.Mutation<CreateTwilioTextRequest>>();
 
       return method;
     }, []);
@@ -1445,28 +1115,28 @@ export const useTodoList = (
   const create = useCreate();
 
 
-  function useAddTodo() {
+  function useAddText() {
     const [
       pending,
       setPending
-    ] = useState<resemble_react.Mutation<AddTodoRequest>[]>([]);
+    ] = useState<resemble_react.Mutation<AddTextRequest>[]>([]);
 
     useEffect(() => {
       const id = uuidv4();
-      instance.useAddTodo(id, setPending);
+      instance.useAddText(id, setPending);
       return () => {
-        instance.unuseAddTodo(id);
+        instance.unuseAddText(id);
       };
     }, []);
 
-    const addTodo = useMemo(() => {
+    const addText = useMemo(() => {
       const method = async (
-        partialRequest: __bufbuildProtobufPartialMessage<AddTodoRequest> = {},
+        partialRequest: __bufbuildProtobufPartialMessage<AddTextRequest> = {},
         optimistic_metadata?: any
       ) => {
-        const request = partialRequest instanceof AddTodoRequest
+        const request = partialRequest instanceof AddTextRequest
           ? partialRequest.clone()
-          : new AddTodoRequest(partialRequest);
+          : new AddTextRequest(partialRequest);
 
         const idempotencyKey = uuidv4();
 
@@ -1477,30 +1147,30 @@ export const useTodoList = (
           isLoading: false, // Won't start loading if we're flushing mutations.
         };
 
-        return instance.addTodo(mutation);
+        return instance.addText(mutation);
       };
 
       method.pending =
-        new Array<resemble_react.Mutation<AddTodoRequest>>();
+        new Array<resemble_react.Mutation<AddTextRequest>>();
 
       return method;
     }, []);
 
-    addTodo.pending = pending;
+    addText.pending = pending;
 
-    return addTodo;
+    return addText;
   }
 
-  const addTodo = useAddTodo();
+  const addText = useAddText();
 
 
 
-  function useListTodos(
-    partialRequest: __bufbuildProtobufPartialMessage<ListTodosRequest> = {}
+  function useListTexts(
+    partialRequest: __bufbuildProtobufPartialMessage<ListTextsRequest> = {}
   ) {
-    const newRequest = partialRequest instanceof ListTodosRequest
+    const newRequest = partialRequest instanceof ListTextsRequest
       ? partialRequest.clone()
-      : new ListTodosRequest(partialRequest);
+      : new ListTextsRequest(partialRequest);
 
     const [request, setRequest] = useState(newRequest);
 
@@ -1508,7 +1178,7 @@ export const useTodoList = (
       setRequest(newRequest);
     }
 
-    const [response, setResponse] = useState<ListTodosResponse>();
+    const [response, setResponse] = useState<ListTextsResponse>();
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [error, setError] = useState<
       undefined
@@ -1518,10 +1188,10 @@ export const useTodoList = (
 
     useEffect(() => {
       const id = uuidv4();
-      instance.useListTodos(
+      instance.useListTexts(
         id,
         request,
-        (response: ListTodosResponse) => {
+        (response: ListTextsResponse) => {
           unstable_batchedUpdates(() => {
             setError(undefined);
             setResponse(response);
@@ -1543,19 +1213,19 @@ export const useTodoList = (
         },
       );
       return () => {
-        instance.unuseListTodos(id, request);
+        instance.unuseListTexts(id, request);
       };
     }, [request]);
 
     return { response, isLoading, error, exception };
   }
 
-  async function listTodos(
-    partialRequest: __bufbuildProtobufPartialMessage<ListTodosRequest> = {}
+  async function listTexts(
+    partialRequest: __bufbuildProtobufPartialMessage<ListTextsRequest> = {}
   ) {
-    const request = partialRequest instanceof ListTodosRequest
+    const request = partialRequest instanceof ListTextsRequest
       ? partialRequest.clone()
-      : new ListTodosRequest(partialRequest);
+      : new ListTextsRequest(partialRequest);
 
     // Fetch with retry, using a backoff, i.e., if we get disconnected.
     const response = await (async () => {
@@ -1569,7 +1239,7 @@ export const useTodoList = (
           // See also 'resemble/helpers.py'.
           return await resemble_react.guardedFetch(
             new Request(
-              `${resembleContext.client.endpoint}/todo_app.v1.TodoList.ListTodos`, {
+              `${resembleContext.client.endpoint}/todo_app.v1.TwilioTexts.ListTexts`, {
                 method: "POST",
                 headers,
                 body: request.toJsonString()
@@ -1610,28 +1280,28 @@ export const useTodoList = (
   }
 
 
-  function useDeleteTodo() {
+  function useReminderTextTask() {
     const [
       pending,
       setPending
-    ] = useState<resemble_react.Mutation<DeleteTodoRequest>[]>([]);
+    ] = useState<resemble_react.Mutation<TwilioReminderTextTaskRequest>[]>([]);
 
     useEffect(() => {
       const id = uuidv4();
-      instance.useDeleteTodo(id, setPending);
+      instance.useReminderTextTask(id, setPending);
       return () => {
-        instance.unuseDeleteTodo(id);
+        instance.unuseReminderTextTask(id);
       };
     }, []);
 
-    const deleteTodo = useMemo(() => {
+    const reminderTextTask = useMemo(() => {
       const method = async (
-        partialRequest: __bufbuildProtobufPartialMessage<DeleteTodoRequest> = {},
+        partialRequest: __bufbuildProtobufPartialMessage<TwilioReminderTextTaskRequest> = {},
         optimistic_metadata?: any
       ) => {
-        const request = partialRequest instanceof DeleteTodoRequest
+        const request = partialRequest instanceof TwilioReminderTextTaskRequest
           ? partialRequest.clone()
-          : new DeleteTodoRequest(partialRequest);
+          : new TwilioReminderTextTaskRequest(partialRequest);
 
         const idempotencyKey = uuidv4();
 
@@ -1642,131 +1312,31 @@ export const useTodoList = (
           isLoading: false, // Won't start loading if we're flushing mutations.
         };
 
-        return instance.deleteTodo(mutation);
+        return instance.reminderTextTask(mutation);
       };
 
       method.pending =
-        new Array<resemble_react.Mutation<DeleteTodoRequest>>();
+        new Array<resemble_react.Mutation<TwilioReminderTextTaskRequest>>();
 
       return method;
     }, []);
 
-    deleteTodo.pending = pending;
+    reminderTextTask.pending = pending;
 
-    return deleteTodo;
+    return reminderTextTask;
   }
 
-  const deleteTodo = useDeleteTodo();
-
-
-  function useCompleteTodo() {
-    const [
-      pending,
-      setPending
-    ] = useState<resemble_react.Mutation<CompleteTodoRequest>[]>([]);
-
-    useEffect(() => {
-      const id = uuidv4();
-      instance.useCompleteTodo(id, setPending);
-      return () => {
-        instance.unuseCompleteTodo(id);
-      };
-    }, []);
-
-    const completeTodo = useMemo(() => {
-      const method = async (
-        partialRequest: __bufbuildProtobufPartialMessage<CompleteTodoRequest> = {},
-        optimistic_metadata?: any
-      ) => {
-        const request = partialRequest instanceof CompleteTodoRequest
-          ? partialRequest.clone()
-          : new CompleteTodoRequest(partialRequest);
-
-        const idempotencyKey = uuidv4();
-
-        const mutation = {
-          request,
-          idempotencyKey,
-          optimistic_metadata,
-          isLoading: false, // Won't start loading if we're flushing mutations.
-        };
-
-        return instance.completeTodo(mutation);
-      };
-
-      method.pending =
-        new Array<resemble_react.Mutation<CompleteTodoRequest>>();
-
-      return method;
-    }, []);
-
-    completeTodo.pending = pending;
-
-    return completeTodo;
-  }
-
-  const completeTodo = useCompleteTodo();
-
-
-  function useAddDeadline() {
-    const [
-      pending,
-      setPending
-    ] = useState<resemble_react.Mutation<AddDeadlineRequest>[]>([]);
-
-    useEffect(() => {
-      const id = uuidv4();
-      instance.useAddDeadline(id, setPending);
-      return () => {
-        instance.unuseAddDeadline(id);
-      };
-    }, []);
-
-    const addDeadline = useMemo(() => {
-      const method = async (
-        partialRequest: __bufbuildProtobufPartialMessage<AddDeadlineRequest> = {},
-        optimistic_metadata?: any
-      ) => {
-        const request = partialRequest instanceof AddDeadlineRequest
-          ? partialRequest.clone()
-          : new AddDeadlineRequest(partialRequest);
-
-        const idempotencyKey = uuidv4();
-
-        const mutation = {
-          request,
-          idempotencyKey,
-          optimistic_metadata,
-          isLoading: false, // Won't start loading if we're flushing mutations.
-        };
-
-        return instance.addDeadline(mutation);
-      };
-
-      method.pending =
-        new Array<resemble_react.Mutation<AddDeadlineRequest>>();
-
-      return method;
-    }, []);
-
-    addDeadline.pending = pending;
-
-    return addDeadline;
-  }
-
-  const addDeadline = useAddDeadline();
+  const reminderTextTask = useReminderTextTask();
 
 
   return {
     mutators: {
       create,
-      addTodo,
-      deleteTodo,
-      completeTodo,
-      addDeadline,
+      addText,
+      reminderTextTask,
     },
-    listTodos,
-    useListTodos,
+    listTexts,
+    useListTexts,
   };
 };
 

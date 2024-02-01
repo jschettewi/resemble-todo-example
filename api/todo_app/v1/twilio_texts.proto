@@ -1,0 +1,88 @@
+syntax = "proto3";
+
+package todo_app.v1;
+
+import "google/protobuf/empty.proto";
+import "resemble/v1alpha1/options.proto";
+import "resemble/v1alpha1/tasks.proto";
+
+////////////////////////////////////////////////////////////////////////
+
+service TwilioTexts {
+  option (resemble.v1alpha1.service).state = "TwilioTextsState";
+
+  rpc Create(google.protobuf.Empty) returns (google.protobuf.Empty) {
+    option (resemble.v1alpha1.method).writer = {
+      constructor: true,
+    };
+  }
+
+  rpc AddText(AddTextRequest) returns (AddTextResponse) {
+    option (resemble.v1alpha1.method).writer = {
+    };
+  }
+
+  rpc ListTexts(ListTextsRequest) returns (ListTextsResponse) {
+    option (resemble.v1alpha1.method).reader = {
+    };
+  }
+
+  // An async task to send a reminder text to the person who set the deadline on a task
+  rpc ReminderTextTask(TwilioReminderTextTaskRequest) returns (google.protobuf.Empty) {
+    option (resemble.v1alpha1.method) = {
+      writer: {},
+      task: true,
+    };
+  }
+
+}
+
+////////////////////////////////////////////////////////////////////////
+// State types.
+
+message UniqueText {
+    string to = 1;
+    string body = 2;
+    string create_time = 3;
+    int32 num_times = 4;
+}
+
+message TwilioTextsState {
+    repeated UniqueText uniquetexts = 1;
+}
+
+////////////////////////////////////////////////////////////////////////
+// Request and response types.
+
+message CreateTwilioTextRequest {
+    string to = 1;
+    string body = 2;
+    string create_time = 3;
+}
+
+message CreateTwilioTextResponse {
+    // resemble.v1alpha1.TaskId reminder_text_task_id = 1;
+}
+
+message AddTextRequest {
+    string to = 1;
+    string body = 2;
+    string create_time = 3;
+}
+
+message AddTextResponse {
+    resemble.v1alpha1.TaskId reminder_text_task_id = 1;
+}
+
+message ListTextsRequest {}
+
+message ListTextsResponse {
+  repeated UniqueText uniquetexts = 1;
+}
+
+message TwilioReminderTextTaskRequest {
+  string to = 1;
+  string body = 2;
+  string create_time = 3;
+  int32 num_times = 4;
+}
