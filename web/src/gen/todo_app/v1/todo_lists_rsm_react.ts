@@ -100,6 +100,10 @@ class TodoListsInstance {
     this.endpoint = endpoint;
     this.refs = 1;
 
+    // TODO(benh): rather than keeping a long-lived open connection
+    // via `WebSocketsConnection`, we could consider aborting that
+    // connection once the websocket is established.
+    this.initializeWebSocketsConnection();
     this.initializeWebSocket();
   }
 
@@ -113,6 +117,7 @@ class TodoListsInstance {
 
     if (this.refs === 0 && this.websocket !== undefined) {
       this.websocket.close();
+      this.websocketsConnectionAbortController.abort();
     }
 
     return this.refs;
@@ -128,6 +133,7 @@ class TodoListsInstance {
   private flushMutates?: resemble_react.Event = undefined;
   private websocket?: WebSocket = undefined;
   private backoff: resemble_react.Backoff = new resemble_react.Backoff();
+  private websocketsConnectionAbortController = new AbortController();
 
   private hasRunningMutations() {
     return this.runningMutates.length > 0;
@@ -158,6 +164,29 @@ class TodoListsInstance {
         }
       }
     }
+  }
+
+  private initializeWebSocketsConnection() {
+    resemble_react.retryForever(async () => {
+      const headers = new Headers();
+      headers.set("Content-Type", "application/json");
+      headers.append("x-resemble-service-name", "todo_app.v1.TodoLists");
+      headers.append("x-resemble-actor-id", this.id);
+      headers.append("Connection", "keep-alive");
+
+      await resemble_react.guardedFetch(
+        new Request(
+          `${this.endpoint}/resemble.v1alpha1.React.WebSocketsConnection`,
+          {
+            method: "POST",
+            headers,
+            body: new resemble_api.react_pb.WebSocketsConnectionRequest()
+              .toJsonString(),
+          }
+        ),
+        { signal: this.websocketsConnectionAbortController.signal }
+      );
+    });
   }
 
   private initializeWebSocket() {
@@ -267,6 +296,7 @@ class TodoListsInstance {
     >(
     method: string,
     request: RequestType,
+    bearerToken: string | undefined,
     responseType: __bufbuildProtobufMessageType<ResponseType>,
     reader: resemble_react.Reader<ResponseType>
   ) {
@@ -275,6 +305,10 @@ class TodoListsInstance {
     headers.append("x-resemble-service-name", "todo_app.v1.TodoLists");
     headers.append("x-resemble-actor-id", this.id);
     headers.append("Connection", "keep-alive");
+
+    if (bearerToken !== undefined) {
+      headers.append("Authorization", `Bearer ${bearerToken}`);
+    }
 
     const queryRequest = new resemble_api.react_pb.QueryRequest({
       method,
@@ -358,19 +392,16 @@ class TodoListsInstance {
             }
           });
 
-          const jsonResponses = resemble_react.grpcServerStream(
-            new Request(
-              `${this.endpoint}/resemble.v1alpha1.React.Query`,
-              {
-                method: "POST",
-                headers,
-                body: queryRequest.toJsonString()
-              }
-            ),
-            { signal: reader.abortController.signal }
-          );
+          const queryResponses = resemble_react.grpcServerStream({
+            endpoint: `${this.endpoint}/resemble.v1alpha1.React.Query`,
+            method: "POST",
+            headers,
+            request: queryRequest,
+            responseType: resemble_api.react_pb.QueryResponse,
+            signal: reader.abortController.signal,
+          });
 
-          for await (const jsonResponse of jsonResponses) {
+          for await (const queryResponse of queryResponses) {
             if (!loaded) {
               if ((this.loadingReaders -= 1) === 0) {
                 this.readersLoadedOrFailed();
@@ -383,10 +414,6 @@ class TodoListsInstance {
                 setIsLoading(false);
               }
             });
-
-            const queryResponse = resemble_api.react_pb.QueryResponse.fromJson(
-              jsonResponse
-            );
 
             const response = queryResponse.response !== undefined
               ? responseType.fromBinary(queryResponse.response)
@@ -551,6 +578,7 @@ class TodoListsInstance {
             method: "AddTodoList",
             request: mutation.request.toBinary(),
             idempotencyKey: mutation.idempotencyKey,
+            bearerToken: mutation.bearerToken,
           },
           ({ isLoading, error }: { isLoading: boolean; error?: any }) => {
             let rerender = false;
@@ -612,7 +640,7 @@ class TodoListsInstance {
             } else {
               reject(
                 new Error(
-                  `Unknown error with gRPC status ${JSON.stringify(status)}`
+                  `Unknown error with gRPC status: ${JSON.stringify(status)}`
                 )
               );
             }
@@ -642,13 +670,18 @@ class TodoListsInstance {
   useListTodoLists(
     id: string,
     request: ListTodoListsRequest,
+    bearerToken: string | undefined,
     setResponse: (response: ListTodoListsResponse) => void,
     setIsLoading: (isLoading: boolean) => void,
     setStatus: (status: resemble_api.Status) => void
   ) {
     let read = false;
 
-    const key = request.toJsonString();
+    // NOTE: need to concatenate `request.toJsonString()` with `bearerToken`
+    // because it uniquely identifies the request, i.e., a second call
+    // that has the same `request` but a different bearerToken should be a
+    // different call.
+    const key = request.toJsonString() + bearerToken;
 
     if (!(key in this.useListTodoListsReaders)) {
       this.useListTodoListsReaders[key] = {
@@ -675,6 +708,7 @@ class TodoListsInstance {
       this.read(
         "ListTodoLists",
         request,
+        bearerToken,
         ListTodoListsResponse,
         reader
       );
@@ -683,9 +717,12 @@ class TodoListsInstance {
 
   unuseListTodoLists(
     id: string,
-    request: ListTodoListsRequest
+    request: ListTodoListsRequest,
+    bearerToken: string | undefined
   ) {
-    const key = request.toJsonString();
+    // See comment above in `useListTodoLists` for why
+    // we concatenate `request.toJsonString()` with `bearerToken`.
+    const key = request.toJsonString() + bearerToken;
 
     const reader = this.useListTodoListsReaders[key];
 
@@ -764,6 +801,7 @@ class TodoListsInstance {
             method: "DeleteTodoList",
             request: mutation.request.toBinary(),
             idempotencyKey: mutation.idempotencyKey,
+            bearerToken: mutation.bearerToken,
           },
           ({ isLoading, error }: { isLoading: boolean; error?: any }) => {
             let rerender = false;
@@ -825,7 +863,7 @@ class TodoListsInstance {
             } else {
               reject(
                 new Error(
-                  `Unknown error with gRPC status ${JSON.stringify(status)}`
+                  `Unknown error with gRPC status: ${JSON.stringify(status)}`
                 )
               );
             }
@@ -873,6 +911,7 @@ export const useTodoLists = (
   const resembleContext = resemble_react.useResembleContext();
 
   const endpoint = resembleContext.client.endpoint;
+  const bearerToken = resembleContext.bearerToken;
 
   const [instance, setInstance] = useState(() => {
     return TodoListsInstance.use(
@@ -900,8 +939,13 @@ export const useTodoLists = (
     headers.append("x-resemble-service-name", "todo_app.v1.TodoLists");
     headers.append("x-resemble-actor-id", id);
     headers.append("Connection", "keep-alive");
+
+    if (bearerToken !== undefined) {
+      headers.append("Authorization", `Bearer ${bearerToken}`);
+    }
+
     return headers;
-  }, [id]);
+  }, [id, bearerToken]);
 
 
   function useAddTodoList() {
@@ -918,6 +962,10 @@ export const useTodoLists = (
       };
     }, []);
 
+    const resembleContext = resemble_react.useResembleContext();
+
+    const bearerToken = resembleContext.bearerToken;
+
     const addTodoList = useMemo(() => {
       const method = async (
         partialRequest: __bufbuildProtobufPartialMessage<AddTodoListRequest> = {},
@@ -932,6 +980,7 @@ export const useTodoLists = (
         const mutation = {
           request,
           idempotencyKey,
+          bearerToken,
           optimistic_metadata,
           isLoading: false, // Won't start loading if we're flushing mutations.
         };
@@ -943,7 +992,7 @@ export const useTodoLists = (
         new Array<resemble_react.Mutation<AddTodoListRequest>>();
 
       return method;
-    }, []);
+    }, [bearerToken]);
 
     addTodoList.pending = pending;
 
@@ -975,11 +1024,16 @@ export const useTodoLists = (
       >();
     const [exception, setException] = useState<Error>();
 
+    const resembleContext = resemble_react.useResembleContext();
+
+    const bearerToken = resembleContext.bearerToken;
+
     useEffect(() => {
       const id = uuidv4();
       instance.useListTodoLists(
         id,
         request,
+        bearerToken,
         (response: ListTodoListsResponse) => {
           unstable_batchedUpdates(() => {
             setError(undefined);
@@ -994,7 +1048,7 @@ export const useTodoLists = (
             setError(error);
           } else {
             error = new Error(
-              `Unknown error with gRPC status ${JSON.stringify(status)}`
+              `Unknown error with gRPC status: ${JSON.stringify(status)}`
             );
             console.warn(error.message);
             setException(error);
@@ -1002,9 +1056,9 @@ export const useTodoLists = (
         },
       );
       return () => {
-        instance.unuseListTodoLists(id, request);
+        instance.unuseListTodoLists(id, request, bearerToken);
       };
-    }, [request]);
+    }, [request, bearerToken]);
 
     return { response, isLoading, error, exception };
   }
@@ -1057,7 +1111,7 @@ export const useTodoLists = (
           return { error };
         } else {
           throw new Error(
-            `Unknown error with gRPC status ${JSON.stringify(status)}`
+            `Unknown error with gRPC status: ${JSON.stringify(status)}`
           );
         }
       } else {
@@ -1083,6 +1137,10 @@ export const useTodoLists = (
       };
     }, []);
 
+    const resembleContext = resemble_react.useResembleContext();
+
+    const bearerToken = resembleContext.bearerToken;
+
     const deleteTodoList = useMemo(() => {
       const method = async (
         partialRequest: __bufbuildProtobufPartialMessage<DeleteTodoListRequest> = {},
@@ -1097,6 +1155,7 @@ export const useTodoLists = (
         const mutation = {
           request,
           idempotencyKey,
+          bearerToken,
           optimistic_metadata,
           isLoading: false, // Won't start loading if we're flushing mutations.
         };
@@ -1108,7 +1167,7 @@ export const useTodoLists = (
         new Array<resemble_react.Mutation<DeleteTodoListRequest>>();
 
       return method;
-    }, []);
+    }, [bearerToken]);
 
     deleteTodoList.pending = pending;
 
