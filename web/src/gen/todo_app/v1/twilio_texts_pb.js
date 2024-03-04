@@ -20,25 +20,36 @@ export const UniqueText = proto3.makeMessageType(
 );
 
 /**
+ * @generated from message todo_app.v1.Pair
+ */
+export const Pair = proto3.makeMessageType(
+  "todo_app.v1.Pair",
+  () => [
+    { no: 1, name: "key", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 2, name: "value", kind: "scalar", T: 5 /* ScalarType.INT32 */ },
+  ],
+);
+
+/**
  * @generated from message todo_app.v1.TwilioTextsState
  */
 export const TwilioTextsState = proto3.makeMessageType(
   "todo_app.v1.TwilioTextsState",
   () => [
-    { no: 1, name: "uniquetexts", kind: "message", T: UniqueText, repeated: true },
+    { no: 1, name: "uniquetexts", kind: "message", T: Pair, repeated: true },
   ],
 );
 
 /**
+ * string to = 1;
+ * string body = 2;
+ * string create_time = 3;
+ *
  * @generated from message todo_app.v1.CreateTwilioTextRequest
  */
 export const CreateTwilioTextRequest = proto3.makeMessageType(
   "todo_app.v1.CreateTwilioTextRequest",
-  () => [
-    { no: 1, name: "to", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-    { no: 2, name: "body", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-    { no: 3, name: "create_time", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-  ],
+  [],
 );
 
 /**

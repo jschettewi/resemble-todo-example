@@ -47,31 +47,40 @@ message UniqueText {
     int32 num_times = 4;
 }
 
+// message TwilioTextsState {
+//     repeated UniqueText uniquetexts = 1;
+// }
+
+message Pair {
+  string key = 1;
+  int32 value = 2;
+}
+
 message TwilioTextsState {
-    repeated UniqueText uniquetexts = 1;
+  repeated Pair uniquetexts = 1;
 }
 
 ////////////////////////////////////////////////////////////////////////
 // Request and response types.
 
 message CreateTwilioTextRequest {
-    string to = 1;
-    string body = 2;
-    string create_time = 3;
+  // string to = 1;
+  // string body = 2;
+  // string create_time = 3;
 }
 
 message CreateTwilioTextResponse {
-    // resemble.v1alpha1.TaskId reminder_text_task_id = 1;
+  // resemble.v1alpha1.TaskId reminder_text_task_id = 1;
 }
 
 message AddTextRequest {
-    string to = 1;
-    string body = 2;
-    string create_time = 3;
+  string to = 1;
+  string body = 2;
+  string create_time = 3;
 }
 
 message AddTextResponse {
-    resemble.v1alpha1.TaskId reminder_text_task_id = 1;
+  resemble.v1alpha1.TaskId reminder_text_task_id = 1;
 }
 
 message ListTextsRequest {}

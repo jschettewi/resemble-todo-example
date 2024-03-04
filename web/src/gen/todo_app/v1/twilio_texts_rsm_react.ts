@@ -17,6 +17,7 @@ import { unstable_batchedUpdates } from "react-dom";
 import { v4 as uuidv4 } from "uuid";
 import {
   UniqueText, 
+	Pair, 
 	TwilioTextsState, 
 	CreateTwilioTextRequest, 
 	CreateTwilioTextResponse, 
@@ -30,6 +31,7 @@ import {
 // Additionally re-export all messages from the pb module.
 export {
   UniqueText, 
+	Pair, 
 	TwilioTextsState, 
 	CreateTwilioTextRequest, 
 	CreateTwilioTextResponse, 

@@ -24,6 +24,7 @@ async def initialize(workflow: Workflow):
 
     # Implicitly construct todolist upon first write.
     await todolists.AddTodoList(workflow, name='First List')
+    await twiliotexts.Create(workflow)
     #await todolists.AddTodoList(workflow, name='second list')
     #await todolist.AddTodo(workflow, todo='Test')
     #await todolists.ListTodoLists(workflow)

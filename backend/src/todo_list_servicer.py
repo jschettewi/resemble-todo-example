@@ -105,6 +105,7 @@ class TodoListServicer(TodoList.Interface):
         
         todoId = request.todoId
         date = request.date
+        self.todo_body = ""
         
         async def add_deadline(
             context: WriterContext,
@@ -116,14 +117,16 @@ class TodoListServicer(TodoList.Interface):
                 if todo.id == todoId:
                     todo.deadline = date
                     target_todo = todo
+                    self.todo_body = target_todo.text
                     break
-        # print("Calling AddDeadline")
+            
+            return TodoList.Effects(state=state)
         
         await self.write(context, add_deadline)
         
         # Let's go create the TwilioText.
-        TwilioTexts = TwilioTexts('twilio-texts')
-        await TwilioTexts.AddText(context, to='+18777804236', body="test", create_time=datetime.now())
+        twilio = TwilioTexts('twilio-texts')
+        await twilio.AddText(context, to='+18777804236', body=self.todo_body, create_time=str(datetime.now()))
 
         # TODO: pass in argument that is the 'time_now' when the task is scheduled
         # reminder_text_task = self.schedule().ReminderTextTask(context, deadline=date, todo=target_todo.text)

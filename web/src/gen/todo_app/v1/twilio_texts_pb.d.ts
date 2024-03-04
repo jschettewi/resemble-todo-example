@@ -47,13 +47,42 @@ export declare class UniqueText extends Message<UniqueText> {
 }
 
 /**
+ * @generated from message todo_app.v1.Pair
+ */
+export declare class Pair extends Message<Pair> {
+  /**
+   * @generated from field: string key = 1;
+   */
+  key: string;
+
+  /**
+   * @generated from field: int32 value = 2;
+   */
+  value: number;
+
+  constructor(data?: PartialMessage<Pair>);
+
+  static readonly runtime: typeof proto3;
+  static readonly typeName = "todo_app.v1.Pair";
+  static readonly fields: FieldList;
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): Pair;
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): Pair;
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): Pair;
+
+  static equals(a: Pair | PlainMessage<Pair> | undefined, b: Pair | PlainMessage<Pair> | undefined): boolean;
+}
+
+/**
  * @generated from message todo_app.v1.TwilioTextsState
  */
 export declare class TwilioTextsState extends Message<TwilioTextsState> {
   /**
-   * @generated from field: repeated todo_app.v1.UniqueText uniquetexts = 1;
+   * @generated from field: repeated todo_app.v1.Pair uniquetexts = 1;
    */
-  uniquetexts: UniqueText[];
+  uniquetexts: Pair[];
 
   constructor(data?: PartialMessage<TwilioTextsState>);
 
@@ -71,24 +100,13 @@ export declare class TwilioTextsState extends Message<TwilioTextsState> {
 }
 
 /**
+ * string to = 1;
+ * string body = 2;
+ * string create_time = 3;
+ *
  * @generated from message todo_app.v1.CreateTwilioTextRequest
  */
 export declare class CreateTwilioTextRequest extends Message<CreateTwilioTextRequest> {
-  /**
-   * @generated from field: string to = 1;
-   */
-  to: string;
-
-  /**
-   * @generated from field: string body = 2;
-   */
-  body: string;
-
-  /**
-   * @generated from field: string create_time = 3;
-   */
-  createTime: string;
-
   constructor(data?: PartialMessage<CreateTwilioTextRequest>);
 
   static readonly runtime: typeof proto3;
