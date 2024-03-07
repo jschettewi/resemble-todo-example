@@ -47,7 +47,7 @@ export interface TodoListsMutators {
     ): Promise<
       resemble_react.ResponseOrErrors<
         AddTodoListResponse,
-        resemble_api.SystemErrorDetails
+        resemble_api.SystemAbortedErrors
       >>;
 
     pending: resemble_react.Mutation<AddTodoListRequest>[];
@@ -59,7 +59,7 @@ export interface TodoListsMutators {
     ): Promise<
       resemble_react.ResponseOrErrors<
         DeleteTodoListResponse,
-        resemble_api.SystemErrorDetails
+        resemble_api.SystemAbortedErrors
       >>;
 
     pending: resemble_react.Mutation<DeleteTodoListRequest>[];
@@ -74,7 +74,7 @@ export interface UseTodoListsApi {
   ) => {
     response: ListTodoListsResponse | undefined;
     isLoading: boolean;
-    error: undefined | resemble_api.SystemErrorDetails
+    error: undefined | resemble_api.SystemAbortedErrors
 ;
     exception: undefined | Error;
   };
@@ -83,7 +83,7 @@ export interface UseTodoListsApi {
   ) => Promise<
     resemble_react.ResponseOrErrors<
     ListTodoListsResponse,
-    resemble_api.SystemErrorDetails
+    resemble_api.SystemAbortedErrors
     >
   >;
 }
@@ -170,13 +170,11 @@ class TodoListsInstance {
     resemble_react.retryForever(async () => {
       const headers = new Headers();
       headers.set("Content-Type", "application/json");
-      headers.append("x-resemble-service-name", "todo_app.v1.TodoLists");
-      headers.append("x-resemble-actor-id", this.id);
       headers.append("Connection", "keep-alive");
 
       await resemble_react.guardedFetch(
         new Request(
-          `${this.endpoint}/resemble.v1alpha1.React.WebSocketsConnection`,
+          `${this.endpoint}/__/resemble/todo_app.v1.TodoLists/${this.id}/resemble.v1alpha1.React.WebSocketsConnection`,
           {
             method: "POST",
             headers,
@@ -192,8 +190,9 @@ class TodoListsInstance {
   private initializeWebSocket() {
     if (this.websocket === undefined && this.refs > 0) {
       const url = new URL(this.endpoint);
+      const protocol = url.protocol === "https:" ? "wss:" : "ws:"
       this.websocket = new WebSocket(
-        `wss://${url.host}/__/resemble/websocket/todo_app.v1.TodoLists/${this.id}`
+        `${protocol}//${url.host}/__/resemble/todo_app.v1.TodoLists/${this.id}`
       );
 
       this.websocket.binaryType = "arraybuffer";
@@ -302,8 +301,6 @@ class TodoListsInstance {
   ) {
     const headers = new Headers();
     headers.set("Content-Type", "application/json");
-    headers.append("x-resemble-service-name", "todo_app.v1.TodoLists");
-    headers.append("x-resemble-actor-id", this.id);
     headers.append("Connection", "keep-alive");
 
     if (bearerToken !== undefined) {
@@ -393,7 +390,7 @@ class TodoListsInstance {
           });
 
           const queryResponses = resemble_react.grpcServerStream({
-            endpoint: `${this.endpoint}/resemble.v1alpha1.React.Query`,
+            endpoint: `${this.endpoint}/__/resemble/todo_app.v1.TodoLists/${this.id}/resemble.v1alpha1.React.Query`,
             method: "POST",
             headers,
             request: queryRequest,
@@ -503,8 +500,6 @@ class TodoListsInstance {
             }
           });
 
-          console.error(e);
-
           throw e; // This just retries!
         }
       });
@@ -526,7 +521,7 @@ class TodoListsInstance {
   ): Promise<
     resemble_react.ResponseOrErrors<
       AddTodoListResponse,
-      resemble_api.SystemErrorDetails
+      resemble_api.SystemAbortedErrors
   >> {
     // We always have at least 1 observer which is this function!
     let remainingObservers = 1;
@@ -570,7 +565,7 @@ class TodoListsInstance {
     return new Promise<
       resemble_react.ResponseOrErrors<
         AddTodoListResponse,
-        resemble_api.SystemErrorDetails
+        resemble_api.SystemAbortedErrors
       >>(
       async (resolve, reject) => {
         const { responseOrStatus } = await this.mutate(
@@ -634,7 +629,7 @@ class TodoListsInstance {
             const status = resemble_api.Status.fromJsonString(responseOrStatus.value);
 
             let error;
-            if ((error = resemble_api.SystemError.fromStatus(status)) !== undefined) {
+            if ((error = resemble_api.SystemAborted.fromStatus(status)) !== undefined) {
               console.warn(`Error '${error.getType().typeName}' received`);
               resolve({ error });
             } else {
@@ -749,7 +744,7 @@ class TodoListsInstance {
   ): Promise<
     resemble_react.ResponseOrErrors<
       DeleteTodoListResponse,
-      resemble_api.SystemErrorDetails
+      resemble_api.SystemAbortedErrors
   >> {
     // We always have at least 1 observer which is this function!
     let remainingObservers = 1;
@@ -793,7 +788,7 @@ class TodoListsInstance {
     return new Promise<
       resemble_react.ResponseOrErrors<
         DeleteTodoListResponse,
-        resemble_api.SystemErrorDetails
+        resemble_api.SystemAbortedErrors
       >>(
       async (resolve, reject) => {
         const { responseOrStatus } = await this.mutate(
@@ -857,7 +852,7 @@ class TodoListsInstance {
             const status = resemble_api.Status.fromJsonString(responseOrStatus.value);
 
             let error;
-            if ((error = resemble_api.SystemError.fromStatus(status)) !== undefined) {
+            if ((error = resemble_api.SystemAborted.fromStatus(status)) !== undefined) {
               console.warn(`Error '${error.getType().typeName}' received`);
               resolve({ error });
             } else {
@@ -936,8 +931,6 @@ export const useTodoLists = (
   const headers = useMemo(() => {
     const headers = new Headers();
     headers.set("Content-Type", "application/json");
-    headers.append("x-resemble-service-name", "todo_app.v1.TodoLists");
-    headers.append("x-resemble-actor-id", id);
     headers.append("Connection", "keep-alive");
 
     if (bearerToken !== undefined) {
@@ -945,7 +938,7 @@ export const useTodoLists = (
     }
 
     return headers;
-  }, [id, bearerToken]);
+  }, [bearerToken]);
 
 
   function useAddTodoList() {
@@ -1020,7 +1013,7 @@ export const useTodoLists = (
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [error, setError] = useState<
       undefined
-      | resemble_api.SystemErrorDetails
+      | resemble_api.SystemAbortedErrors
       >();
     const [exception, setException] = useState<Error>();
 
@@ -1043,7 +1036,7 @@ export const useTodoLists = (
         setIsLoading,
         (status: resemble_api.Status) => {
           let error;
-          if ((error = resemble_api.SystemError.fromStatus(status)) !== undefined) {
+          if ((error = resemble_api.SystemAborted.fromStatus(status)) !== undefined) {
             console.warn(`Error '${error.getType().typeName}' received`);
             setError(error);
           } else {
@@ -1082,7 +1075,7 @@ export const useTodoLists = (
           // See also 'resemble/helpers.py'.
           return await resemble_react.guardedFetch(
             new Request(
-              `${resembleContext.client.endpoint}/todo_app.v1.TodoLists.ListTodoLists`, {
+              `${resembleContext.client.endpoint}/__/resemble/todo_app.v1.TodoLists/${id}/todo_app.v1.TodoLists.ListTodoLists`, {
                 method: "POST",
                 headers,
                 body: request.toJsonString()
@@ -1106,7 +1099,7 @@ export const useTodoLists = (
         const status = resemble_api.Status.fromJson(await response.json());
 
         let error;
-        if ((error = resemble_api.SystemError.fromStatus(status)) !== undefined) {
+        if ((error = resemble_api.SystemAborted.fromStatus(status)) !== undefined) {
           console.warn(`Error '${error.getType().typeName}' received`);
           return { error };
         } else {

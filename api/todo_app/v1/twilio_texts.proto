@@ -5,6 +5,7 @@ package todo_app.v1;
 import "google/protobuf/empty.proto";
 import "resemble/v1alpha1/options.proto";
 import "resemble/v1alpha1/tasks.proto";
+import "google/protobuf/timestamp.proto";
 
 ////////////////////////////////////////////////////////////////////////
 
@@ -56,8 +57,17 @@ message Pair {
   int32 value = 2;
 }
 
+message Text {
+  string to = 1;
+  string from_ = 2;
+  string body = 3;
+  google.protobuf.Timestamp create_time = 4;
+  string accepted_time = 5;
+}
+
 message TwilioTextsState {
-  repeated Pair uniquetexts = 1;
+  repeated Text texts_to_send = 1;
+  repeated Text texts_accepted = 2;
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -76,7 +86,7 @@ message CreateTwilioTextResponse {
 message AddTextRequest {
   string to = 1;
   string body = 2;
-  string create_time = 3;
+  google.protobuf.Timestamp create_time = 3;
 }
 
 message AddTextResponse {
@@ -90,8 +100,9 @@ message ListTextsResponse {
 }
 
 message TwilioReminderTextTaskRequest {
-  string to = 1;
-  string body = 2;
-  string create_time = 3;
-  int32 num_times = 4;
+  Text text_to_send = 1;
+  // string to = 1;
+  // string body = 2;
+  // string create_time = 3;
+  // int32 num_times = 4;
 }

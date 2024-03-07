@@ -3,7 +3,7 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import type { BinaryReadOptions, FieldList, JsonReadOptions, JsonValue, PartialMessage, PlainMessage } from "@bufbuild/protobuf";
+import type { BinaryReadOptions, FieldList, JsonReadOptions, JsonValue, PartialMessage, PlainMessage, Timestamp } from "@bufbuild/protobuf";
 import { Message, proto3 } from "@bufbuild/protobuf";
 import type { TaskId } from "../../resemble/v1alpha1/tasks_pb.js";
 
@@ -76,13 +76,62 @@ export declare class Pair extends Message<Pair> {
 }
 
 /**
+ * @generated from message todo_app.v1.Text
+ */
+export declare class Text extends Message<Text> {
+  /**
+   * @generated from field: string to = 1;
+   */
+  to: string;
+
+  /**
+   * @generated from field: string from_ = 2;
+   */
+  from: string;
+
+  /**
+   * @generated from field: string body = 3;
+   */
+  body: string;
+
+  /**
+   * @generated from field: google.protobuf.Timestamp create_time = 4;
+   */
+  createTime?: Timestamp;
+
+  /**
+   * @generated from field: string accepted_time = 5;
+   */
+  acceptedTime: string;
+
+  constructor(data?: PartialMessage<Text>);
+
+  static readonly runtime: typeof proto3;
+  static readonly typeName = "todo_app.v1.Text";
+  static readonly fields: FieldList;
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): Text;
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): Text;
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): Text;
+
+  static equals(a: Text | PlainMessage<Text> | undefined, b: Text | PlainMessage<Text> | undefined): boolean;
+}
+
+/**
  * @generated from message todo_app.v1.TwilioTextsState
  */
 export declare class TwilioTextsState extends Message<TwilioTextsState> {
   /**
-   * @generated from field: repeated todo_app.v1.Pair uniquetexts = 1;
+   * @generated from field: repeated todo_app.v1.Text texts_to_send = 1;
    */
-  uniquetexts: Pair[];
+  textsToSend: Text[];
+
+  /**
+   * @generated from field: repeated todo_app.v1.Text texts_accepted = 2;
+   */
+  textsAccepted: Text[];
 
   constructor(data?: PartialMessage<TwilioTextsState>);
 
@@ -158,9 +207,9 @@ export declare class AddTextRequest extends Message<AddTextRequest> {
   body: string;
 
   /**
-   * @generated from field: string create_time = 3;
+   * @generated from field: google.protobuf.Timestamp create_time = 3;
    */
-  createTime: string;
+  createTime?: Timestamp;
 
   constructor(data?: PartialMessage<AddTextRequest>);
 
@@ -249,24 +298,14 @@ export declare class ListTextsResponse extends Message<ListTextsResponse> {
  */
 export declare class TwilioReminderTextTaskRequest extends Message<TwilioReminderTextTaskRequest> {
   /**
-   * @generated from field: string to = 1;
+   * string to = 1;
+   * string body = 2;
+   * string create_time = 3;
+   * int32 num_times = 4;
+   *
+   * @generated from field: todo_app.v1.Text text_to_send = 1;
    */
-  to: string;
-
-  /**
-   * @generated from field: string body = 2;
-   */
-  body: string;
-
-  /**
-   * @generated from field: string create_time = 3;
-   */
-  createTime: string;
-
-  /**
-   * @generated from field: int32 num_times = 4;
-   */
-  numTimes: number;
+  textToSend?: Text;
 
   constructor(data?: PartialMessage<TwilioReminderTextTaskRequest>);
 

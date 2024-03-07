@@ -4,7 +4,8 @@ import type {
   PartialMessage as __bufbuildProtobufPartialMessage,
 } from "@bufbuild/protobuf";
 import {
-  Empty
+  Timestamp, 
+	Empty
 } from "@bufbuild/protobuf";
 import * as resemble_react from "@reboot-dev/resemble-react";
 import * as resemble_api from "@reboot-dev/resemble-api";
@@ -18,6 +19,7 @@ import { v4 as uuidv4 } from "uuid";
 import {
   UniqueText, 
 	Pair, 
+	Text, 
 	TwilioTextsState, 
 	CreateTwilioTextRequest, 
 	CreateTwilioTextResponse, 
@@ -32,6 +34,7 @@ import {
 export {
   UniqueText, 
 	Pair, 
+	Text, 
 	TwilioTextsState, 
 	CreateTwilioTextRequest, 
 	CreateTwilioTextResponse, 
@@ -51,7 +54,7 @@ export interface TwilioTextsMutators {
     ): Promise<
       resemble_react.ResponseOrErrors<
         Empty,
-        resemble_api.SystemErrorDetails
+        resemble_api.SystemAbortedErrors
       >>;
 
     pending: resemble_react.Mutation<Empty>[];
@@ -63,7 +66,7 @@ export interface TwilioTextsMutators {
     ): Promise<
       resemble_react.ResponseOrErrors<
         AddTextResponse,
-        resemble_api.SystemErrorDetails
+        resemble_api.SystemAbortedErrors
       >>;
 
     pending: resemble_react.Mutation<AddTextRequest>[];
@@ -75,7 +78,7 @@ export interface TwilioTextsMutators {
     ): Promise<
       resemble_react.ResponseOrErrors<
         Empty,
-        resemble_api.SystemErrorDetails
+        resemble_api.SystemAbortedErrors
       >>;
 
     pending: resemble_react.Mutation<TwilioReminderTextTaskRequest>[];
@@ -90,7 +93,7 @@ export interface UseTwilioTextsApi {
   ) => {
     response: ListTextsResponse | undefined;
     isLoading: boolean;
-    error: undefined | resemble_api.SystemErrorDetails
+    error: undefined | resemble_api.SystemAbortedErrors
 ;
     exception: undefined | Error;
   };
@@ -99,7 +102,7 @@ export interface UseTwilioTextsApi {
   ) => Promise<
     resemble_react.ResponseOrErrors<
     ListTextsResponse,
-    resemble_api.SystemErrorDetails
+    resemble_api.SystemAbortedErrors
     >
   >;
 }
@@ -186,13 +189,11 @@ class TwilioTextsInstance {
     resemble_react.retryForever(async () => {
       const headers = new Headers();
       headers.set("Content-Type", "application/json");
-      headers.append("x-resemble-service-name", "todo_app.v1.TwilioTexts");
-      headers.append("x-resemble-actor-id", this.id);
       headers.append("Connection", "keep-alive");
 
       await resemble_react.guardedFetch(
         new Request(
-          `${this.endpoint}/resemble.v1alpha1.React.WebSocketsConnection`,
+          `${this.endpoint}/__/resemble/todo_app.v1.TwilioTexts/${this.id}/resemble.v1alpha1.React.WebSocketsConnection`,
           {
             method: "POST",
             headers,
@@ -208,8 +209,9 @@ class TwilioTextsInstance {
   private initializeWebSocket() {
     if (this.websocket === undefined && this.refs > 0) {
       const url = new URL(this.endpoint);
+      const protocol = url.protocol === "https:" ? "wss:" : "ws:"
       this.websocket = new WebSocket(
-        `wss://${url.host}/__/resemble/websocket/todo_app.v1.TwilioTexts/${this.id}`
+        `${protocol}//${url.host}/__/resemble/todo_app.v1.TwilioTexts/${this.id}`
       );
 
       this.websocket.binaryType = "arraybuffer";
@@ -318,8 +320,6 @@ class TwilioTextsInstance {
   ) {
     const headers = new Headers();
     headers.set("Content-Type", "application/json");
-    headers.append("x-resemble-service-name", "todo_app.v1.TwilioTexts");
-    headers.append("x-resemble-actor-id", this.id);
     headers.append("Connection", "keep-alive");
 
     if (bearerToken !== undefined) {
@@ -409,7 +409,7 @@ class TwilioTextsInstance {
           });
 
           const queryResponses = resemble_react.grpcServerStream({
-            endpoint: `${this.endpoint}/resemble.v1alpha1.React.Query`,
+            endpoint: `${this.endpoint}/__/resemble/todo_app.v1.TwilioTexts/${this.id}/resemble.v1alpha1.React.Query`,
             method: "POST",
             headers,
             request: queryRequest,
@@ -519,8 +519,6 @@ class TwilioTextsInstance {
             }
           });
 
-          console.error(e);
-
           throw e; // This just retries!
         }
       });
@@ -542,7 +540,7 @@ class TwilioTextsInstance {
   ): Promise<
     resemble_react.ResponseOrErrors<
       Empty,
-      resemble_api.SystemErrorDetails
+      resemble_api.SystemAbortedErrors
   >> {
     // We always have at least 1 observer which is this function!
     let remainingObservers = 1;
@@ -586,7 +584,7 @@ class TwilioTextsInstance {
     return new Promise<
       resemble_react.ResponseOrErrors<
         Empty,
-        resemble_api.SystemErrorDetails
+        resemble_api.SystemAbortedErrors
       >>(
       async (resolve, reject) => {
         const { responseOrStatus } = await this.mutate(
@@ -650,7 +648,7 @@ class TwilioTextsInstance {
             const status = resemble_api.Status.fromJsonString(responseOrStatus.value);
 
             let error;
-            if ((error = resemble_api.SystemError.fromStatus(status)) !== undefined) {
+            if ((error = resemble_api.SystemAborted.fromStatus(status)) !== undefined) {
               console.warn(`Error '${error.getType().typeName}' received`);
               resolve({ error });
             } else {
@@ -691,7 +689,7 @@ class TwilioTextsInstance {
   ): Promise<
     resemble_react.ResponseOrErrors<
       AddTextResponse,
-      resemble_api.SystemErrorDetails
+      resemble_api.SystemAbortedErrors
   >> {
     // We always have at least 1 observer which is this function!
     let remainingObservers = 1;
@@ -735,7 +733,7 @@ class TwilioTextsInstance {
     return new Promise<
       resemble_react.ResponseOrErrors<
         AddTextResponse,
-        resemble_api.SystemErrorDetails
+        resemble_api.SystemAbortedErrors
       >>(
       async (resolve, reject) => {
         const { responseOrStatus } = await this.mutate(
@@ -799,7 +797,7 @@ class TwilioTextsInstance {
             const status = resemble_api.Status.fromJsonString(responseOrStatus.value);
 
             let error;
-            if ((error = resemble_api.SystemError.fromStatus(status)) !== undefined) {
+            if ((error = resemble_api.SystemAborted.fromStatus(status)) !== undefined) {
               console.warn(`Error '${error.getType().typeName}' received`);
               resolve({ error });
             } else {
@@ -914,7 +912,7 @@ class TwilioTextsInstance {
   ): Promise<
     resemble_react.ResponseOrErrors<
       Empty,
-      resemble_api.SystemErrorDetails
+      resemble_api.SystemAbortedErrors
   >> {
     // We always have at least 1 observer which is this function!
     let remainingObservers = 1;
@@ -958,7 +956,7 @@ class TwilioTextsInstance {
     return new Promise<
       resemble_react.ResponseOrErrors<
         Empty,
-        resemble_api.SystemErrorDetails
+        resemble_api.SystemAbortedErrors
       >>(
       async (resolve, reject) => {
         const { responseOrStatus } = await this.mutate(
@@ -1022,7 +1020,7 @@ class TwilioTextsInstance {
             const status = resemble_api.Status.fromJsonString(responseOrStatus.value);
 
             let error;
-            if ((error = resemble_api.SystemError.fromStatus(status)) !== undefined) {
+            if ((error = resemble_api.SystemAborted.fromStatus(status)) !== undefined) {
               console.warn(`Error '${error.getType().typeName}' received`);
               resolve({ error });
             } else {
@@ -1101,8 +1099,6 @@ export const useTwilioTexts = (
   const headers = useMemo(() => {
     const headers = new Headers();
     headers.set("Content-Type", "application/json");
-    headers.append("x-resemble-service-name", "todo_app.v1.TwilioTexts");
-    headers.append("x-resemble-actor-id", id);
     headers.append("Connection", "keep-alive");
 
     if (bearerToken !== undefined) {
@@ -1110,7 +1106,7 @@ export const useTwilioTexts = (
     }
 
     return headers;
-  }, [id, bearerToken]);
+  }, [bearerToken]);
 
 
   function useCreate() {
@@ -1239,7 +1235,7 @@ export const useTwilioTexts = (
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [error, setError] = useState<
       undefined
-      | resemble_api.SystemErrorDetails
+      | resemble_api.SystemAbortedErrors
       >();
     const [exception, setException] = useState<Error>();
 
@@ -1262,7 +1258,7 @@ export const useTwilioTexts = (
         setIsLoading,
         (status: resemble_api.Status) => {
           let error;
-          if ((error = resemble_api.SystemError.fromStatus(status)) !== undefined) {
+          if ((error = resemble_api.SystemAborted.fromStatus(status)) !== undefined) {
             console.warn(`Error '${error.getType().typeName}' received`);
             setError(error);
           } else {
@@ -1301,7 +1297,7 @@ export const useTwilioTexts = (
           // See also 'resemble/helpers.py'.
           return await resemble_react.guardedFetch(
             new Request(
-              `${resembleContext.client.endpoint}/todo_app.v1.TwilioTexts.ListTexts`, {
+              `${resembleContext.client.endpoint}/__/resemble/todo_app.v1.TwilioTexts/${id}/todo_app.v1.TwilioTexts.ListTexts`, {
                 method: "POST",
                 headers,
                 body: request.toJsonString()
@@ -1325,7 +1321,7 @@ export const useTwilioTexts = (
         const status = resemble_api.Status.fromJson(await response.json());
 
         let error;
-        if ((error = resemble_api.SystemError.fromStatus(status)) !== undefined) {
+        if ((error = resemble_api.SystemAborted.fromStatus(status)) !== undefined) {
           console.warn(`Error '${error.getType().typeName}' received`);
           return { error };
         } else {

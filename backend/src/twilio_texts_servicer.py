@@ -3,8 +3,10 @@ import traceback
 import todo_app.v1.todo_list_pb2
 import uuid
 from datetime import datetime, timedelta
+from google.protobuf import timestamp_pb2
 from twilio.rest import Client
 from todo_app.v1.twilio_texts_rsm import (
+    Text,
     Pair,
     UniqueText,
     TwilioTexts,
@@ -20,6 +22,10 @@ from todo_app.v1.twilio_texts_rsm import (
 from google.protobuf.empty_pb2 import Empty
 from resemble.aio.contexts import ReaderContext, WriterContext, TransactionContext
 
+ACCOUNT_SID = 'AC03d5902ba89dd69e3a8b7dc25b61b325'
+AUTH_TOKEN = ''
+FROM_NUMBER = '+18554612173'
+
 class TwilioTextsServicer(TwilioTexts.Interface):
 
     async def Create(
@@ -29,7 +35,7 @@ class TwilioTextsServicer(TwilioTexts.Interface):
     ) -> TwilioTexts.CreateEffects:
         # Since this is a constructor, we are setting the initial state of the
         # state machine.
-        initial_state = TwilioTextsState(uniquetexts=[])
+        initial_state = TwilioTextsState(texts_to_send=[], texts_accepted=[])
 
         # here we can schedule a task if we want to
         # welcome_email_task = self.schedule().WelcomeEmailTask(context)
@@ -50,30 +56,17 @@ class TwilioTextsServicer(TwilioTexts.Interface):
         to_number = request.to
         body = request.body
         create_time = request.create_time
-        # now we need to check if there are any texts that have the same 'to' and 'body'
-        # if there are: increment the num_times of this text
-        # else: make a new UniqueText
 
-        print(to_number)
-        print(body)
+        print("##########################")
         print(create_time)
+        print("HERE", create_time.ToDatetime())
 
-        curr_key = str(to_number) + str(body)
+        new_text = Text(to=to_number, from_=FROM_NUMBER, body=body, create_time=create_time, accepted_time="")
 
-        key_exists_flag = False
-        for utext in state.uniquetexts:
-            if utext.key == curr_key:
-                utext.value += 1
-                key_exists_flag = True
-                break
-        
-        if not key_exists_flag:
-            # add a new key into state with value of 1
-            newText = Pair(key=curr_key, value=1)
-            state.uniquetexts.extend([newText])
+        state.texts_to_send.extend([new_text])
 
-        # TODO: fix this line
-        reminder_text_task = self.schedule().ReminderTextTask(context, to='', body='', create_time='',num_times=1)
+        # TODO: fix this line !!!!!!
+        reminder_text_task = self.schedule().ReminderTextTask(context, text_to_send=new_text)
         
         return TwilioTexts.AddTextEffects(
             state=state, 
@@ -98,79 +91,66 @@ class TwilioTextsServicer(TwilioTexts.Interface):
         request: TwilioReminderTextTaskRequest,
     ) -> TwilioTexts.ReminderTextTaskEffects:
         
-        # deadline = request.deadline
-        # todo = request.todo
-        
-        # message_body = "Reminder! You have to complete task '"+todo+"' by "+deadline
-        message_body = ""
-        # uncomment line below to send the message in twilio
-        # await send_text(message_body)
+        text_to_send = request.text_to_send
 
-        print("Message:", message_body)
+        earliest_create_time = state.texts_to_send[0].create_time
+
+        i = 0
+        text_sent = await has_text_been_sent(text_to_send.to, text_to_send.body, earliest_create_time)
+        while not text_sent and i < 3:
+            await send_text(text_to_send.to, text_to_send.body)
+            text_sent = await has_text_been_sent(text_to_send.to, text_to_send.body)
+            i += 1
+
+        if text_sent:
+            state.texts_to_send.remove(text_to_send)
+            state.texts_accepted.extend([text_to_send])
+
+        print(state)
 
         return TwilioTexts.ReminderTextTaskEffects(
             state=state,
             response=Empty(),
         )
-    
-async def get_num_sent_texts(to_number, text_body):
-    
+
+async def has_text_been_sent(to_number, text_body, after):
     # connect to twilio account
-    account_sid = 'AC03d5902ba89dd69e3a8b7dc25b61b325'
-    auth_token = '0434815514287f052b857a9fcead502c'
-    client = Client(account_sid, auth_token)
+    client = Client(ACCOUNT_SID, AUTH_TOKEN)
     
     # we should get all messages starting at time from last message that was sent while all messages still haven't been sent
-    messages = client.messages.list(date_sent_after=datetime.now() + timedelta(days=-1))
-    
-    num_sent_texts = 0
+    messages = client.messages.list(date_sent_after=after.ToDatetime(), limit=20)
+
     for record in messages:
-        if False:
-        # if message has been accepted
-            num_sent_texts += 1
+        if record.to == to_number and record.body == "Sent from your Twilio trial account - "+text_body:
+            if record.status in ['sent', 'delivered']:
+                return True
 
-    return num_sent_texts
+    return False
 
-
-async def send_text(message_body: str):
-    #logging.info(f"Sending text:\n====\n{message_body}\n====")
+async def send_text(to_number, message_body):
     print("We are sending a text")
 
-    # twilio code here to send a text
-
     # lets send a message using twillio
-    account_sid = 'AC03d5902ba89dd69e3a8b7dc25b61b325'
-    auth_token = '0434815514287f052b857a9fcead502c'
-    client = Client(account_sid, auth_token)
+    client = Client(ACCOUNT_SID, AUTH_TOKEN)
 
-    # messages = client.messages.list(date_sent_before=datetime(2019, 3, 1, 0, 0, 0), limit=20)
+    message = client.messages.create(body=message_body, from_='+18554612173', to=to_number)
 
-    # lets get all the messages that were sent in the last 24 hours
-    # then make sure we aren't sending a message that has the same body as a message we already sent
-
-    num_sent_texts = get_num_sent_texts(to_number='+18777804236', text_body=message_body)
-
-    # get the difference between num_sent_texts and value for the corresponding key
-
-    # if diff = 0:
-    # print("All messages have been sent")
-    # if diff >0 : loop through number of times we need to send message
-
-    # send_message = True
-    # for record in messages:
-    #     if record.body == message_body:
-    #         send_message = False
-    
-    # if send_message:
-    #     message = client.messages.create(body=message_body, from_='+18554612173', to='+18777804236')
-    #     print(message.sid)
-    # else:
-    #     print("Reminder was already sent in the last 24 hours")
-    
-    # message = client.messages.create(body=message_body, from_='+18554612173', to='+18777804236')
-    # message = client.messages.create(body=message_body, from_='+18554612173', to='+18777804236')
-
-    #print(message.sid)
+    print(message.sid)
     return
+    
+# async def get_num_sent_texts(to_number, text_body):
+#     # connect to twilio account
+#     client = Client(ACCOUNT_SID, AUTH_TOKEN)
+    
+#     # we should get all messages starting at time from last message that was sent while all messages still haven't been sent
+#     messages = client.messages.list(date_sent_after=datetime.now() + timedelta(days=-1))
+    
+#     num_sent_texts = 0
+#     for record in messages:
+#         if record.to == to_number and record.body == text_body:
+#             if record.status in ['sent', 'delivered']:
+#                 num_sent_texts += 1
+
+#     return num_sent_texts
 
         

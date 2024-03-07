@@ -2,7 +2,8 @@ import asyncio
 import traceback
 import todo_app.v1.todo_list_pb2
 import uuid
-from datetime import datetime, timedelta
+from datetime import datetime, timezone
+from google.protobuf.timestamp_pb2 import Timestamp
 from twilio.rest import Client
 from todo_app.v1.twilio_texts_rsm import TwilioTexts
 from todo_app.v1.todo_list_rsm import (
@@ -35,9 +36,6 @@ class TodoListServicer(TodoList.Interface):
         # Since this is a constructor, we are setting the initial state of the
         # state machine.
         initial_state = TodoListState(name=request.name)
-
-        # here we can schedule a task if we want to
-        # welcome_email_task = self.schedule().WelcomeEmailTask(context)
 
         print(initial_state.todos)
 
@@ -99,25 +97,22 @@ class TodoListServicer(TodoList.Interface):
     async def AddDeadline(
         self,
         context: TransactionContext,
-        # state: TodoListState,
         request: AddDeadlineRequest,
     ) -> AddDeadlineResponse:
         
         todoId = request.todoId
         date = request.date
-        self.todo_body = ""
+        self.target_todo = None
         
         async def add_deadline(
             context: WriterContext,
             state: TodoListState,
         ) -> TodoList.Effects:
             
-            target_todo = None
             for todo in state.todos:
                 if todo.id == todoId:
                     todo.deadline = date
-                    target_todo = todo
-                    self.todo_body = target_todo.text
+                    self.target_todo = todo
                     break
             
             return TodoList.Effects(state=state)
@@ -126,19 +121,10 @@ class TodoListServicer(TodoList.Interface):
         
         # Let's go create the TwilioText.
         twilio = TwilioTexts('twilio-texts')
-        await twilio.AddText(context, to='+18777804236', body=self.todo_body, create_time=str(datetime.now()))
-
-        # TODO: pass in argument that is the 'time_now' when the task is scheduled
-        # reminder_text_task = self.schedule().ReminderTextTask(context, deadline=date, todo=target_todo.text)
+        text_body = "Reminder! You have to complete task "+self.target_todo.text+" by "+self.target_todo.deadline
+        timestamp = Timestamp()
+        timestamp.FromDatetime(datetime.now(tz=timezone.utc))
+        await twilio.AddText(context, to='+18777804236', body=text_body, create_time=timestamp)
 
         return AddDeadlineResponse()
-
-        # return TodoList.AddDeadlineEffects(
-        #     state=state, 
-        #     tasks=[reminder_text_task],
-        #     response=AddDealineResponse(
-        #         reminder_text_task_id = reminder_text_task.task_id
-        #     ),
-        # )
-
         
