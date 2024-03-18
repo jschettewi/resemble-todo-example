@@ -52,9 +52,9 @@ export interface TwilioTextsMutators {
     (partialRequest?: __bufbuildProtobufPartialMessage<Empty>,
      optimistic_metadata?: any
     ): Promise<
-      resemble_react.ResponseOrErrors<
+      resemble_react.ResponseOrAborted<
         Empty,
-        resemble_api.SystemAbortedErrors
+        TwilioTextsCreateAborted
       >>;
 
     pending: resemble_react.Mutation<Empty>[];
@@ -64,9 +64,9 @@ export interface TwilioTextsMutators {
     (partialRequest?: __bufbuildProtobufPartialMessage<AddTextRequest>,
      optimistic_metadata?: any
     ): Promise<
-      resemble_react.ResponseOrErrors<
+      resemble_react.ResponseOrAborted<
         AddTextResponse,
-        resemble_api.SystemAbortedErrors
+        TwilioTextsAddTextAborted
       >>;
 
     pending: resemble_react.Mutation<AddTextRequest>[];
@@ -76,13 +76,345 @@ export interface TwilioTextsMutators {
     (partialRequest?: __bufbuildProtobufPartialMessage<TwilioReminderTextTaskRequest>,
      optimistic_metadata?: any
     ): Promise<
-      resemble_react.ResponseOrErrors<
+      resemble_react.ResponseOrAborted<
         Empty,
-        resemble_api.SystemAbortedErrors
+        TwilioTextsReminderTextTaskAborted
       >>;
 
     pending: resemble_react.Mutation<TwilioReminderTextTaskRequest>[];
   };
+}
+
+const TWILIO_TEXTS_CREATE_ERROR_TYPES = [
+  // TODO(benh): don't copy these errors everywhere.
+  //
+  // gRPC errors.
+  resemble_api.errors_pb.Cancelled,
+  resemble_api.errors_pb.Unknown,
+  resemble_api.errors_pb.InvalidArgument,
+  resemble_api.errors_pb.DeadlineExceeded,
+  resemble_api.errors_pb.NotFound,
+  resemble_api.errors_pb.AlreadyExists,
+  resemble_api.errors_pb.PermissionDenied,
+  resemble_api.errors_pb.ResourceExhausted,
+  resemble_api.errors_pb.FailedPrecondition,
+  resemble_api.errors_pb.Aborted,
+  resemble_api.errors_pb.OutOfRange,
+  resemble_api.errors_pb.Unimplemented,
+  resemble_api.errors_pb.Internal,
+  resemble_api.errors_pb.Unavailable,
+  resemble_api.errors_pb.DataLoss,
+  resemble_api.errors_pb.Unauthenticated,
+  // Resemble errors.
+  //
+  // NOTE: also add any new errors into `resemble/v1alpha1/index.ts`.
+  resemble_api.errors_pb.ActorAlreadyConstructed,
+  resemble_api.errors_pb.ActorNotConstructed,
+  resemble_api.errors_pb.TransactionParticipantFailedToPrepare,
+  resemble_api.errors_pb.TransactionParticipantFailedToCommit,
+  resemble_api.errors_pb.UnknownService,
+  resemble_api.errors_pb.UnknownTask,
+  // Method errors.
+] as const; // Need `as const` to ensure TypeScript infers this as a tuple!
+
+export type TwilioTextsCreateAbortedError =
+  resemble_api.InstanceTypeForErrorTypes<
+    typeof TWILIO_TEXTS_CREATE_ERROR_TYPES
+  >[number];
+
+export class TwilioTextsCreateAborted {
+
+  static fromStatus(status: resemble_api.Status) {
+    let error = resemble_api.errorFromGoogleRpcStatusDetails(
+      status,
+      TWILIO_TEXTS_CREATE_ERROR_TYPES,
+    );
+
+    if (error !== undefined) {
+      return new TwilioTextsCreateAborted(
+        error, { message: status.message }
+      );
+    }
+
+    error = resemble_api.errorFromGoogleRpcStatusCode(status);
+
+    // TODO(benh): also consider getting the type names from
+    // `status.details` and including that in `message` to make
+    // debugging easier.
+
+    return new TwilioTextsCreateAborted(
+      error, { message: status.message }
+    );
+  }
+
+  constructor(
+    error: TwilioTextsCreateAbortedError,
+    { message }: { message?: string } = {}
+  ) {
+    this.error = error;
+
+    let code = resemble_api.grpcStatusCodeFromError(this.error);
+
+    if (code === undefined) {
+      // Must be one of the Resemble specific errors.
+      code = resemble_api.StatusCode.ABORTED;;
+    }
+
+    this.message = message;
+  }
+
+  readonly error: TwilioTextsCreateAbortedError;
+  readonly code: number;
+  readonly message?: string;
+}
+
+const TWILIO_TEXTS_ADD_TEXT_ERROR_TYPES = [
+  // TODO(benh): don't copy these errors everywhere.
+  //
+  // gRPC errors.
+  resemble_api.errors_pb.Cancelled,
+  resemble_api.errors_pb.Unknown,
+  resemble_api.errors_pb.InvalidArgument,
+  resemble_api.errors_pb.DeadlineExceeded,
+  resemble_api.errors_pb.NotFound,
+  resemble_api.errors_pb.AlreadyExists,
+  resemble_api.errors_pb.PermissionDenied,
+  resemble_api.errors_pb.ResourceExhausted,
+  resemble_api.errors_pb.FailedPrecondition,
+  resemble_api.errors_pb.Aborted,
+  resemble_api.errors_pb.OutOfRange,
+  resemble_api.errors_pb.Unimplemented,
+  resemble_api.errors_pb.Internal,
+  resemble_api.errors_pb.Unavailable,
+  resemble_api.errors_pb.DataLoss,
+  resemble_api.errors_pb.Unauthenticated,
+  // Resemble errors.
+  //
+  // NOTE: also add any new errors into `resemble/v1alpha1/index.ts`.
+  resemble_api.errors_pb.ActorAlreadyConstructed,
+  resemble_api.errors_pb.ActorNotConstructed,
+  resemble_api.errors_pb.TransactionParticipantFailedToPrepare,
+  resemble_api.errors_pb.TransactionParticipantFailedToCommit,
+  resemble_api.errors_pb.UnknownService,
+  resemble_api.errors_pb.UnknownTask,
+  // Method errors.
+] as const; // Need `as const` to ensure TypeScript infers this as a tuple!
+
+export type TwilioTextsAddTextAbortedError =
+  resemble_api.InstanceTypeForErrorTypes<
+    typeof TWILIO_TEXTS_ADD_TEXT_ERROR_TYPES
+  >[number];
+
+export class TwilioTextsAddTextAborted {
+
+  static fromStatus(status: resemble_api.Status) {
+    let error = resemble_api.errorFromGoogleRpcStatusDetails(
+      status,
+      TWILIO_TEXTS_ADD_TEXT_ERROR_TYPES,
+    );
+
+    if (error !== undefined) {
+      return new TwilioTextsAddTextAborted(
+        error, { message: status.message }
+      );
+    }
+
+    error = resemble_api.errorFromGoogleRpcStatusCode(status);
+
+    // TODO(benh): also consider getting the type names from
+    // `status.details` and including that in `message` to make
+    // debugging easier.
+
+    return new TwilioTextsAddTextAborted(
+      error, { message: status.message }
+    );
+  }
+
+  constructor(
+    error: TwilioTextsAddTextAbortedError,
+    { message }: { message?: string } = {}
+  ) {
+    this.error = error;
+
+    let code = resemble_api.grpcStatusCodeFromError(this.error);
+
+    if (code === undefined) {
+      // Must be one of the Resemble specific errors.
+      code = resemble_api.StatusCode.ABORTED;;
+    }
+
+    this.message = message;
+  }
+
+  readonly error: TwilioTextsAddTextAbortedError;
+  readonly code: number;
+  readonly message?: string;
+}
+
+const TWILIO_TEXTS_LIST_TEXTS_ERROR_TYPES = [
+  // TODO(benh): don't copy these errors everywhere.
+  //
+  // gRPC errors.
+  resemble_api.errors_pb.Cancelled,
+  resemble_api.errors_pb.Unknown,
+  resemble_api.errors_pb.InvalidArgument,
+  resemble_api.errors_pb.DeadlineExceeded,
+  resemble_api.errors_pb.NotFound,
+  resemble_api.errors_pb.AlreadyExists,
+  resemble_api.errors_pb.PermissionDenied,
+  resemble_api.errors_pb.ResourceExhausted,
+  resemble_api.errors_pb.FailedPrecondition,
+  resemble_api.errors_pb.Aborted,
+  resemble_api.errors_pb.OutOfRange,
+  resemble_api.errors_pb.Unimplemented,
+  resemble_api.errors_pb.Internal,
+  resemble_api.errors_pb.Unavailable,
+  resemble_api.errors_pb.DataLoss,
+  resemble_api.errors_pb.Unauthenticated,
+  // Resemble errors.
+  //
+  // NOTE: also add any new errors into `resemble/v1alpha1/index.ts`.
+  resemble_api.errors_pb.ActorAlreadyConstructed,
+  resemble_api.errors_pb.ActorNotConstructed,
+  resemble_api.errors_pb.TransactionParticipantFailedToPrepare,
+  resemble_api.errors_pb.TransactionParticipantFailedToCommit,
+  resemble_api.errors_pb.UnknownService,
+  resemble_api.errors_pb.UnknownTask,
+  // Method errors.
+] as const; // Need `as const` to ensure TypeScript infers this as a tuple!
+
+export type TwilioTextsListTextsAbortedError =
+  resemble_api.InstanceTypeForErrorTypes<
+    typeof TWILIO_TEXTS_LIST_TEXTS_ERROR_TYPES
+  >[number];
+
+export class TwilioTextsListTextsAborted {
+
+  static fromStatus(status: resemble_api.Status) {
+    let error = resemble_api.errorFromGoogleRpcStatusDetails(
+      status,
+      TWILIO_TEXTS_LIST_TEXTS_ERROR_TYPES,
+    );
+
+    if (error !== undefined) {
+      return new TwilioTextsListTextsAborted(
+        error, { message: status.message }
+      );
+    }
+
+    error = resemble_api.errorFromGoogleRpcStatusCode(status);
+
+    // TODO(benh): also consider getting the type names from
+    // `status.details` and including that in `message` to make
+    // debugging easier.
+
+    return new TwilioTextsListTextsAborted(
+      error, { message: status.message }
+    );
+  }
+
+  constructor(
+    error: TwilioTextsListTextsAbortedError,
+    { message }: { message?: string } = {}
+  ) {
+    this.error = error;
+
+    let code = resemble_api.grpcStatusCodeFromError(this.error);
+
+    if (code === undefined) {
+      // Must be one of the Resemble specific errors.
+      code = resemble_api.StatusCode.ABORTED;;
+    }
+
+    this.message = message;
+  }
+
+  readonly error: TwilioTextsListTextsAbortedError;
+  readonly code: number;
+  readonly message?: string;
+}
+
+const TWILIO_TEXTS_REMINDER_TEXT_TASK_ERROR_TYPES = [
+  // TODO(benh): don't copy these errors everywhere.
+  //
+  // gRPC errors.
+  resemble_api.errors_pb.Cancelled,
+  resemble_api.errors_pb.Unknown,
+  resemble_api.errors_pb.InvalidArgument,
+  resemble_api.errors_pb.DeadlineExceeded,
+  resemble_api.errors_pb.NotFound,
+  resemble_api.errors_pb.AlreadyExists,
+  resemble_api.errors_pb.PermissionDenied,
+  resemble_api.errors_pb.ResourceExhausted,
+  resemble_api.errors_pb.FailedPrecondition,
+  resemble_api.errors_pb.Aborted,
+  resemble_api.errors_pb.OutOfRange,
+  resemble_api.errors_pb.Unimplemented,
+  resemble_api.errors_pb.Internal,
+  resemble_api.errors_pb.Unavailable,
+  resemble_api.errors_pb.DataLoss,
+  resemble_api.errors_pb.Unauthenticated,
+  // Resemble errors.
+  //
+  // NOTE: also add any new errors into `resemble/v1alpha1/index.ts`.
+  resemble_api.errors_pb.ActorAlreadyConstructed,
+  resemble_api.errors_pb.ActorNotConstructed,
+  resemble_api.errors_pb.TransactionParticipantFailedToPrepare,
+  resemble_api.errors_pb.TransactionParticipantFailedToCommit,
+  resemble_api.errors_pb.UnknownService,
+  resemble_api.errors_pb.UnknownTask,
+  // Method errors.
+] as const; // Need `as const` to ensure TypeScript infers this as a tuple!
+
+export type TwilioTextsReminderTextTaskAbortedError =
+  resemble_api.InstanceTypeForErrorTypes<
+    typeof TWILIO_TEXTS_REMINDER_TEXT_TASK_ERROR_TYPES
+  >[number];
+
+export class TwilioTextsReminderTextTaskAborted {
+
+  static fromStatus(status: resemble_api.Status) {
+    let error = resemble_api.errorFromGoogleRpcStatusDetails(
+      status,
+      TWILIO_TEXTS_REMINDER_TEXT_TASK_ERROR_TYPES,
+    );
+
+    if (error !== undefined) {
+      return new TwilioTextsReminderTextTaskAborted(
+        error, { message: status.message }
+      );
+    }
+
+    error = resemble_api.errorFromGoogleRpcStatusCode(status);
+
+    // TODO(benh): also consider getting the type names from
+    // `status.details` and including that in `message` to make
+    // debugging easier.
+
+    return new TwilioTextsReminderTextTaskAborted(
+      error, { message: status.message }
+    );
+  }
+
+  constructor(
+    error: TwilioTextsReminderTextTaskAbortedError,
+    { message }: { message?: string } = {}
+  ) {
+    this.error = error;
+
+    let code = resemble_api.grpcStatusCodeFromError(this.error);
+
+    if (code === undefined) {
+      // Must be one of the Resemble specific errors.
+      code = resemble_api.StatusCode.ABORTED;;
+    }
+
+    this.message = message;
+  }
+
+  readonly error: TwilioTextsReminderTextTaskAbortedError;
+  readonly code: number;
+  readonly message?: string;
 }
 
 
@@ -93,16 +425,14 @@ export interface UseTwilioTextsApi {
   ) => {
     response: ListTextsResponse | undefined;
     isLoading: boolean;
-    error: undefined | resemble_api.SystemAbortedErrors
-;
-    exception: undefined | Error;
+    aborted: undefined | TwilioTextsListTextsAborted;
   };
   listTexts: (
     partialRequest?: __bufbuildProtobufPartialMessage<ListTextsRequest>
   ) => Promise<
-    resemble_react.ResponseOrErrors<
+    resemble_react.ResponseOrAborted<
     ListTextsResponse,
-    resemble_api.SystemAbortedErrors
+    TwilioTextsListTextsAborted
     >
   >;
 }
@@ -538,9 +868,9 @@ class TwilioTextsInstance {
   async create(
     mutation: resemble_react.Mutation<Empty>
   ): Promise<
-    resemble_react.ResponseOrErrors<
+    resemble_react.ResponseOrAborted<
       Empty,
-      resemble_api.SystemAbortedErrors
+      TwilioTextsCreateAborted
   >> {
     // We always have at least 1 observer which is this function!
     let remainingObservers = 1;
@@ -582,9 +912,9 @@ class TwilioTextsInstance {
     });
 
     return new Promise<
-      resemble_react.ResponseOrErrors<
+      resemble_react.ResponseOrAborted<
         Empty,
-        resemble_api.SystemAbortedErrors
+        TwilioTextsCreateAborted
       >>(
       async (resolve, reject) => {
         const { responseOrStatus } = await this.mutate(
@@ -647,20 +977,19 @@ class TwilioTextsInstance {
 
             const status = resemble_api.Status.fromJsonString(responseOrStatus.value);
 
-            let error;
-            if ((error = resemble_api.SystemAborted.fromStatus(status)) !== undefined) {
-              console.warn(`Error '${error.getType().typeName}' received`);
-              resolve({ error });
-            } else {
-              reject(
-                new Error(
-                  `Unknown error with gRPC status: ${JSON.stringify(status)}`
-                )
-              );
-            }
+            const aborted = TwilioTextsCreateAborted.fromStatus(status);
+
+            console.warn(
+              `'TwilioTextsCreate' aborted with '${aborted.error.getType().typeName}'`
+            );
+
+            resolve({ aborted });
+
             break;
           default:
-            reject(new Error('Expecting either a response or an error'));
+            // TODO(benh): while this is a _really_ fatal error,
+            // should we still set `aborted` instead of throwing?
+            reject(new Error('Expecting either a response or a status'));
         }
       });
   }
@@ -687,9 +1016,9 @@ class TwilioTextsInstance {
   async addText(
     mutation: resemble_react.Mutation<AddTextRequest>
   ): Promise<
-    resemble_react.ResponseOrErrors<
+    resemble_react.ResponseOrAborted<
       AddTextResponse,
-      resemble_api.SystemAbortedErrors
+      TwilioTextsAddTextAborted
   >> {
     // We always have at least 1 observer which is this function!
     let remainingObservers = 1;
@@ -731,9 +1060,9 @@ class TwilioTextsInstance {
     });
 
     return new Promise<
-      resemble_react.ResponseOrErrors<
+      resemble_react.ResponseOrAborted<
         AddTextResponse,
-        resemble_api.SystemAbortedErrors
+        TwilioTextsAddTextAborted
       >>(
       async (resolve, reject) => {
         const { responseOrStatus } = await this.mutate(
@@ -796,20 +1125,19 @@ class TwilioTextsInstance {
 
             const status = resemble_api.Status.fromJsonString(responseOrStatus.value);
 
-            let error;
-            if ((error = resemble_api.SystemAborted.fromStatus(status)) !== undefined) {
-              console.warn(`Error '${error.getType().typeName}' received`);
-              resolve({ error });
-            } else {
-              reject(
-                new Error(
-                  `Unknown error with gRPC status: ${JSON.stringify(status)}`
-                )
-              );
-            }
+            const aborted = TwilioTextsAddTextAborted.fromStatus(status);
+
+            console.warn(
+              `'TwilioTextsAddText' aborted with '${aborted.error.getType().typeName}'`
+            );
+
+            resolve({ aborted });
+
             break;
           default:
-            reject(new Error('Expecting either a response or an error'));
+            // TODO(benh): while this is a _really_ fatal error,
+            // should we still set `aborted` instead of throwing?
+            reject(new Error('Expecting either a response or a status'));
         }
       });
   }
@@ -910,9 +1238,9 @@ class TwilioTextsInstance {
   async reminderTextTask(
     mutation: resemble_react.Mutation<TwilioReminderTextTaskRequest>
   ): Promise<
-    resemble_react.ResponseOrErrors<
+    resemble_react.ResponseOrAborted<
       Empty,
-      resemble_api.SystemAbortedErrors
+      TwilioTextsReminderTextTaskAborted
   >> {
     // We always have at least 1 observer which is this function!
     let remainingObservers = 1;
@@ -954,9 +1282,9 @@ class TwilioTextsInstance {
     });
 
     return new Promise<
-      resemble_react.ResponseOrErrors<
+      resemble_react.ResponseOrAborted<
         Empty,
-        resemble_api.SystemAbortedErrors
+        TwilioTextsReminderTextTaskAborted
       >>(
       async (resolve, reject) => {
         const { responseOrStatus } = await this.mutate(
@@ -1019,20 +1347,19 @@ class TwilioTextsInstance {
 
             const status = resemble_api.Status.fromJsonString(responseOrStatus.value);
 
-            let error;
-            if ((error = resemble_api.SystemAborted.fromStatus(status)) !== undefined) {
-              console.warn(`Error '${error.getType().typeName}' received`);
-              resolve({ error });
-            } else {
-              reject(
-                new Error(
-                  `Unknown error with gRPC status: ${JSON.stringify(status)}`
-                )
-              );
-            }
+            const aborted = TwilioTextsReminderTextTaskAborted.fromStatus(status);
+
+            console.warn(
+              `'TwilioTextsReminderTextTask' aborted with '${aborted.error.getType().typeName}'`
+            );
+
+            resolve({ aborted });
+
             break;
           default:
-            reject(new Error('Expecting either a response or an error'));
+            // TODO(benh): while this is a _really_ fatal error,
+            // should we still set `aborted` instead of throwing?
+            reject(new Error('Expecting either a response or a status'));
         }
       });
   }
@@ -1233,11 +1560,10 @@ export const useTwilioTexts = (
 
     const [response, setResponse] = useState<ListTextsResponse>();
     const [isLoading, setIsLoading] = useState<boolean>(true);
-    const [error, setError] = useState<
+    const [aborted, setAborted] = useState<
       undefined
-      | resemble_api.SystemAbortedErrors
+      | TwilioTextsListTextsAborted
       >();
-    const [exception, setException] = useState<Error>();
 
     const resembleContext = resemble_react.useResembleContext();
 
@@ -1251,23 +1577,19 @@ export const useTwilioTexts = (
         bearerToken,
         (response: ListTextsResponse) => {
           unstable_batchedUpdates(() => {
-            setError(undefined);
+            setAborted(undefined);
             setResponse(response);
           });
         },
         setIsLoading,
         (status: resemble_api.Status) => {
-          let error;
-          if ((error = resemble_api.SystemAborted.fromStatus(status)) !== undefined) {
-            console.warn(`Error '${error.getType().typeName}' received`);
-            setError(error);
-          } else {
-            error = new Error(
-              `Unknown error with gRPC status: ${JSON.stringify(status)}`
-            );
-            console.warn(error.message);
-            setException(error);
-          }
+          const aborted = TwilioTextsListTextsAborted.fromStatus(status);
+
+          console.warn(
+            `'TwilioTextsListTexts' aborted with '${aborted.error.getType().typeName}'`
+          );
+
+          setAborted(aborted);
         },
       );
       return () => {
@@ -1275,7 +1597,7 @@ export const useTwilioTexts = (
       };
     }, [request, bearerToken]);
 
-    return { response, isLoading, error, exception };
+    return { response, isLoading, aborted };
   }
 
   async function listTexts(
@@ -1320,17 +1642,21 @@ export const useTwilioTexts = (
       if (response.headers.get("content-type") === "application/json") {
         const status = resemble_api.Status.fromJson(await response.json());
 
-        let error;
-        if ((error = resemble_api.SystemAborted.fromStatus(status)) !== undefined) {
-          console.warn(`Error '${error.getType().typeName}' received`);
-          return { error };
-        } else {
-          throw new Error(
-            `Unknown error with gRPC status: ${JSON.stringify(status)}`
-          );
-        }
+        const aborted = TwilioTextsListTextsAborted.fromStatus(status);
+
+        console.warn(
+          `'TwilioTextsListTexts' aborted with '${aborted.error.getType().typeName}' `
+        );
+
+        return { aborted };
       } else {
-        throw new Error(`Unknown error with HTTP status ${response.status}`);
+        const aborted = new TwilioTextsListTextsAborted(
+          new resemble_api.errors_pb.Unknown(), {
+            message: `Unknown error with HTTP status ${response.status}`
+          }
+        );
+
+        return { aborted };
       }
     } else {
       return { response: await response.json() };

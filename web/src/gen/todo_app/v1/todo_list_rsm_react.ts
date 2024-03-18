@@ -57,9 +57,9 @@ export interface TodoListMutators {
     (partialRequest?: __bufbuildProtobufPartialMessage<CreateRequest>,
      optimistic_metadata?: any
     ): Promise<
-      resemble_react.ResponseOrErrors<
+      resemble_react.ResponseOrAborted<
         CreateResponse,
-        resemble_api.SystemAbortedErrors
+        TodoListCreateAborted
       >>;
 
     pending: resemble_react.Mutation<CreateRequest>[];
@@ -69,9 +69,9 @@ export interface TodoListMutators {
     (partialRequest?: __bufbuildProtobufPartialMessage<AddTodoRequest>,
      optimistic_metadata?: any
     ): Promise<
-      resemble_react.ResponseOrErrors<
+      resemble_react.ResponseOrAborted<
         AddTodoResponse,
-        resemble_api.SystemAbortedErrors
+        TodoListAddTodoAborted
       >>;
 
     pending: resemble_react.Mutation<AddTodoRequest>[];
@@ -81,9 +81,9 @@ export interface TodoListMutators {
     (partialRequest?: __bufbuildProtobufPartialMessage<DeleteTodoRequest>,
      optimistic_metadata?: any
     ): Promise<
-      resemble_react.ResponseOrErrors<
+      resemble_react.ResponseOrAborted<
         DeleteTodoResponse,
-        resemble_api.SystemAbortedErrors
+        TodoListDeleteTodoAborted
       >>;
 
     pending: resemble_react.Mutation<DeleteTodoRequest>[];
@@ -93,9 +93,9 @@ export interface TodoListMutators {
     (partialRequest?: __bufbuildProtobufPartialMessage<CompleteTodoRequest>,
      optimistic_metadata?: any
     ): Promise<
-      resemble_react.ResponseOrErrors<
+      resemble_react.ResponseOrAborted<
         CompleteTodoResponse,
-        resemble_api.SystemAbortedErrors
+        TodoListCompleteTodoAborted
       >>;
 
     pending: resemble_react.Mutation<CompleteTodoRequest>[];
@@ -105,13 +105,511 @@ export interface TodoListMutators {
     (partialRequest?: __bufbuildProtobufPartialMessage<AddDeadlineRequest>,
      optimistic_metadata?: any
     ): Promise<
-      resemble_react.ResponseOrErrors<
+      resemble_react.ResponseOrAborted<
         AddDeadlineResponse,
-        resemble_api.SystemAbortedErrors
+        TodoListAddDeadlineAborted
       >>;
 
     pending: resemble_react.Mutation<AddDeadlineRequest>[];
   };
+}
+
+const TODO_LIST_CREATE_ERROR_TYPES = [
+  // TODO(benh): don't copy these errors everywhere.
+  //
+  // gRPC errors.
+  resemble_api.errors_pb.Cancelled,
+  resemble_api.errors_pb.Unknown,
+  resemble_api.errors_pb.InvalidArgument,
+  resemble_api.errors_pb.DeadlineExceeded,
+  resemble_api.errors_pb.NotFound,
+  resemble_api.errors_pb.AlreadyExists,
+  resemble_api.errors_pb.PermissionDenied,
+  resemble_api.errors_pb.ResourceExhausted,
+  resemble_api.errors_pb.FailedPrecondition,
+  resemble_api.errors_pb.Aborted,
+  resemble_api.errors_pb.OutOfRange,
+  resemble_api.errors_pb.Unimplemented,
+  resemble_api.errors_pb.Internal,
+  resemble_api.errors_pb.Unavailable,
+  resemble_api.errors_pb.DataLoss,
+  resemble_api.errors_pb.Unauthenticated,
+  // Resemble errors.
+  //
+  // NOTE: also add any new errors into `resemble/v1alpha1/index.ts`.
+  resemble_api.errors_pb.ActorAlreadyConstructed,
+  resemble_api.errors_pb.ActorNotConstructed,
+  resemble_api.errors_pb.TransactionParticipantFailedToPrepare,
+  resemble_api.errors_pb.TransactionParticipantFailedToCommit,
+  resemble_api.errors_pb.UnknownService,
+  resemble_api.errors_pb.UnknownTask,
+  // Method errors.
+] as const; // Need `as const` to ensure TypeScript infers this as a tuple!
+
+export type TodoListCreateAbortedError =
+  resemble_api.InstanceTypeForErrorTypes<
+    typeof TODO_LIST_CREATE_ERROR_TYPES
+  >[number];
+
+export class TodoListCreateAborted {
+
+  static fromStatus(status: resemble_api.Status) {
+    let error = resemble_api.errorFromGoogleRpcStatusDetails(
+      status,
+      TODO_LIST_CREATE_ERROR_TYPES,
+    );
+
+    if (error !== undefined) {
+      return new TodoListCreateAborted(
+        error, { message: status.message }
+      );
+    }
+
+    error = resemble_api.errorFromGoogleRpcStatusCode(status);
+
+    // TODO(benh): also consider getting the type names from
+    // `status.details` and including that in `message` to make
+    // debugging easier.
+
+    return new TodoListCreateAborted(
+      error, { message: status.message }
+    );
+  }
+
+  constructor(
+    error: TodoListCreateAbortedError,
+    { message }: { message?: string } = {}
+  ) {
+    this.error = error;
+
+    let code = resemble_api.grpcStatusCodeFromError(this.error);
+
+    if (code === undefined) {
+      // Must be one of the Resemble specific errors.
+      code = resemble_api.StatusCode.ABORTED;;
+    }
+
+    this.message = message;
+  }
+
+  readonly error: TodoListCreateAbortedError;
+  readonly code: number;
+  readonly message?: string;
+}
+
+const TODO_LIST_ADD_TODO_ERROR_TYPES = [
+  // TODO(benh): don't copy these errors everywhere.
+  //
+  // gRPC errors.
+  resemble_api.errors_pb.Cancelled,
+  resemble_api.errors_pb.Unknown,
+  resemble_api.errors_pb.InvalidArgument,
+  resemble_api.errors_pb.DeadlineExceeded,
+  resemble_api.errors_pb.NotFound,
+  resemble_api.errors_pb.AlreadyExists,
+  resemble_api.errors_pb.PermissionDenied,
+  resemble_api.errors_pb.ResourceExhausted,
+  resemble_api.errors_pb.FailedPrecondition,
+  resemble_api.errors_pb.Aborted,
+  resemble_api.errors_pb.OutOfRange,
+  resemble_api.errors_pb.Unimplemented,
+  resemble_api.errors_pb.Internal,
+  resemble_api.errors_pb.Unavailable,
+  resemble_api.errors_pb.DataLoss,
+  resemble_api.errors_pb.Unauthenticated,
+  // Resemble errors.
+  //
+  // NOTE: also add any new errors into `resemble/v1alpha1/index.ts`.
+  resemble_api.errors_pb.ActorAlreadyConstructed,
+  resemble_api.errors_pb.ActorNotConstructed,
+  resemble_api.errors_pb.TransactionParticipantFailedToPrepare,
+  resemble_api.errors_pb.TransactionParticipantFailedToCommit,
+  resemble_api.errors_pb.UnknownService,
+  resemble_api.errors_pb.UnknownTask,
+  // Method errors.
+] as const; // Need `as const` to ensure TypeScript infers this as a tuple!
+
+export type TodoListAddTodoAbortedError =
+  resemble_api.InstanceTypeForErrorTypes<
+    typeof TODO_LIST_ADD_TODO_ERROR_TYPES
+  >[number];
+
+export class TodoListAddTodoAborted {
+
+  static fromStatus(status: resemble_api.Status) {
+    let error = resemble_api.errorFromGoogleRpcStatusDetails(
+      status,
+      TODO_LIST_ADD_TODO_ERROR_TYPES,
+    );
+
+    if (error !== undefined) {
+      return new TodoListAddTodoAborted(
+        error, { message: status.message }
+      );
+    }
+
+    error = resemble_api.errorFromGoogleRpcStatusCode(status);
+
+    // TODO(benh): also consider getting the type names from
+    // `status.details` and including that in `message` to make
+    // debugging easier.
+
+    return new TodoListAddTodoAborted(
+      error, { message: status.message }
+    );
+  }
+
+  constructor(
+    error: TodoListAddTodoAbortedError,
+    { message }: { message?: string } = {}
+  ) {
+    this.error = error;
+
+    let code = resemble_api.grpcStatusCodeFromError(this.error);
+
+    if (code === undefined) {
+      // Must be one of the Resemble specific errors.
+      code = resemble_api.StatusCode.ABORTED;;
+    }
+
+    this.message = message;
+  }
+
+  readonly error: TodoListAddTodoAbortedError;
+  readonly code: number;
+  readonly message?: string;
+}
+
+const TODO_LIST_LIST_TODOS_ERROR_TYPES = [
+  // TODO(benh): don't copy these errors everywhere.
+  //
+  // gRPC errors.
+  resemble_api.errors_pb.Cancelled,
+  resemble_api.errors_pb.Unknown,
+  resemble_api.errors_pb.InvalidArgument,
+  resemble_api.errors_pb.DeadlineExceeded,
+  resemble_api.errors_pb.NotFound,
+  resemble_api.errors_pb.AlreadyExists,
+  resemble_api.errors_pb.PermissionDenied,
+  resemble_api.errors_pb.ResourceExhausted,
+  resemble_api.errors_pb.FailedPrecondition,
+  resemble_api.errors_pb.Aborted,
+  resemble_api.errors_pb.OutOfRange,
+  resemble_api.errors_pb.Unimplemented,
+  resemble_api.errors_pb.Internal,
+  resemble_api.errors_pb.Unavailable,
+  resemble_api.errors_pb.DataLoss,
+  resemble_api.errors_pb.Unauthenticated,
+  // Resemble errors.
+  //
+  // NOTE: also add any new errors into `resemble/v1alpha1/index.ts`.
+  resemble_api.errors_pb.ActorAlreadyConstructed,
+  resemble_api.errors_pb.ActorNotConstructed,
+  resemble_api.errors_pb.TransactionParticipantFailedToPrepare,
+  resemble_api.errors_pb.TransactionParticipantFailedToCommit,
+  resemble_api.errors_pb.UnknownService,
+  resemble_api.errors_pb.UnknownTask,
+  // Method errors.
+] as const; // Need `as const` to ensure TypeScript infers this as a tuple!
+
+export type TodoListListTodosAbortedError =
+  resemble_api.InstanceTypeForErrorTypes<
+    typeof TODO_LIST_LIST_TODOS_ERROR_TYPES
+  >[number];
+
+export class TodoListListTodosAborted {
+
+  static fromStatus(status: resemble_api.Status) {
+    let error = resemble_api.errorFromGoogleRpcStatusDetails(
+      status,
+      TODO_LIST_LIST_TODOS_ERROR_TYPES,
+    );
+
+    if (error !== undefined) {
+      return new TodoListListTodosAborted(
+        error, { message: status.message }
+      );
+    }
+
+    error = resemble_api.errorFromGoogleRpcStatusCode(status);
+
+    // TODO(benh): also consider getting the type names from
+    // `status.details` and including that in `message` to make
+    // debugging easier.
+
+    return new TodoListListTodosAborted(
+      error, { message: status.message }
+    );
+  }
+
+  constructor(
+    error: TodoListListTodosAbortedError,
+    { message }: { message?: string } = {}
+  ) {
+    this.error = error;
+
+    let code = resemble_api.grpcStatusCodeFromError(this.error);
+
+    if (code === undefined) {
+      // Must be one of the Resemble specific errors.
+      code = resemble_api.StatusCode.ABORTED;;
+    }
+
+    this.message = message;
+  }
+
+  readonly error: TodoListListTodosAbortedError;
+  readonly code: number;
+  readonly message?: string;
+}
+
+const TODO_LIST_DELETE_TODO_ERROR_TYPES = [
+  // TODO(benh): don't copy these errors everywhere.
+  //
+  // gRPC errors.
+  resemble_api.errors_pb.Cancelled,
+  resemble_api.errors_pb.Unknown,
+  resemble_api.errors_pb.InvalidArgument,
+  resemble_api.errors_pb.DeadlineExceeded,
+  resemble_api.errors_pb.NotFound,
+  resemble_api.errors_pb.AlreadyExists,
+  resemble_api.errors_pb.PermissionDenied,
+  resemble_api.errors_pb.ResourceExhausted,
+  resemble_api.errors_pb.FailedPrecondition,
+  resemble_api.errors_pb.Aborted,
+  resemble_api.errors_pb.OutOfRange,
+  resemble_api.errors_pb.Unimplemented,
+  resemble_api.errors_pb.Internal,
+  resemble_api.errors_pb.Unavailable,
+  resemble_api.errors_pb.DataLoss,
+  resemble_api.errors_pb.Unauthenticated,
+  // Resemble errors.
+  //
+  // NOTE: also add any new errors into `resemble/v1alpha1/index.ts`.
+  resemble_api.errors_pb.ActorAlreadyConstructed,
+  resemble_api.errors_pb.ActorNotConstructed,
+  resemble_api.errors_pb.TransactionParticipantFailedToPrepare,
+  resemble_api.errors_pb.TransactionParticipantFailedToCommit,
+  resemble_api.errors_pb.UnknownService,
+  resemble_api.errors_pb.UnknownTask,
+  // Method errors.
+] as const; // Need `as const` to ensure TypeScript infers this as a tuple!
+
+export type TodoListDeleteTodoAbortedError =
+  resemble_api.InstanceTypeForErrorTypes<
+    typeof TODO_LIST_DELETE_TODO_ERROR_TYPES
+  >[number];
+
+export class TodoListDeleteTodoAborted {
+
+  static fromStatus(status: resemble_api.Status) {
+    let error = resemble_api.errorFromGoogleRpcStatusDetails(
+      status,
+      TODO_LIST_DELETE_TODO_ERROR_TYPES,
+    );
+
+    if (error !== undefined) {
+      return new TodoListDeleteTodoAborted(
+        error, { message: status.message }
+      );
+    }
+
+    error = resemble_api.errorFromGoogleRpcStatusCode(status);
+
+    // TODO(benh): also consider getting the type names from
+    // `status.details` and including that in `message` to make
+    // debugging easier.
+
+    return new TodoListDeleteTodoAborted(
+      error, { message: status.message }
+    );
+  }
+
+  constructor(
+    error: TodoListDeleteTodoAbortedError,
+    { message }: { message?: string } = {}
+  ) {
+    this.error = error;
+
+    let code = resemble_api.grpcStatusCodeFromError(this.error);
+
+    if (code === undefined) {
+      // Must be one of the Resemble specific errors.
+      code = resemble_api.StatusCode.ABORTED;;
+    }
+
+    this.message = message;
+  }
+
+  readonly error: TodoListDeleteTodoAbortedError;
+  readonly code: number;
+  readonly message?: string;
+}
+
+const TODO_LIST_COMPLETE_TODO_ERROR_TYPES = [
+  // TODO(benh): don't copy these errors everywhere.
+  //
+  // gRPC errors.
+  resemble_api.errors_pb.Cancelled,
+  resemble_api.errors_pb.Unknown,
+  resemble_api.errors_pb.InvalidArgument,
+  resemble_api.errors_pb.DeadlineExceeded,
+  resemble_api.errors_pb.NotFound,
+  resemble_api.errors_pb.AlreadyExists,
+  resemble_api.errors_pb.PermissionDenied,
+  resemble_api.errors_pb.ResourceExhausted,
+  resemble_api.errors_pb.FailedPrecondition,
+  resemble_api.errors_pb.Aborted,
+  resemble_api.errors_pb.OutOfRange,
+  resemble_api.errors_pb.Unimplemented,
+  resemble_api.errors_pb.Internal,
+  resemble_api.errors_pb.Unavailable,
+  resemble_api.errors_pb.DataLoss,
+  resemble_api.errors_pb.Unauthenticated,
+  // Resemble errors.
+  //
+  // NOTE: also add any new errors into `resemble/v1alpha1/index.ts`.
+  resemble_api.errors_pb.ActorAlreadyConstructed,
+  resemble_api.errors_pb.ActorNotConstructed,
+  resemble_api.errors_pb.TransactionParticipantFailedToPrepare,
+  resemble_api.errors_pb.TransactionParticipantFailedToCommit,
+  resemble_api.errors_pb.UnknownService,
+  resemble_api.errors_pb.UnknownTask,
+  // Method errors.
+] as const; // Need `as const` to ensure TypeScript infers this as a tuple!
+
+export type TodoListCompleteTodoAbortedError =
+  resemble_api.InstanceTypeForErrorTypes<
+    typeof TODO_LIST_COMPLETE_TODO_ERROR_TYPES
+  >[number];
+
+export class TodoListCompleteTodoAborted {
+
+  static fromStatus(status: resemble_api.Status) {
+    let error = resemble_api.errorFromGoogleRpcStatusDetails(
+      status,
+      TODO_LIST_COMPLETE_TODO_ERROR_TYPES,
+    );
+
+    if (error !== undefined) {
+      return new TodoListCompleteTodoAborted(
+        error, { message: status.message }
+      );
+    }
+
+    error = resemble_api.errorFromGoogleRpcStatusCode(status);
+
+    // TODO(benh): also consider getting the type names from
+    // `status.details` and including that in `message` to make
+    // debugging easier.
+
+    return new TodoListCompleteTodoAborted(
+      error, { message: status.message }
+    );
+  }
+
+  constructor(
+    error: TodoListCompleteTodoAbortedError,
+    { message }: { message?: string } = {}
+  ) {
+    this.error = error;
+
+    let code = resemble_api.grpcStatusCodeFromError(this.error);
+
+    if (code === undefined) {
+      // Must be one of the Resemble specific errors.
+      code = resemble_api.StatusCode.ABORTED;;
+    }
+
+    this.message = message;
+  }
+
+  readonly error: TodoListCompleteTodoAbortedError;
+  readonly code: number;
+  readonly message?: string;
+}
+
+const TODO_LIST_ADD_DEADLINE_ERROR_TYPES = [
+  // TODO(benh): don't copy these errors everywhere.
+  //
+  // gRPC errors.
+  resemble_api.errors_pb.Cancelled,
+  resemble_api.errors_pb.Unknown,
+  resemble_api.errors_pb.InvalidArgument,
+  resemble_api.errors_pb.DeadlineExceeded,
+  resemble_api.errors_pb.NotFound,
+  resemble_api.errors_pb.AlreadyExists,
+  resemble_api.errors_pb.PermissionDenied,
+  resemble_api.errors_pb.ResourceExhausted,
+  resemble_api.errors_pb.FailedPrecondition,
+  resemble_api.errors_pb.Aborted,
+  resemble_api.errors_pb.OutOfRange,
+  resemble_api.errors_pb.Unimplemented,
+  resemble_api.errors_pb.Internal,
+  resemble_api.errors_pb.Unavailable,
+  resemble_api.errors_pb.DataLoss,
+  resemble_api.errors_pb.Unauthenticated,
+  // Resemble errors.
+  //
+  // NOTE: also add any new errors into `resemble/v1alpha1/index.ts`.
+  resemble_api.errors_pb.ActorAlreadyConstructed,
+  resemble_api.errors_pb.ActorNotConstructed,
+  resemble_api.errors_pb.TransactionParticipantFailedToPrepare,
+  resemble_api.errors_pb.TransactionParticipantFailedToCommit,
+  resemble_api.errors_pb.UnknownService,
+  resemble_api.errors_pb.UnknownTask,
+  // Method errors.
+] as const; // Need `as const` to ensure TypeScript infers this as a tuple!
+
+export type TodoListAddDeadlineAbortedError =
+  resemble_api.InstanceTypeForErrorTypes<
+    typeof TODO_LIST_ADD_DEADLINE_ERROR_TYPES
+  >[number];
+
+export class TodoListAddDeadlineAborted {
+
+  static fromStatus(status: resemble_api.Status) {
+    let error = resemble_api.errorFromGoogleRpcStatusDetails(
+      status,
+      TODO_LIST_ADD_DEADLINE_ERROR_TYPES,
+    );
+
+    if (error !== undefined) {
+      return new TodoListAddDeadlineAborted(
+        error, { message: status.message }
+      );
+    }
+
+    error = resemble_api.errorFromGoogleRpcStatusCode(status);
+
+    // TODO(benh): also consider getting the type names from
+    // `status.details` and including that in `message` to make
+    // debugging easier.
+
+    return new TodoListAddDeadlineAborted(
+      error, { message: status.message }
+    );
+  }
+
+  constructor(
+    error: TodoListAddDeadlineAbortedError,
+    { message }: { message?: string } = {}
+  ) {
+    this.error = error;
+
+    let code = resemble_api.grpcStatusCodeFromError(this.error);
+
+    if (code === undefined) {
+      // Must be one of the Resemble specific errors.
+      code = resemble_api.StatusCode.ABORTED;;
+    }
+
+    this.message = message;
+  }
+
+  readonly error: TodoListAddDeadlineAbortedError;
+  readonly code: number;
+  readonly message?: string;
 }
 
 
@@ -122,16 +620,14 @@ export interface UseTodoListApi {
   ) => {
     response: ListTodosResponse | undefined;
     isLoading: boolean;
-    error: undefined | resemble_api.SystemAbortedErrors
-;
-    exception: undefined | Error;
+    aborted: undefined | TodoListListTodosAborted;
   };
   listTodos: (
     partialRequest?: __bufbuildProtobufPartialMessage<ListTodosRequest>
   ) => Promise<
-    resemble_react.ResponseOrErrors<
+    resemble_react.ResponseOrAborted<
     ListTodosResponse,
-    resemble_api.SystemAbortedErrors
+    TodoListListTodosAborted
     >
   >;
 }
@@ -567,9 +1063,9 @@ class TodoListInstance {
   async create(
     mutation: resemble_react.Mutation<CreateRequest>
   ): Promise<
-    resemble_react.ResponseOrErrors<
+    resemble_react.ResponseOrAborted<
       CreateResponse,
-      resemble_api.SystemAbortedErrors
+      TodoListCreateAborted
   >> {
     // We always have at least 1 observer which is this function!
     let remainingObservers = 1;
@@ -611,9 +1107,9 @@ class TodoListInstance {
     });
 
     return new Promise<
-      resemble_react.ResponseOrErrors<
+      resemble_react.ResponseOrAborted<
         CreateResponse,
-        resemble_api.SystemAbortedErrors
+        TodoListCreateAborted
       >>(
       async (resolve, reject) => {
         const { responseOrStatus } = await this.mutate(
@@ -676,20 +1172,19 @@ class TodoListInstance {
 
             const status = resemble_api.Status.fromJsonString(responseOrStatus.value);
 
-            let error;
-            if ((error = resemble_api.SystemAborted.fromStatus(status)) !== undefined) {
-              console.warn(`Error '${error.getType().typeName}' received`);
-              resolve({ error });
-            } else {
-              reject(
-                new Error(
-                  `Unknown error with gRPC status: ${JSON.stringify(status)}`
-                )
-              );
-            }
+            const aborted = TodoListCreateAborted.fromStatus(status);
+
+            console.warn(
+              `'TodoListCreate' aborted with '${aborted.error.getType().typeName}'`
+            );
+
+            resolve({ aborted });
+
             break;
           default:
-            reject(new Error('Expecting either a response or an error'));
+            // TODO(benh): while this is a _really_ fatal error,
+            // should we still set `aborted` instead of throwing?
+            reject(new Error('Expecting either a response or a status'));
         }
       });
   }
@@ -716,9 +1211,9 @@ class TodoListInstance {
   async addTodo(
     mutation: resemble_react.Mutation<AddTodoRequest>
   ): Promise<
-    resemble_react.ResponseOrErrors<
+    resemble_react.ResponseOrAborted<
       AddTodoResponse,
-      resemble_api.SystemAbortedErrors
+      TodoListAddTodoAborted
   >> {
     // We always have at least 1 observer which is this function!
     let remainingObservers = 1;
@@ -760,9 +1255,9 @@ class TodoListInstance {
     });
 
     return new Promise<
-      resemble_react.ResponseOrErrors<
+      resemble_react.ResponseOrAborted<
         AddTodoResponse,
-        resemble_api.SystemAbortedErrors
+        TodoListAddTodoAborted
       >>(
       async (resolve, reject) => {
         const { responseOrStatus } = await this.mutate(
@@ -825,20 +1320,19 @@ class TodoListInstance {
 
             const status = resemble_api.Status.fromJsonString(responseOrStatus.value);
 
-            let error;
-            if ((error = resemble_api.SystemAborted.fromStatus(status)) !== undefined) {
-              console.warn(`Error '${error.getType().typeName}' received`);
-              resolve({ error });
-            } else {
-              reject(
-                new Error(
-                  `Unknown error with gRPC status: ${JSON.stringify(status)}`
-                )
-              );
-            }
+            const aborted = TodoListAddTodoAborted.fromStatus(status);
+
+            console.warn(
+              `'TodoListAddTodo' aborted with '${aborted.error.getType().typeName}'`
+            );
+
+            resolve({ aborted });
+
             break;
           default:
-            reject(new Error('Expecting either a response or an error'));
+            // TODO(benh): while this is a _really_ fatal error,
+            // should we still set `aborted` instead of throwing?
+            reject(new Error('Expecting either a response or a status'));
         }
       });
   }
@@ -939,9 +1433,9 @@ class TodoListInstance {
   async deleteTodo(
     mutation: resemble_react.Mutation<DeleteTodoRequest>
   ): Promise<
-    resemble_react.ResponseOrErrors<
+    resemble_react.ResponseOrAborted<
       DeleteTodoResponse,
-      resemble_api.SystemAbortedErrors
+      TodoListDeleteTodoAborted
   >> {
     // We always have at least 1 observer which is this function!
     let remainingObservers = 1;
@@ -983,9 +1477,9 @@ class TodoListInstance {
     });
 
     return new Promise<
-      resemble_react.ResponseOrErrors<
+      resemble_react.ResponseOrAborted<
         DeleteTodoResponse,
-        resemble_api.SystemAbortedErrors
+        TodoListDeleteTodoAborted
       >>(
       async (resolve, reject) => {
         const { responseOrStatus } = await this.mutate(
@@ -1048,20 +1542,19 @@ class TodoListInstance {
 
             const status = resemble_api.Status.fromJsonString(responseOrStatus.value);
 
-            let error;
-            if ((error = resemble_api.SystemAborted.fromStatus(status)) !== undefined) {
-              console.warn(`Error '${error.getType().typeName}' received`);
-              resolve({ error });
-            } else {
-              reject(
-                new Error(
-                  `Unknown error with gRPC status: ${JSON.stringify(status)}`
-                )
-              );
-            }
+            const aborted = TodoListDeleteTodoAborted.fromStatus(status);
+
+            console.warn(
+              `'TodoListDeleteTodo' aborted with '${aborted.error.getType().typeName}'`
+            );
+
+            resolve({ aborted });
+
             break;
           default:
-            reject(new Error('Expecting either a response or an error'));
+            // TODO(benh): while this is a _really_ fatal error,
+            // should we still set `aborted` instead of throwing?
+            reject(new Error('Expecting either a response or a status'));
         }
       });
   }
@@ -1088,9 +1581,9 @@ class TodoListInstance {
   async completeTodo(
     mutation: resemble_react.Mutation<CompleteTodoRequest>
   ): Promise<
-    resemble_react.ResponseOrErrors<
+    resemble_react.ResponseOrAborted<
       CompleteTodoResponse,
-      resemble_api.SystemAbortedErrors
+      TodoListCompleteTodoAborted
   >> {
     // We always have at least 1 observer which is this function!
     let remainingObservers = 1;
@@ -1132,9 +1625,9 @@ class TodoListInstance {
     });
 
     return new Promise<
-      resemble_react.ResponseOrErrors<
+      resemble_react.ResponseOrAborted<
         CompleteTodoResponse,
-        resemble_api.SystemAbortedErrors
+        TodoListCompleteTodoAborted
       >>(
       async (resolve, reject) => {
         const { responseOrStatus } = await this.mutate(
@@ -1197,20 +1690,19 @@ class TodoListInstance {
 
             const status = resemble_api.Status.fromJsonString(responseOrStatus.value);
 
-            let error;
-            if ((error = resemble_api.SystemAborted.fromStatus(status)) !== undefined) {
-              console.warn(`Error '${error.getType().typeName}' received`);
-              resolve({ error });
-            } else {
-              reject(
-                new Error(
-                  `Unknown error with gRPC status: ${JSON.stringify(status)}`
-                )
-              );
-            }
+            const aborted = TodoListCompleteTodoAborted.fromStatus(status);
+
+            console.warn(
+              `'TodoListCompleteTodo' aborted with '${aborted.error.getType().typeName}'`
+            );
+
+            resolve({ aborted });
+
             break;
           default:
-            reject(new Error('Expecting either a response or an error'));
+            // TODO(benh): while this is a _really_ fatal error,
+            // should we still set `aborted` instead of throwing?
+            reject(new Error('Expecting either a response or a status'));
         }
       });
   }
@@ -1237,9 +1729,9 @@ class TodoListInstance {
   async addDeadline(
     mutation: resemble_react.Mutation<AddDeadlineRequest>
   ): Promise<
-    resemble_react.ResponseOrErrors<
+    resemble_react.ResponseOrAborted<
       AddDeadlineResponse,
-      resemble_api.SystemAbortedErrors
+      TodoListAddDeadlineAborted
   >> {
     // We always have at least 1 observer which is this function!
     let remainingObservers = 1;
@@ -1281,9 +1773,9 @@ class TodoListInstance {
     });
 
     return new Promise<
-      resemble_react.ResponseOrErrors<
+      resemble_react.ResponseOrAborted<
         AddDeadlineResponse,
-        resemble_api.SystemAbortedErrors
+        TodoListAddDeadlineAborted
       >>(
       async (resolve, reject) => {
         const { responseOrStatus } = await this.mutate(
@@ -1346,20 +1838,19 @@ class TodoListInstance {
 
             const status = resemble_api.Status.fromJsonString(responseOrStatus.value);
 
-            let error;
-            if ((error = resemble_api.SystemAborted.fromStatus(status)) !== undefined) {
-              console.warn(`Error '${error.getType().typeName}' received`);
-              resolve({ error });
-            } else {
-              reject(
-                new Error(
-                  `Unknown error with gRPC status: ${JSON.stringify(status)}`
-                )
-              );
-            }
+            const aborted = TodoListAddDeadlineAborted.fromStatus(status);
+
+            console.warn(
+              `'TodoListAddDeadline' aborted with '${aborted.error.getType().typeName}'`
+            );
+
+            resolve({ aborted });
+
             break;
           default:
-            reject(new Error('Expecting either a response or an error'));
+            // TODO(benh): while this is a _really_ fatal error,
+            // should we still set `aborted` instead of throwing?
+            reject(new Error('Expecting either a response or a status'));
         }
       });
   }
@@ -1560,11 +2051,10 @@ export const useTodoList = (
 
     const [response, setResponse] = useState<ListTodosResponse>();
     const [isLoading, setIsLoading] = useState<boolean>(true);
-    const [error, setError] = useState<
+    const [aborted, setAborted] = useState<
       undefined
-      | resemble_api.SystemAbortedErrors
+      | TodoListListTodosAborted
       >();
-    const [exception, setException] = useState<Error>();
 
     const resembleContext = resemble_react.useResembleContext();
 
@@ -1578,23 +2068,19 @@ export const useTodoList = (
         bearerToken,
         (response: ListTodosResponse) => {
           unstable_batchedUpdates(() => {
-            setError(undefined);
+            setAborted(undefined);
             setResponse(response);
           });
         },
         setIsLoading,
         (status: resemble_api.Status) => {
-          let error;
-          if ((error = resemble_api.SystemAborted.fromStatus(status)) !== undefined) {
-            console.warn(`Error '${error.getType().typeName}' received`);
-            setError(error);
-          } else {
-            error = new Error(
-              `Unknown error with gRPC status: ${JSON.stringify(status)}`
-            );
-            console.warn(error.message);
-            setException(error);
-          }
+          const aborted = TodoListListTodosAborted.fromStatus(status);
+
+          console.warn(
+            `'TodoListListTodos' aborted with '${aborted.error.getType().typeName}'`
+          );
+
+          setAborted(aborted);
         },
       );
       return () => {
@@ -1602,7 +2088,7 @@ export const useTodoList = (
       };
     }, [request, bearerToken]);
 
-    return { response, isLoading, error, exception };
+    return { response, isLoading, aborted };
   }
 
   async function listTodos(
@@ -1647,17 +2133,21 @@ export const useTodoList = (
       if (response.headers.get("content-type") === "application/json") {
         const status = resemble_api.Status.fromJson(await response.json());
 
-        let error;
-        if ((error = resemble_api.SystemAborted.fromStatus(status)) !== undefined) {
-          console.warn(`Error '${error.getType().typeName}' received`);
-          return { error };
-        } else {
-          throw new Error(
-            `Unknown error with gRPC status: ${JSON.stringify(status)}`
-          );
-        }
+        const aborted = TodoListListTodosAborted.fromStatus(status);
+
+        console.warn(
+          `'TodoListListTodos' aborted with '${aborted.error.getType().typeName}' `
+        );
+
+        return { aborted };
       } else {
-        throw new Error(`Unknown error with HTTP status ${response.status}`);
+        const aborted = new TodoListListTodosAborted(
+          new resemble_api.errors_pb.Unknown(), {
+            message: `Unknown error with HTTP status ${response.status}`
+          }
+        );
+
+        return { aborted };
       }
     } else {
       return { response: await response.json() };
