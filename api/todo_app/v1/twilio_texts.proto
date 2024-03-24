@@ -14,7 +14,7 @@ service TwilioTexts {
 
   rpc Create(google.protobuf.Empty) returns (google.protobuf.Empty) {
     option (resemble.v1alpha1.method).writer = {
-      constructor: true,
+      constructor: {},
     };
   }
 
@@ -32,7 +32,7 @@ service TwilioTexts {
   rpc ReminderTextTask(TwilioReminderTextTaskRequest) returns (google.protobuf.Empty) {
     option (resemble.v1alpha1.method) = {
       writer: {},
-      task: true,
+      task: {},
     };
   }
 

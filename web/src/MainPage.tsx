@@ -119,7 +119,7 @@ const Todo = ({ id, text, complete, deadline, selectedTodoList }: TodoArgs) => {
 
   const onAddDeadline = (event: any) => {
     event.preventDefault();
-    const dateString = moment(date.$d).format('MM/DD/YYYY');
+    const dateString = moment(date?.$d).format('MM/DD/YYYY');
     console.log(date);
     // console.log(dateString);
     // const dateString2 = moment(deadlineDate).format('DD/MM/YYYY')

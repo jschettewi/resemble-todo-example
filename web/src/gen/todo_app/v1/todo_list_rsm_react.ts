@@ -186,14 +186,16 @@ export class TodoListCreateAborted {
 
     if (code === undefined) {
       // Must be one of the Resemble specific errors.
-      code = resemble_api.StatusCode.ABORTED;;
+      code = resemble_api.StatusCode.ABORTED;
     }
+
+    this.code = code;
 
     this.message = message;
   }
 
   readonly error: TodoListCreateAbortedError;
-  readonly code: number;
+  readonly code: resemble_api.StatusCode;
   readonly message?: string;
 }
 
@@ -269,14 +271,16 @@ export class TodoListAddTodoAborted {
 
     if (code === undefined) {
       // Must be one of the Resemble specific errors.
-      code = resemble_api.StatusCode.ABORTED;;
+      code = resemble_api.StatusCode.ABORTED;
     }
+
+    this.code = code;
 
     this.message = message;
   }
 
   readonly error: TodoListAddTodoAbortedError;
-  readonly code: number;
+  readonly code: resemble_api.StatusCode;
   readonly message?: string;
 }
 
@@ -352,14 +356,16 @@ export class TodoListListTodosAborted {
 
     if (code === undefined) {
       // Must be one of the Resemble specific errors.
-      code = resemble_api.StatusCode.ABORTED;;
+      code = resemble_api.StatusCode.ABORTED;
     }
+
+    this.code = code;
 
     this.message = message;
   }
 
   readonly error: TodoListListTodosAbortedError;
-  readonly code: number;
+  readonly code: resemble_api.StatusCode;
   readonly message?: string;
 }
 
@@ -435,14 +441,16 @@ export class TodoListDeleteTodoAborted {
 
     if (code === undefined) {
       // Must be one of the Resemble specific errors.
-      code = resemble_api.StatusCode.ABORTED;;
+      code = resemble_api.StatusCode.ABORTED;
     }
+
+    this.code = code;
 
     this.message = message;
   }
 
   readonly error: TodoListDeleteTodoAbortedError;
-  readonly code: number;
+  readonly code: resemble_api.StatusCode;
   readonly message?: string;
 }
 
@@ -518,14 +526,16 @@ export class TodoListCompleteTodoAborted {
 
     if (code === undefined) {
       // Must be one of the Resemble specific errors.
-      code = resemble_api.StatusCode.ABORTED;;
+      code = resemble_api.StatusCode.ABORTED;
     }
+
+    this.code = code;
 
     this.message = message;
   }
 
   readonly error: TodoListCompleteTodoAbortedError;
-  readonly code: number;
+  readonly code: resemble_api.StatusCode;
   readonly message?: string;
 }
 
@@ -601,14 +611,16 @@ export class TodoListAddDeadlineAborted {
 
     if (code === undefined) {
       // Must be one of the Resemble specific errors.
-      code = resemble_api.StatusCode.ABORTED;;
+      code = resemble_api.StatusCode.ABORTED;
     }
+
+    this.code = code;
 
     this.message = message;
   }
 
   readonly error: TodoListAddDeadlineAbortedError;
-  readonly code: number;
+  readonly code: resemble_api.StatusCode;
   readonly message?: string;
 }
 

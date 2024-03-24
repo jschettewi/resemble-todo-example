@@ -95,12 +95,10 @@ class TwilioTextsServicer(TwilioTexts.Interface):
 
         earliest_create_time = state.texts_to_send[0].create_time
 
-        i = 0
         text_sent = await has_text_been_sent(text_to_send.to, text_to_send.body, earliest_create_time)
-        while not text_sent and i < 3:
+        while not text_sent:
             await send_text(text_to_send.to, text_to_send.body)
             text_sent = await has_text_been_sent(text_to_send.to, text_to_send.body)
-            i += 1
 
         if text_sent:
             state.texts_to_send.remove(text_to_send)
@@ -122,8 +120,9 @@ async def has_text_been_sent(to_number, text_body, after):
 
     for record in messages:
         if record.to == to_number and record.body == "Sent from your Twilio trial account - "+text_body:
-            if record.status in ['sent', 'delivered']:
-                return True
+            return True
+            # if record.status in ['sent', 'delivered']:
+            #     return True
 
     return False
 

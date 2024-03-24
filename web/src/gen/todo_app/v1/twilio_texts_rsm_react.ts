@@ -4,8 +4,8 @@ import type {
   PartialMessage as __bufbuildProtobufPartialMessage,
 } from "@bufbuild/protobuf";
 import {
-  Timestamp, 
-	Empty
+  Empty, 
+	Timestamp
 } from "@bufbuild/protobuf";
 import * as resemble_react from "@reboot-dev/resemble-react";
 import * as resemble_api from "@reboot-dev/resemble-api";
@@ -157,14 +157,16 @@ export class TwilioTextsCreateAborted {
 
     if (code === undefined) {
       // Must be one of the Resemble specific errors.
-      code = resemble_api.StatusCode.ABORTED;;
+      code = resemble_api.StatusCode.ABORTED;
     }
+
+    this.code = code;
 
     this.message = message;
   }
 
   readonly error: TwilioTextsCreateAbortedError;
-  readonly code: number;
+  readonly code: resemble_api.StatusCode;
   readonly message?: string;
 }
 
@@ -240,14 +242,16 @@ export class TwilioTextsAddTextAborted {
 
     if (code === undefined) {
       // Must be one of the Resemble specific errors.
-      code = resemble_api.StatusCode.ABORTED;;
+      code = resemble_api.StatusCode.ABORTED;
     }
+
+    this.code = code;
 
     this.message = message;
   }
 
   readonly error: TwilioTextsAddTextAbortedError;
-  readonly code: number;
+  readonly code: resemble_api.StatusCode;
   readonly message?: string;
 }
 
@@ -323,14 +327,16 @@ export class TwilioTextsListTextsAborted {
 
     if (code === undefined) {
       // Must be one of the Resemble specific errors.
-      code = resemble_api.StatusCode.ABORTED;;
+      code = resemble_api.StatusCode.ABORTED;
     }
+
+    this.code = code;
 
     this.message = message;
   }
 
   readonly error: TwilioTextsListTextsAbortedError;
-  readonly code: number;
+  readonly code: resemble_api.StatusCode;
   readonly message?: string;
 }
 
@@ -406,14 +412,16 @@ export class TwilioTextsReminderTextTaskAborted {
 
     if (code === undefined) {
       // Must be one of the Resemble specific errors.
-      code = resemble_api.StatusCode.ABORTED;;
+      code = resemble_api.StatusCode.ABORTED;
     }
+
+    this.code = code;
 
     this.message = message;
   }
 
   readonly error: TwilioTextsReminderTextTaskAbortedError;
-  readonly code: number;
+  readonly code: resemble_api.StatusCode;
   readonly message?: string;
 }
 

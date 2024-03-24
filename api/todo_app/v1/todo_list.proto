@@ -13,7 +13,7 @@ service TodoList {
 
   rpc Create(CreateRequest) returns (CreateResponse) {
     option (resemble.v1alpha1.method).writer = {
-      constructor: true,
+      constructor: {},
     };
   }
 
@@ -41,15 +41,6 @@ service TodoList {
     option (resemble.v1alpha1.method).transaction = {
     };
   }
-
-  // An async task to send a reminder text to the person who set the deadline on a task
-  // rpc ReminderTextTask(ReminderTextTaskRequest) returns (google.protobuf.Empty) {
-  //   option (resemble.v1alpha1.method) = {
-  //     writer: {},
-  //     task: true,
-  //   };
-  // }
-
 }
 
 ////////////////////////////////////////////////////////////////////////

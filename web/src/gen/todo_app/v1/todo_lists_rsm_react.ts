@@ -138,14 +138,16 @@ export class TodoListsAddTodoListAborted {
 
     if (code === undefined) {
       // Must be one of the Resemble specific errors.
-      code = resemble_api.StatusCode.ABORTED;;
+      code = resemble_api.StatusCode.ABORTED;
     }
+
+    this.code = code;
 
     this.message = message;
   }
 
   readonly error: TodoListsAddTodoListAbortedError;
-  readonly code: number;
+  readonly code: resemble_api.StatusCode;
   readonly message?: string;
 }
 
@@ -221,14 +223,16 @@ export class TodoListsListTodoListsAborted {
 
     if (code === undefined) {
       // Must be one of the Resemble specific errors.
-      code = resemble_api.StatusCode.ABORTED;;
+      code = resemble_api.StatusCode.ABORTED;
     }
+
+    this.code = code;
 
     this.message = message;
   }
 
   readonly error: TodoListsListTodoListsAbortedError;
-  readonly code: number;
+  readonly code: resemble_api.StatusCode;
   readonly message?: string;
 }
 
@@ -304,14 +308,16 @@ export class TodoListsDeleteTodoListAborted {
 
     if (code === undefined) {
       // Must be one of the Resemble specific errors.
-      code = resemble_api.StatusCode.ABORTED;;
+      code = resemble_api.StatusCode.ABORTED;
     }
+
+    this.code = code;
 
     this.message = message;
   }
 
   readonly error: TodoListsDeleteTodoListAbortedError;
-  readonly code: number;
+  readonly code: resemble_api.StatusCode;
   readonly message?: string;
 }
 
